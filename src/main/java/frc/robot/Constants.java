@@ -35,4 +35,12 @@ public final class Constants {
     /** Replaying from a log file. */
     REPLAY
   }
+
+  /** Checks whether the robot the correct mode is selected when deploying. */
+  public static void main(String... args) {
+    if (currentMode != Mode.REAL) {
+      System.err.println("Cannot deploy, invalid mode selected: " + currentMode.toString());
+      System.exit(1);
+    }
+  }
 }
