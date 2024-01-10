@@ -29,6 +29,15 @@
     null
   ],
   "java.test.defaultConfig": "WPIlibUnitTests",
+  "java.format.enabled": false,
+  "editor.detectIndentation": false,
+  "editor.insertSpaces": true,
+  "editor.tabSize": 2,
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
+  "editor.formatOnType": true,
+  "editor.formatOnSaveMode": "file",
+  "editor.autoIndent": "full",
   "spotlessGradle.format.enable": true,
   "spotlessGradle.diagnostics.enable": false,
   "editor.defaultFormatter": "richardwillis.vscode-spotless-gradle",
@@ -38,5 +47,7 @@
   "[java]": {
     "editor.defaultFormatter": "richardwillis.vscode-spotless-gradle"
   },
-  "java.debug.settings.onBuildFailureProceed": true
+  "wpilib.deployOffline": true,
+  "wpilib.offline": false,
+  "wpilib.skipTests": false
 }
