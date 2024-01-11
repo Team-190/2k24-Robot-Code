@@ -20,14 +20,27 @@ import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import frc.robot.Constants;
 
 /** IO implementation for Pigeon2 */
 public class GyroIOPigeon2 implements GyroIO {
-  private final Pigeon2 pigeon = new Pigeon2(1);
-  private final StatusSignal<Double> yaw = pigeon.getYaw();
-  private final StatusSignal<Double> yawVelocity = pigeon.getAngularVelocityZWorld();
+  private final Pigeon2 pigeon;
+  private final StatusSignal<Double> yaw;
+  private final StatusSignal<Double> yawVelocity;
 
   public GyroIOPigeon2() {
+    switch (Constants.ROBOT) {
+      case ROBOT_2K24_C:
+      case ROBOT_2K24_P:
+      case ROBOT_2K23_EMBER:
+        pigeon = new Pigeon2(1);
+        break;
+      default:
+        throw new RuntimeException("Invalid robot");
+    }
+
+    yaw = pigeon.getYaw();
+    yawVelocity = pigeon.getAngularVelocityZWorld();
     pigeon.getConfigurator().apply(new Pigeon2Configuration());
     pigeon.getConfigurator().setYaw(0.0);
     yaw.setUpdateFrequency(100.0);
