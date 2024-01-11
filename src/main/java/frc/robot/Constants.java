@@ -13,6 +13,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.RobotBase;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -22,24 +24,45 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final double LOOP_PERIOD_SECS = 0.02;
-  public static final Mode currentMode = Mode.REAL;
+  public static final boolean tuningMode = false;
+  public static final double loopPeriodSecs = 0.02;
+  public static final RobotType robot = RobotType.ROBOT_SIM;
+  public static final Mode mode;
+
+  static {
+    switch (robot) {
+      case ROBOT_2K24_C:
+      case ROBOT_2K24_P:
+        mode = RobotBase.isReal() ? Mode.REAL : Mode.REPLAY;
+        break;
+
+      case ROBOT_SIM:
+        mode = Mode.SIM;
+        break;
+
+      default:
+        mode = Mode.REAL;
+        break;
+    }
+  }
 
   public static enum Mode {
-    /** Running on a real robot. */
     REAL,
-
-    /** Running a physics simulator. */
     SIM,
-
-    /** Replaying from a log file. */
     REPLAY
+  }
+
+  public static enum RobotType {
+    ROBOT_2K24_C,
+    ROBOT_2K24_P,
+    ROBOT_2K23_EMBER,
+    ROBOT_SIM
   }
 
   /** Checks whether the robot the correct mode is selected when deploying. */
   public static void main(String... args) {
-    if (currentMode != Mode.REAL) {
-      System.err.println("Cannot deploy, invalid mode selected: " + currentMode.toString());
+    if (robot == RobotType.ROBOT_SIM) {
+      System.err.println("Cannot deploy, invalid mode selected: " + robot.toString());
       System.exit(1);
     }
   }

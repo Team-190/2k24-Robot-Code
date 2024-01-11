@@ -14,18 +14,22 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.Constants.Mode;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -36,7 +40,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
  */
 public class RobotContainer {
   // Subsystems
-  private final Drive drive;
+  private Drive drive;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -46,48 +50,65 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    switch (Constants.currentMode) {
-      case REAL:
-        // Real robot, instantiate hardware IO implementations
-        drive =
-            new Drive(
-                new GyroIOPigeon2(),
-                new ModuleIOTalonFX(0),
-                new ModuleIOTalonFX(1),
-                new ModuleIOTalonFX(2),
-                new ModuleIOTalonFX(3));
-        break;
+    if (Constants.mode != Mode.REPLAY) {
+      switch (Constants.robot) {
+        case ROBOT_2K24_C:
+        case ROBOT_2K24_P:
+        case ROBOT_2K23_EMBER:
+          // Real robot, instantiate hardware IO implementations
+          drive =
+              new Drive(
+                  new GyroIOPigeon2(),
+                  new ModuleIOTalonFX(0),
+                  new ModuleIOTalonFX(1),
+                  new ModuleIOTalonFX(2),
+                  new ModuleIOTalonFX(3));
+          break;
 
-      case SIM:
-        // Sim robot, instantiate physics sim IO implementations
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIOSim(),
-                new ModuleIOSim(),
-                new ModuleIOSim(),
-                new ModuleIOSim());
-        break;
-
-      default:
-        // Replayed robot, disable IO implementations
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {});
-        break;
+        case ROBOT_SIM:
+          // Sim robot, instantiate physics sim IO implementations
+          drive =
+              new Drive(
+                  new GyroIO() {},
+                  new ModuleIOSim(),
+                  new ModuleIOSim(),
+                  new ModuleIOSim(),
+                  new ModuleIOSim());
+          break;
+      }
     }
 
+    // Instantiate missing subsystems
+    if (drive == null) {
+      drive =
+          new Drive(
+              new GyroIO() {},
+              new ModuleIO() {},
+              new ModuleIO() {},
+              new ModuleIO() {},
+              new ModuleIO() {});
+    }
+
+    // Set up autos
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
-    // Set up feedforward characterization
-    autoChooser.addOption(
-        "Drive FF Characterization",
-        new FeedForwardCharacterization(
-            drive, drive::runCharacterizationVolts, drive::getCharacterizationVelocity));
+    // Set up SysId
+    if (Constants.tuningMode) {
+      var driveSysId =
+          new SysIdRoutine(
+              new SysIdRoutine.Config(
+                  null, null, null, (state) -> Logger.recordOutput("SysIdState", state.toString())),
+              new SysIdRoutine.Mechanism(
+                  (volts) -> drive.runCharacterizationVolts(volts.in(Units.Volts)), null, drive));
+      autoChooser.addOption(
+          "Drive SysId (Quasistatic Forward)", driveSysId.quasistatic(Direction.kForward));
+      autoChooser.addOption(
+          "Drive SysId (Quasistatic Reverse)", driveSysId.quasistatic(Direction.kReverse));
+      autoChooser.addOption(
+          "Drive SysId (Dynamic Forward)", driveSysId.dynamic(Direction.kForward));
+      autoChooser.addOption(
+          "Drive SysId (Dynamic Reverse)", driveSysId.dynamic(Direction.kReverse));
+    }
 
     // Configure the button bindings
     configureButtonBindings();
