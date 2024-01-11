@@ -29,7 +29,7 @@ public class GyroIOPigeon2 implements GyroIO {
   private final StatusSignal<Double> yawVelocity;
 
   public GyroIOPigeon2() {
-    switch (Constants.robot) {
+    switch (Constants.ROBOT) {
       case ROBOT_2K24_C:
       case ROBOT_2K24_P:
       case ROBOT_2K23_EMBER:

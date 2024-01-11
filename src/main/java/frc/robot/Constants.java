@@ -24,24 +24,24 @@ import edu.wpi.first.wpilibj.RobotBase;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final boolean tuningMode = false;
-  public static final double loopPeriodSecs = 0.02;
-  public static final RobotType robot = RobotType.ROBOT_2K24_C;
-  public static final Mode mode;
+  public static final boolean TUNING_MODE = false;
+  public static final double LOOP_PERIOD_SECS = 0.02;
+  public static final RobotType ROBOT = RobotType.ROBOT_2K24_C;
+  public static final Mode MODE;
 
   static {
-    switch (robot) {
+    switch (ROBOT) {
       case ROBOT_2K24_C:
       case ROBOT_2K24_P:
-        mode = RobotBase.isReal() ? Mode.REAL : Mode.REPLAY;
+        MODE = RobotBase.isReal() ? Mode.REAL : Mode.REPLAY;
         break;
 
       case ROBOT_SIM:
-        mode = Mode.SIM;
+        MODE = Mode.SIM;
         break;
 
       default:
-        mode = Mode.REAL;
+        MODE = Mode.REAL;
         break;
     }
   }
@@ -61,8 +61,8 @@ public final class Constants {
 
   /** Checks whether the robot the correct mode is selected when deploying. */
   public static void main(String... args) {
-    if (robot == RobotType.ROBOT_SIM) {
-      System.err.println("Cannot deploy, invalid mode selected: " + robot.toString());
+    if (ROBOT == RobotType.ROBOT_SIM) {
+      System.err.println("Cannot deploy, invalid mode selected: " + ROBOT.toString());
       System.exit(1);
     }
   }

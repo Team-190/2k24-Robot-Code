@@ -63,7 +63,7 @@ public class ModuleIOTalonFX implements ModuleIO {
   private final Rotation2d absoluteEncoderOffset;
 
   public ModuleIOTalonFX(int index) {
-    switch (Constants.robot) {
+    switch (Constants.ROBOT) {
       case ROBOT_2K24_C:
         switch (index) {
           case 0:

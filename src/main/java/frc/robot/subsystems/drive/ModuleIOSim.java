@@ -36,8 +36,8 @@ public class ModuleIOSim implements ModuleIO {
 
   @Override
   public void updateInputs(ModuleIOInputs inputs) {
-    driveSim.update(Constants.loopPeriodSecs);
-    turnSim.update(Constants.loopPeriodSecs);
+    driveSim.update(Constants.LOOP_PERIOD_SECS);
+    turnSim.update(Constants.LOOP_PERIOD_SECS);
 
     inputs.drivePositionRad = driveSim.getAngularPositionRad();
     inputs.driveVelocityRadPerSec = driveSim.getAngularVelocityRadPerSec();

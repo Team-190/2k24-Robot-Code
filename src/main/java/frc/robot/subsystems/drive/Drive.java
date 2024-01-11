@@ -43,7 +43,7 @@ public class Drive extends SubsystemBase {
   private static final double MAX_ANGULAR_SPEED;
 
   static {
-    switch (Constants.robot) {
+    switch (Constants.ROBOT) {
       case ROBOT_2K24_C:
       case ROBOT_2K24_P:
       case ROBOT_SIM:

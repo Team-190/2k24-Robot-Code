@@ -50,8 +50,8 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    if (Constants.mode != Mode.REPLAY) {
-      switch (Constants.robot) {
+    if (Constants.MODE != Mode.REPLAY) {
+      switch (Constants.ROBOT) {
         case ROBOT_2K24_C:
         case ROBOT_2K24_P:
         case ROBOT_2K23_EMBER:
@@ -93,7 +93,7 @@ public class RobotContainer {
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Set up SysId
-    if (Constants.tuningMode) {
+    if (Constants.TUNING_MODE) {
       var driveSysId =
           new SysIdRoutine(
               new SysIdRoutine.Config(

@@ -46,7 +46,7 @@ public class Module {
   private double lastPositionMeters = 0.0; // Used for delta calculation
 
   static {
-    switch (Constants.robot) {
+    switch (Constants.ROBOT) {
       case ROBOT_2K24_C:
       case ROBOT_2K24_P:
         WHEEL_RADIUS.initDefault(Units.inchesToMeters(2.0));
@@ -86,8 +86,8 @@ public class Module {
 
     driveFeedforward = new SimpleMotorFeedforward(DRIVE_KS.get(), DRIVE_KV.get());
     driveFeedback =
-        new PIDController(DRIVE_KP.get(), 0.0, DRIVE_KD.get(), Constants.loopPeriodSecs);
-    turnFeedback = new PIDController(TURN_KP.get(), 0.0, TURN_KD.get(), Constants.loopPeriodSecs);
+        new PIDController(DRIVE_KP.get(), 0.0, DRIVE_KD.get(), Constants.LOOP_PERIOD_SECS);
+    turnFeedback = new PIDController(TURN_KP.get(), 0.0, TURN_KD.get(), Constants.LOOP_PERIOD_SECS);
 
     turnFeedback.enableContinuousInput(-Math.PI, Math.PI);
     setBrakeMode(true);

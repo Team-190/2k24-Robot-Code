@@ -33,7 +33,7 @@ public class Robot extends LoggedRobot {
   private RobotContainer robotContainer;
 
   public Robot() {
-    super(Constants.loopPeriodSecs);
+    super(Constants.LOOP_PERIOD_SECS);
   }
 
   /**
@@ -61,7 +61,7 @@ public class Robot extends LoggedRobot {
     }
 
     // Set up data receivers & replay source
-    switch (Constants.mode) {
+    switch (Constants.MODE) {
       case REAL:
         // Running on a real robot, log to a USB stick ("/U/logs")
         Logger.addDataReceiver(new WPILOGWriter());
