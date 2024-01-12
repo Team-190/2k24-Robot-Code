@@ -59,8 +59,8 @@ public class Module {
         break;
       case ROBOT_2K23_EMBER:
         WHEEL_RADIUS.initDefault(Units.inchesToMeters(2.0));
-        DRIVE_KS.initDefault(0.13454);
-        DRIVE_KV.initDefault(0.11507);
+        DRIVE_KS.initDefault(0.099153);
+        DRIVE_KV.initDefault(0.10541);
         DRIVE_KP.initDefault(0.08);
         DRIVE_KD.initDefault(0.0);
         TURN_KP.initDefault(9.0);
