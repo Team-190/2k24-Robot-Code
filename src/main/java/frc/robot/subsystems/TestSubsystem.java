@@ -34,8 +34,8 @@ public class TestSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    Logger.recordOutput("motor 1", motor1.getVelocity().getValueAsDouble());
-    Logger.recordOutput("motor 2", motor2.getVelocity().getValueAsDouble());
+    Logger.recordOutput("motor 1", motor1.getVelocity().getValueAsDouble() * 2.2037 * 60);
+    Logger.recordOutput("motor 2", motor2.getVelocity().getValueAsDouble() * 2.2037 * 60);
 
     config.kV = v.get();
     config.kP = p.get();
@@ -49,7 +49,7 @@ public class TestSubsystem extends SubsystemBase {
   public Command runMotor1() {
     return startEnd(
         () -> {
-          motor1.setControl(velocity.withVelocity(speed.get()).withSlot(0));
+          motor1.setControl(velocity.withVelocity(speed.get() / 60 / 2.2037).withSlot(0));
         },
         () -> {
           motor1.stopMotor();
@@ -59,7 +59,7 @@ public class TestSubsystem extends SubsystemBase {
   public Command runMotor2() {
     return startEnd(
         () -> {
-          motor2.setControl(velocity.withVelocity(speed.get()).withSlot(0));
+          motor2.setControl(velocity.withVelocity(speed.get() / 60 / 2.2037).withSlot(0));
         },
         () -> {
           motor2.stopMotor();
@@ -69,8 +69,8 @@ public class TestSubsystem extends SubsystemBase {
   public Command runBoth() {
     return startEnd(
         () -> {
-          motor1.setControl(velocity.withVelocity(speed.get()).withSlot(0));
-          motor2.setControl(velocity.withVelocity(speed.get()).withSlot(0));
+          motor1.setControl(velocity.withVelocity(speed.get() / 60 / 2.2037).withSlot(0));
+          motor2.setControl(velocity.withVelocity(speed.get() / 60 / 2.2037).withSlot(0));
         },
         () -> {
           motor1.stopMotor();
