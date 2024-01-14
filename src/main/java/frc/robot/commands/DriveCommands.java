@@ -43,8 +43,8 @@ public class DriveCommands {
         autoAimKD.initDefault(0);
         break;
       case ROBOT_2K23_EMBER:
-        autoAimKP.initDefault(0);
-        autoAimKD.initDefault(0);
+        autoAimKP.initDefault(7);
+        autoAimKD.initDefault(0.125);
         break;
       default:
         break;
