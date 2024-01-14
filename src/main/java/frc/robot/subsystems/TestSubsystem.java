@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
@@ -12,12 +14,14 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 public class TestSubsystem extends SubsystemBase {
   private final TalonFX motor1 = new TalonFX(52);
   private final TalonFX motor2 = new TalonFX(51);
+  private final TalonSRX feeder = new TalonSRX(8);
 
   private final LoggedDashboardNumber speed = new LoggedDashboardNumber("speed");
   private final LoggedDashboardNumber p = new LoggedDashboardNumber("p", 0.1);
   private final LoggedDashboardNumber i = new LoggedDashboardNumber("i", 0);
   private final LoggedDashboardNumber d = new LoggedDashboardNumber("d", 0.001);
   private final LoggedDashboardNumber v = new LoggedDashboardNumber("v", 0.115);
+  private final LoggedDashboardNumber feederSpeed = new LoggedDashboardNumber("feeder speed");
 
   private final VelocityVoltage velocity = new VelocityVoltage(0);
 
@@ -50,9 +54,11 @@ public class TestSubsystem extends SubsystemBase {
     return startEnd(
         () -> {
           motor1.setControl(velocity.withVelocity(speed.get() / 60 / 2.2037).withSlot(0));
+          feeder.set(TalonSRXControlMode.PercentOutput, -feederSpeed.get());
         },
         () -> {
           motor1.stopMotor();
+          feeder.set(TalonSRXControlMode.PercentOutput, 0);
         });
   }
 
@@ -60,9 +66,11 @@ public class TestSubsystem extends SubsystemBase {
     return startEnd(
         () -> {
           motor2.setControl(velocity.withVelocity(speed.get() / 60 / 2.2037).withSlot(0));
+          feeder.set(TalonSRXControlMode.PercentOutput, -feederSpeed.get());
         },
         () -> {
           motor2.stopMotor();
+          feeder.set(TalonSRXControlMode.PercentOutput, 0);
         });
   }
 
@@ -71,10 +79,12 @@ public class TestSubsystem extends SubsystemBase {
         () -> {
           motor1.setControl(velocity.withVelocity(speed.get() / 60 / 2.2037).withSlot(0));
           motor2.setControl(velocity.withVelocity(speed.get() / 60 / 2.2037).withSlot(0));
+          feeder.set(TalonSRXControlMode.PercentOutput, -feederSpeed.get());
         },
         () -> {
           motor1.stopMotor();
           motor2.stopMotor();
+          feeder.set(TalonSRXControlMode.PercentOutput, 0);
         });
   }
 }
