@@ -28,12 +28,16 @@ public class Vision extends SubsystemBase {
 
     Rotation2d gyroPosition = gyroSupplier.get();
     gyroBuffer.addSample(Timer.getFPGATimestamp(), gyroPosition);
+    Optional<Rotation2d> targetAngle = getTargetGyroAngle();
+    if (targetAngle.isPresent()) {
+      Logger.recordOutput("Vision/TargetAngle", targetAngle.get());
+    }
   }
 
   public Optional<Rotation2d> getTargetGyroAngle() {
     Optional<Rotation2d> gyroPosition = gyroBuffer.getSample(inputs.timeStamp);
     if (gyroPosition.isPresent() && inputs.tv) {
-      return Optional.of(gyroPosition.get().plus(inputs.tx));
+      return Optional.of(gyroPosition.get().minus(inputs.tx));
     } else {
       return Optional.empty();
     }
