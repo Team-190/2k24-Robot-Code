@@ -92,9 +92,9 @@ public class DriveCommands {
           aimController.setD(autoAimKD.get());
           aimController.setP(autoAimKP.get());
 
-          // Convert to field relative speeds & send command
+          // get robot relative vel
           Optional<Rotation2d> targetGyroAngle = vision.getTargetGyroAngle();
-          drive.runVelocity(
+          ChassisSpeeds chassisSpeeds =
               ChassisSpeeds.fromFieldRelativeSpeeds(
                   linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
                   linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
@@ -102,7 +102,15 @@ public class DriveCommands {
                       ? aimController.calculate(
                           drive.getRotation().getRadians(), targetGyroAngle.get().getRadians())
                       : omega * drive.getMaxAngularSpeedRadPerSec(),
-                  drive.getRotation()));
+                  drive.getRotation());
+
+          if (autoAimSupplier.getAsBoolean()) {
+            chassisSpeeds.vyMetersPerSecond = 0;
+          }
+
+          // Convert to field relative speeds & send command
+          // Optional<Rotation2d> targetGyroAngle = vision.getTargetGyroAngle();
+          drive.runVelocity(chassisSpeeds);
         },
         drive);
   }
