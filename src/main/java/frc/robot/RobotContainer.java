@@ -18,11 +18,10 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.Mode;
-import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.TestSubsystem;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -43,7 +42,7 @@ public class RobotContainer {
   private TestSubsystem testSubsystem = new TestSubsystem();
 
   // Controller
-  private final CommandXboxController controller = new CommandXboxController(0);
+  private final CommandJoystick controller = new CommandJoystick(0);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -121,17 +120,8 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    drive.setDefaultCommand(
-        DriveCommands.joystickDrive(
-            drive,
-            () -> -controller.getLeftY(),
-            () -> -controller.getLeftX(),
-            () -> -controller.getRightX()));
-    controller.x().onTrue(DriveCommands.XLock(drive));
-    controller.b().onTrue(DriveCommands.resetHeading(drive));
-    controller.y().whileTrue(testSubsystem.runMotor1());
-    controller.a().whileTrue(testSubsystem.runMotor2());
-    controller.leftTrigger().whileTrue(testSubsystem.runBoth());
+    controller.button(1).whileTrue(testSubsystem.runBoth());
+    // controller.button(2).whileTrue(testSubsystem.runBothReverse());
   }
 
   /**

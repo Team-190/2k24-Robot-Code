@@ -87,4 +87,18 @@ public class TestSubsystem extends SubsystemBase {
           feeder.set(TalonSRXControlMode.PercentOutput, 0);
         });
   }
+
+  // public Command runBothReverse() {
+  //   return startEnd(
+  //       () -> {
+  //         motor1.setControl(velocity.withVelocity(-speed.get() / 60 / 2.2037).withSlot(0));
+  //         motor2.setControl(velocity.withVelocity(-speed.get() / 60 / 2.2037).withSlot(0));
+  //         feeder.set(TalonSRXControlMode.PercentOutput, -feederSpeed.get());
+  //       },
+  //       () -> {
+  //         motor1.stopMotor();
+  //         motor2.stopMotor();
+  //         feeder.set(TalonSRXControlMode.PercentOutput, 0);
+  //       });
+  // }
 }
