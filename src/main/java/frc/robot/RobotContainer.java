@@ -18,15 +18,18 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.Mode;
+import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.TestSubsystem;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
+import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
+import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -42,7 +45,7 @@ public class RobotContainer {
   private TestSubsystem testSubsystem = new TestSubsystem();
 
   // Controller
-  private final CommandJoystick controller = new CommandJoystick(0);
+  private final CommandXboxController controller = new CommandXboxController(0);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -55,13 +58,13 @@ public class RobotContainer {
         case ROBOT_2K24_P:
         case ROBOT_2K24_TEST:
           // Real robot, instantiate hardware IO implementations
-          // drive =
-          //     new Drive(
-          //         new GyroIOPigeon2(),
-          //         new ModuleIOTalonFX(0),
-          //         new ModuleIOTalonFX(1),
-          //         new ModuleIOTalonFX(2),
-          //         new ModuleIOTalonFX(3));
+          drive =
+              new Drive(
+                  new GyroIOPigeon2(),
+                  new ModuleIOTalonFX(0),
+                  new ModuleIOTalonFX(1),
+                  new ModuleIOTalonFX(2),
+                  new ModuleIOTalonFX(3));
           break;
 
         case ROBOT_SIM:
@@ -120,8 +123,15 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    controller.button(1).whileTrue(testSubsystem.runBoth());
-    // controller.button(2).whileTrue(testSubsystem.runBothReverse());
+    drive.setDefaultCommand(
+        DriveCommands.joystickDrive(
+            drive,
+            () -> -controller.getLeftY(),
+            () -> -controller.getLeftX(),
+            () -> -controller.getRightX()));
+    controller.x().onTrue(DriveCommands.XLock(drive));
+    controller.b().onTrue(DriveCommands.resetHeading(drive));
+    controller.a().onTrue(testSubsystem.runBoth());
   }
 
   /**
