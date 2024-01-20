@@ -24,9 +24,10 @@ import edu.wpi.first.wpilibj.RobotBase;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final boolean TUNING_MODE = false;
+  public static final boolean TUNING_MODE = true;
   public static final double LOOP_PERIOD_SECS = 0.02;
   public static final RobotType ROBOT = RobotType.ROBOT_2K24_TEST;
+  public static final Mode MODE;
 
   public static Mode getMode() {
     switch (ROBOT) {
