@@ -50,11 +50,11 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    if (Constants.MODE != Mode.REPLAY) {
+    if (Constants.getMode() != Mode.REPLAY) {
       switch (Constants.ROBOT) {
         case ROBOT_2K24_C:
         case ROBOT_2K24_P:
-        case ROBOT_2K23_EMBER:
+        case ROBOT_2K24_TEST:
           // Real robot, instantiate hardware IO implementations
           drive =
               new Drive(

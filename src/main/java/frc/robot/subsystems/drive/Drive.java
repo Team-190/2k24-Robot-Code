@@ -51,10 +51,10 @@ public class Drive extends SubsystemBase {
         TRACK_WIDTH_X = Units.inchesToMeters(25.0);
         TRACK_WIDTH_Y = Units.inchesToMeters(25.0);
         break;
-      case ROBOT_2K23_EMBER:
+      case ROBOT_2K24_TEST:
         MAX_LINEAR_SPEED = Units.feetToMeters(14.5);
-        TRACK_WIDTH_X = Units.inchesToMeters(20.375);
-        TRACK_WIDTH_Y = Units.inchesToMeters(24.2);
+        TRACK_WIDTH_X = Units.inchesToMeters(22.75);
+        TRACK_WIDTH_Y = Units.inchesToMeters(22.75);
         break;
       default:
         throw new RuntimeException("Invalid robot");

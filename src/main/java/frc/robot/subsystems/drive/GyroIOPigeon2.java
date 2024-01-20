@@ -27,13 +27,14 @@ public class GyroIOPigeon2 implements GyroIO {
   private final Pigeon2 pigeon;
   private final StatusSignal<Double> yaw;
   private final StatusSignal<Double> yawVelocity;
+  private final String canivore = "drive";
 
   public GyroIOPigeon2() {
     switch (Constants.ROBOT) {
       case ROBOT_2K24_C:
       case ROBOT_2K24_P:
-      case ROBOT_2K23_EMBER:
-        pigeon = new Pigeon2(1);
+      case ROBOT_2K24_TEST:
+        pigeon = new Pigeon2(1, canivore);
         break;
       default:
         throw new RuntimeException("Invalid robot");

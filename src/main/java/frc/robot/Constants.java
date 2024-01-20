@@ -26,23 +26,19 @@ import edu.wpi.first.wpilibj.RobotBase;
 public final class Constants {
   public static final boolean TUNING_MODE = false;
   public static final double LOOP_PERIOD_SECS = 0.02;
-  public static final RobotType ROBOT = RobotType.ROBOT_2K24_C;
-  public static final Mode MODE;
+  public static final RobotType ROBOT = RobotType.ROBOT_2K24_TEST;
 
-  static {
+  public static Mode getMode() {
     switch (ROBOT) {
       case ROBOT_2K24_C:
       case ROBOT_2K24_P:
-        MODE = RobotBase.isReal() ? Mode.REAL : Mode.REPLAY;
-        break;
+        return RobotBase.isReal() ? Mode.REAL : Mode.REPLAY;
 
       case ROBOT_SIM:
-        MODE = Mode.SIM;
-        break;
+        return Mode.SIM;
 
       default:
-        MODE = Mode.REAL;
-        break;
+        return Mode.REAL;
     }
   }
 
@@ -55,7 +51,7 @@ public final class Constants {
   public static enum RobotType {
     ROBOT_2K24_C,
     ROBOT_2K24_P,
-    ROBOT_2K23_EMBER,
+    ROBOT_2K24_TEST,
     ROBOT_SIM
   }
 
