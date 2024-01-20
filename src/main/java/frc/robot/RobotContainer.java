@@ -24,13 +24,10 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.Mode;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.TestIntakeSubsystem;
-import frc.robot.subsystems.TestSubsystem;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
-import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
-import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -43,7 +40,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
   // Subsystems
   private Drive drive;
-  private TestSubsystem testSubsystem = new TestSubsystem();
+  // private TestSubsystem testSubsystem = new TestSubsystem();
   private TestIntakeSubsystem testIntakeSubsystem = new TestIntakeSubsystem();
 
   // Controller
@@ -60,13 +57,13 @@ public class RobotContainer {
         case ROBOT_2K24_P:
         case ROBOT_2K24_TEST:
           // Real robot, instantiate hardware IO implementations
-          drive =
-              new Drive(
-                  new GyroIOPigeon2(),
-                  new ModuleIOTalonFX(0),
-                  new ModuleIOTalonFX(1),
-                  new ModuleIOTalonFX(2),
-                  new ModuleIOTalonFX(3));
+          // drive =
+          //     new Drive(
+          //         new GyroIOPigeon2(),
+          //         new ModuleIOTalonFX(0),
+          //         new ModuleIOTalonFX(1),
+          //         new ModuleIOTalonFX(2),
+          //         new ModuleIOTalonFX(3));
           break;
 
         case ROBOT_SIM:
@@ -133,8 +130,8 @@ public class RobotContainer {
             () -> -controller.getRightX()));
     controller.x().onTrue(DriveCommands.XLock(drive));
     controller.b().onTrue(DriveCommands.resetHeading(drive));
-    controller.a().onTrue(testSubsystem.runBoth());
-    controller.leftTrigger().onTrue(testIntakeSubsystem.runMotor1());
+    // controller.a().onTrue(testSubsystem.runBoth());
+    controller.button(2).whileTrue(testIntakeSubsystem.runMotor1());
   }
 
   /**
