@@ -23,8 +23,8 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.Mode;
 import frc.robot.commands.DriveCommands;
-import frc.robot.subsystems.TestIntakeSubsystem;
-import frc.robot.subsystems.TestSubsystem;
+import frc.robot.subsystems.Feeder;
+import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -43,8 +43,8 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
   // Subsystems
   private Drive drive;
-  private TestSubsystem testSubsystem = new TestSubsystem();
-  private TestIntakeSubsystem testIntakeSubsystem = new TestIntakeSubsystem();
+  private Shooter shooter = new Shooter();
+  private Feeder feeder = new Feeder();
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -133,8 +133,8 @@ public class RobotContainer {
             () -> -controller.getRightX()));
     controller.x().onTrue(DriveCommands.XLock(drive));
     controller.b().onTrue(DriveCommands.resetHeading(drive));
-    controller.a().onTrue(testSubsystem.runBoth());
-    controller.leftTrigger().onTrue(testIntakeSubsystem.runMotor1());
+    controller.leftTrigger().whileTrue(shooter.runBoth());
+    controller.rightTrigger().whileTrue(feeder.runFeeder());
   }
 
   /**
