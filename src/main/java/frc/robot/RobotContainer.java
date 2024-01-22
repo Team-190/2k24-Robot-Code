@@ -131,7 +131,7 @@ public class RobotContainer {
     controller.x().onTrue(DriveCommands.XLock(drive));
     controller.b().onTrue(DriveCommands.resetHeading(drive));
     // controller.a().onTrue(testSubsystem.runBoth());
-    controller.button(2).whileTrue(testIntakeSubsystem.runMotor1());
+    controller.a().whileTrue(testIntakeSubsystem.runMotor1());
   }
 
   /**
