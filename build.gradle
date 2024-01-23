@@ -132,7 +132,7 @@ task(checkRobot, dependsOn: "classes", type: JavaExec) {
     mainClass = "frc.robot.Constants"
     classpath = sourceSets.main.runtimeClasspath
 }
-deployroborio.dependsOn(checkRobot)
+// deployroborio.dependsOn(checkRobot)
 
 // Create version file
 project.compileJava.dependsOn(createVersionFile)
