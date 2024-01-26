@@ -44,6 +44,7 @@ public class ModuleIOSim implements ModuleIO {
     inputs.driveVelocityRadPerSec = driveSim.getAngularVelocityRadPerSec();
     inputs.driveAppliedVolts = driveAppliedVolts;
     inputs.driveCurrentAmps = new double[] {Math.abs(driveSim.getCurrentDrawAmps())};
+    inputs.driveTempCelcius = new double[] {};
 
     inputs.turnAbsolutePosition =
         new Rotation2d(turnSim.getAngularPositionRad()).plus(turnAbsoluteInitPosition);
@@ -51,6 +52,7 @@ public class ModuleIOSim implements ModuleIO {
     inputs.turnVelocityRadPerSec = turnSim.getAngularVelocityRadPerSec();
     inputs.turnAppliedVolts = turnAppliedVolts;
     inputs.turnCurrentAmps = new double[] {Math.abs(turnSim.getCurrentDrawAmps())};
+    inputs.turnTempCelcius = new double[] {};
 
     inputs.odometryTimestamps = new double[] {Timer.getFPGATimestamp()};
     inputs.odometryDrivePositionsRad = new double[] {inputs.drivePositionRad};

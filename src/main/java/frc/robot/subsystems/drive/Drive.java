@@ -13,6 +13,8 @@
 
 package frc.robot.subsystems.drive;
 
+import static edu.wpi.first.units.Units.Volts;
+
 import com.ctre.phoenix6.CANBus;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.pathfinding.Pathfinding;
@@ -31,7 +33,10 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants;
 import frc.robot.util.LocalADStarAK;
 import java.util.concurrent.locks.Lock;
@@ -83,6 +88,13 @@ public class Drive extends SubsystemBase {
       };
   private SwerveDriveOdometry odometry =
       new SwerveDriveOdometry(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
+
+  private final SysIdRoutine sysIdRoutine =
+      new SysIdRoutine(
+          new SysIdRoutine.Config(
+              null, null, null, (state) -> Logger.recordOutput("SysIdState", state.toString())),
+          new SysIdRoutine.Mechanism(
+              (volts) -> this.runCharacterizationVolts(volts.in(Volts)), null, this));
 
   public Drive(
       GyroIO gyroIO,
@@ -293,5 +305,13 @@ public class Drive extends SubsystemBase {
       new Translation2d(-TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0),
       new Translation2d(-TRACK_WIDTH_X / 2.0, -TRACK_WIDTH_Y / 2.0)
     };
+  }
+
+  public final Command runSysIdQuasistatic(Direction direction) {
+    return sysIdRoutine.quasistatic(direction);
+  }
+
+  public final Command runSysIdDynamic(Direction direction) {
+    return sysIdRoutine.dynamic(direction);
   }
 }

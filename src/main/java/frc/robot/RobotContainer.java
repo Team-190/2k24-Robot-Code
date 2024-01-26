@@ -14,12 +14,10 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.Mode;
 import frc.robot.commands.DriveCommands;
@@ -29,7 +27,10 @@ import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
-import org.littletonrobotics.junction.Logger;
+import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterIO;
+import frc.robot.subsystems.shooter.ShooterIOSim;
+import frc.robot.subsystems.shooter.ShooterIOTalonFX;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -41,6 +42,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
   // Subsystems
   private Drive drive;
+  private Shooter shooter;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -63,6 +65,7 @@ public class RobotContainer {
                   new ModuleIOTalonFX(1),
                   new ModuleIOTalonFX(2),
                   new ModuleIOTalonFX(3));
+          shooter = new Shooter(new ShooterIOTalonFX());
           break;
 
         case ROBOT_SIM:
@@ -74,6 +77,7 @@ public class RobotContainer {
                   new ModuleIOSim(),
                   new ModuleIOSim(),
                   new ModuleIOSim());
+          shooter = new Shooter(new ShooterIOSim());
           break;
       }
     }
@@ -89,25 +93,33 @@ public class RobotContainer {
               new ModuleIO() {});
     }
 
+    if (shooter == null) {
+      shooter = new Shooter(new ShooterIO() {});
+    }
+
     // Set up autos
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Set up SysId
     if (Constants.TUNING_MODE) {
-      var driveSysId =
-          new SysIdRoutine(
-              new SysIdRoutine.Config(
-                  null, null, null, (state) -> Logger.recordOutput("SysIdState", state.toString())),
-              new SysIdRoutine.Mechanism(
-                  (volts) -> drive.runCharacterizationVolts(volts.in(Units.Volts)), null, drive));
+
       autoChooser.addOption(
-          "Drive SysId (Quasistatic Forward)", driveSysId.quasistatic(Direction.kForward));
+          "Drive SysId (Quasistatic Forward)", drive.runSysIdQuasistatic(Direction.kForward));
       autoChooser.addOption(
-          "Drive SysId (Quasistatic Reverse)", driveSysId.quasistatic(Direction.kReverse));
+          "Drive SysId (Quasistatic Reverse)", drive.runSysIdQuasistatic(Direction.kReverse));
       autoChooser.addOption(
-          "Drive SysId (Dynamic Forward)", driveSysId.dynamic(Direction.kForward));
+          "Drive SysId (Dynamic Forward)", drive.runSysIdDynamic(Direction.kForward));
       autoChooser.addOption(
-          "Drive SysId (Dynamic Reverse)", driveSysId.dynamic(Direction.kReverse));
+          "Drive SysId (Dynamic Reverse)", drive.runSysIdDynamic(Direction.kReverse));
+      autoChooser.addOption(
+          "Shooter SysId (Quasistatic Forward)", shooter.runSysIdQuasistatic(Direction.kForward));
+      autoChooser.addOption(
+          "Shooter SysId (Quasistatic Reverse)", shooter.runSysIdQuasistatic(Direction.kReverse));
+      autoChooser.addOption(
+          "Shooter SysId (Dynamic Forward)", shooter.runSysIdDynamic(Direction.kForward));
+      autoChooser.addOption(
+          "Shooter SysId (Dynamic Reverse)", shooter.runSysIdDynamic(Direction.kReverse));
+      autoChooser.addOption("Shooter Full Speed", shooter.runVelocity(100));
     }
 
     // Configure the button bindings
@@ -129,6 +141,7 @@ public class RobotContainer {
             () -> -controller.getRightX()));
     controller.x().onTrue(DriveCommands.XLock(drive));
     controller.b().onTrue(DriveCommands.resetHeading(drive));
+    controller.a().whileTrue(shooter.runVelocity(142.0));
   }
 
   /**
