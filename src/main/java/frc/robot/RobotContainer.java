@@ -27,6 +27,10 @@ import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeIO;
+import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.ShooterIOSim;
@@ -43,6 +47,7 @@ public class RobotContainer {
   // Subsystems
   private Drive drive;
   private Shooter shooter;
+  private Intake intake;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -66,6 +71,7 @@ public class RobotContainer {
                   new ModuleIOTalonFX(2),
                   new ModuleIOTalonFX(3));
           shooter = new Shooter(new ShooterIOTalonFX());
+          intake = new Intake(new IntakeIOTalonFX());
           break;
 
         case ROBOT_SIM:
@@ -78,6 +84,7 @@ public class RobotContainer {
                   new ModuleIOSim(),
                   new ModuleIOSim());
           shooter = new Shooter(new ShooterIOSim());
+          intake = new Intake(new IntakeIOSim());
           break;
       }
     }
@@ -94,7 +101,13 @@ public class RobotContainer {
     }
 
     if (shooter == null) {
-      shooter = new Shooter(new ShooterIO() {});
+      shooter = new Shooter(new ShooterIO() {
+      });
+    }
+    
+    if (intake == null) {
+      intake = new Intake(new IntakeIO() {
+      });
     }
 
     // Set up autos
