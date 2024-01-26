@@ -42,7 +42,7 @@ public class Shooter extends SubsystemBase {
         KP.initDefault(0.0);
         KD.initDefault(0.0);
         break;
-      case ROBOT_2K23_EMBER:
+      case ROBOT_2K24_TEST:
         KS.initDefault(0.0);
         KV.initDefault(0.0);
         KP.initDefault(0.0);
