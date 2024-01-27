@@ -34,8 +34,8 @@ public class ShooterIOTalonFX implements ShooterIO {
         followerTalon = new TalonFX(11);
         break;
       case ROBOT_2K24_TEST:
-        leaderTalon = new TalonFX(10);
-        followerTalon = new TalonFX(11);
+        leaderTalon = new TalonFX(51);
+        followerTalon = new TalonFX(52);
         break;
       default:
         throw new RuntimeException("Invalid robot");
