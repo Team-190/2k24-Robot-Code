@@ -1,4 +1,4 @@
-package frc.robot.subsystems.intake;
+package frc.robot.subsystems.feeder;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
@@ -8,7 +8,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
 
-public class IntakeIOTalonFX implements IntakeIO {
+public class FeederIOTalonFX implements FeederIO {
   private final TalonFX talon;
 
   private final StatusSignal<Double> position;
@@ -19,7 +19,7 @@ public class IntakeIOTalonFX implements IntakeIO {
 
   private final double GEAR_RATIO = 1;
 
-  public IntakeIOTalonFX() {
+  public FeederIOTalonFX() {
     switch (Constants.ROBOT) {
       case ROBOT_2K24_C:
         talon = new TalonFX(10);
@@ -51,7 +51,7 @@ public class IntakeIOTalonFX implements IntakeIO {
   }
 
   @Override
-  public void updateInputs(IntakeIOInputs inputs) {
+  public void updateInputs(FeederIOInputs inputs) {
     BaseStatusSignal.refreshAll(velocity, position, appliedVolts, current, temperature);
 
     inputs.positionRad = Units.rotationsToRadians(position.getValueAsDouble()) * GEAR_RATIO;
