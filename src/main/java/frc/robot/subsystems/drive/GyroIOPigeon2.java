@@ -14,13 +14,14 @@
 package frc.robot.subsystems.drive;
 
 import com.ctre.phoenix6.BaseStatusSignal;
-import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
+import frc.robot.util.Alert;
+import frc.robot.util.Alert.AlertType;
 import java.util.Queue;
 
 /** IO implementation for Pigeon2 */
@@ -30,6 +31,9 @@ public class GyroIOPigeon2 implements GyroIO {
   private final Queue<Double> yawPositionQueue;
   private final Queue<Double> yawTimestampQueue;
   private final StatusSignal<Double> yawVelocity;
+
+  private final Alert disconnectedAlert =
+      new Alert("Pigeon is disconnected, check CAN bus.", AlertType.ERROR);
 
   public GyroIOPigeon2() {
     switch (Constants.ROBOT) {
@@ -56,7 +60,10 @@ public class GyroIOPigeon2 implements GyroIO {
 
   @Override
   public void updateInputs(GyroIOInputs inputs) {
-    inputs.connected = BaseStatusSignal.refreshAll(yaw, yawVelocity).equals(StatusCode.OK);
+    boolean connected = BaseStatusSignal.refreshAll(yaw, yawVelocity).isOK();
+    disconnectedAlert.set(!connected);
+
+    inputs.connected = connected;
     inputs.yawPosition = Rotation2d.fromDegrees(yaw.getValueAsDouble());
     inputs.yawVelocityRadPerSec = Units.degreesToRadians(yawVelocity.getValueAsDouble());
 

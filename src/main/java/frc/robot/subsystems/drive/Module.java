@@ -20,6 +20,8 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
+import frc.robot.util.Alert;
+import frc.robot.util.Alert.AlertType;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
@@ -33,6 +35,7 @@ public class Module {
   private static final LoggedTunableNumber DRIVE_KD = new LoggedTunableNumber("Drive/DriveKd");
   private static final LoggedTunableNumber TURN_KP = new LoggedTunableNumber("Drive/TurnKp");
   private static final LoggedTunableNumber TURN_KD = new LoggedTunableNumber("Drive/TurnKd");
+  private static final double OUT_OF_SYNC_THRESHOLD = Units.degreesToRadians(30.0);
 
   private final ModuleIO io;
   private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
@@ -45,6 +48,10 @@ public class Module {
   private Double speedSetpoint = null; // Setpoint for closed loop control, null for open loop
   private Rotation2d turnRelativeOffset = null; // Relative + Offset = Absolute
   private SwerveModulePosition[] odometryPositions = new SwerveModulePosition[] {};
+
+  private int cycleCount = 0;
+  private final Alert unitializedAlert;
+  private final Alert outOfSyncAlert;
 
   static {
     switch (Constants.ROBOT) {
@@ -92,6 +99,19 @@ public class Module {
 
     turnFeedback.enableContinuousInput(-Math.PI, Math.PI);
     setBrakeMode(true);
+
+    String moduleName =
+        switch (index) {
+          case 0 -> "FL";
+          case 1 -> "FR";
+          case 2 -> "BL";
+          case 3 -> "BR";
+          default -> "?";
+        };
+    unitializedAlert =
+        new Alert(moduleName + " module turn angle has not been initialized.", AlertType.ERROR);
+    outOfSyncAlert =
+        new Alert(moduleName + " module turn angle out of sync with CANcoder.", AlertType.ERROR);
   }
 
   /**
@@ -124,8 +144,18 @@ public class Module {
 
     // On first cycle, reset relative turn encoder
     // Wait until absolute angle is nonzero in case it wasn't initialized yet
+    cycleCount += 1;
     if (turnRelativeOffset == null && inputs.turnAbsolutePosition.getRadians() != 0.0) {
       turnRelativeOffset = inputs.turnAbsolutePosition.minus(inputs.turnPosition);
+    }
+    if (cycleCount >= 50) {
+      unitializedAlert.set(turnRelativeOffset == null);
+    }
+
+    // Alert if out of sync
+    if (turnRelativeOffset != null
+        && (getAngle().minus(inputs.turnAbsolutePosition).getRadians()) > OUT_OF_SYNC_THRESHOLD) {
+      outOfSyncAlert.set(true);
     }
 
     // Run closed loop turn control

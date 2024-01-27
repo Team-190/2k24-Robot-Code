@@ -26,6 +26,8 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
+import frc.robot.util.Alert;
+import frc.robot.util.Alert.AlertType;
 import java.util.Queue;
 
 /**
@@ -68,6 +70,10 @@ public class ModuleIOTalonFX implements ModuleIO {
 
   private final boolean isTurnMotorInverted = true;
   private final Rotation2d absoluteEncoderOffset;
+
+  private final Alert driveDisconnectedAlert;
+  private final Alert turnDisconnectedAlert;
+  private final Alert cancoderDisconnectedAlert;
 
   public ModuleIOTalonFX(int index) {
     switch (Constants.ROBOT) {
@@ -219,20 +225,38 @@ public class ModuleIOTalonFX implements ModuleIO {
         turnTemp);
     driveTalon.optimizeBusUtilization();
     turnTalon.optimizeBusUtilization();
+
+    String moduleName =
+        switch (index) {
+          case 0 -> "FL";
+          case 1 -> "FR";
+          case 2 -> "BL";
+          case 3 -> "BR";
+          default -> "?";
+        };
+    driveDisconnectedAlert =
+        new Alert(
+            moduleName + " module drive Talon is disconnected, check CAN bus.", AlertType.ERROR);
+    turnDisconnectedAlert =
+        new Alert(
+            moduleName + " module turn Talon is disconnected, check CAN bus.", AlertType.ERROR);
+    cancoderDisconnectedAlert =
+        new Alert(moduleName + " module CANcoder is disconnected, check CAN bus.", AlertType.ERROR);
   }
 
   @Override
   public void updateInputs(ModuleIOInputs inputs) {
-    BaseStatusSignal.refreshAll(
-        driveVelocity,
-        driveAppliedVolts,
-        driveCurrent,
-        driveTemp,
-        turnAbsolutePosition,
-        turnVelocity,
-        turnAppliedVolts,
-        turnCurrent,
-        turnTemp);
+    boolean driveConnected =
+        BaseStatusSignal.refreshAll(driveVelocity, driveAppliedVolts, driveCurrent, driveTemp)
+            .isOK();
+    boolean turnConnected =
+        BaseStatusSignal.refreshAll(
+                turnPosition, turnVelocity, turnAppliedVolts, turnCurrent, turnTemp)
+            .isOK();
+    boolean cancoderConnected = BaseStatusSignal.refreshAll(turnAbsolutePosition).isOK();
+    driveDisconnectedAlert.set(!driveConnected);
+    turnDisconnectedAlert.set(!turnConnected);
+    cancoderDisconnectedAlert.set(!cancoderConnected);
 
     inputs.drivePositionRad =
         Units.rotationsToRadians(drivePosition.getValueAsDouble()) / DRIVE_GEAR_RATIO;
