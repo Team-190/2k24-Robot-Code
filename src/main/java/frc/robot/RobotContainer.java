@@ -104,13 +104,17 @@ public class RobotContainer {
     if (Constants.TUNING_MODE) {
 
       autoChooser.addOption(
-          "Drive SysId (Quasistatic Forward)", drive.runSysIdQuasistatic(Direction.kForward));
+          "Drive SysId (Quasistatic Forward)",
+          DriveCommands.runSysIdQuasistatic(drive, Direction.kForward));
       autoChooser.addOption(
-          "Drive SysId (Quasistatic Reverse)", drive.runSysIdQuasistatic(Direction.kReverse));
+          "Drive SysId (Quasistatic Reverse)",
+          DriveCommands.runSysIdQuasistatic(drive, Direction.kReverse));
       autoChooser.addOption(
-          "Drive SysId (Dynamic Forward)", drive.runSysIdDynamic(Direction.kForward));
+          "Drive SysId (Dynamic Forward)",
+          DriveCommands.runSysIdDynamic(drive, Direction.kForward));
       autoChooser.addOption(
-          "Drive SysId (Dynamic Reverse)", drive.runSysIdDynamic(Direction.kReverse));
+          "Drive SysId (Dynamic Reverse)",
+          DriveCommands.runSysIdDynamic(drive, Direction.kReverse));
       autoChooser.addOption(
           "Shooter SysId (Quasistatic Forward)", shooter.runSysIdQuasistatic(Direction.kForward));
       autoChooser.addOption(
