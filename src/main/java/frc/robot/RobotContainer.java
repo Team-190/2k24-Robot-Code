@@ -35,6 +35,10 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.intake.IntakeIOTalonFX;
+import frc.robot.subsystems.pivot.Pivot;
+import frc.robot.subsystems.pivot.PivotIO;
+import frc.robot.subsystems.pivot.PivotIOSim;
+import frc.robot.subsystems.pivot.PivotIOTalonFX;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.ShooterIOSim;
@@ -53,6 +57,7 @@ public class RobotContainer {
   private Shooter shooter;
   private Feeder feeder;
   private Intake intake;
+  private Pivot pivot;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -78,6 +83,7 @@ public class RobotContainer {
           shooter = new Shooter(new ShooterIOTalonFX());
           intake = new Intake(new IntakeIOTalonFX());
           feeder = new Feeder(new FeederIOTalonFX());
+          pivot = new Pivot(new PivotIOTalonFX());
           break;
 
         case ROBOT_SIM:
@@ -92,6 +98,7 @@ public class RobotContainer {
           shooter = new Shooter(new ShooterIOSim());
           intake = new Intake(new IntakeIOSim());
           feeder = new Feeder(new FeederIOSim());
+          pivot = new Pivot(new PivotIOSim());
           break;
       }
     }
@@ -114,6 +121,10 @@ public class RobotContainer {
     }
     if (feeder == null) {
       feeder = new Feeder(new FeederIO() {});
+    }
+
+    if (pivot == null) {
+      pivot = new Pivot(new PivotIO() {});
     }
 
     // Set up autos
@@ -165,6 +176,8 @@ public class RobotContainer {
     controller.b().onTrue(DriveCommands.resetHeading(drive));
     controller.leftTrigger().whileTrue(intake.runVoltage());
     controller.rightTrigger().whileTrue(feeder.runVoltage());
+    controller.a().whileTrue(pivot.pivot180());
+    controller.y().whileTrue(pivot.pivot90());
   }
 
   /**
