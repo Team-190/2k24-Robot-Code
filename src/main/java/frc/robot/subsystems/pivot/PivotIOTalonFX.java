@@ -8,6 +8,8 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
+import frc.robot.util.Alert;
+import frc.robot.util.Alert.AlertType;
 
 public class PivotIOTalonFX implements PivotIO {
   private final TalonFX pivotTalon;
@@ -19,6 +21,8 @@ public class PivotIOTalonFX implements PivotIO {
   private final StatusSignal<Double> tempCelcius;
 
   private final double GEAR_RATIO = 1.0;
+
+  private final Alert disconnecctedAlert = new Alert("Pivot Talon is disconnected, check CAN bus.", AlertType.ERROR);
 
   public PivotIOTalonFX() {
     switch (Constants.ROBOT) {
@@ -53,7 +57,9 @@ public class PivotIOTalonFX implements PivotIO {
 
   @Override
   public void updateInputs(PivotIOInputs inputs) {
-    BaseStatusSignal.refreshAll(position, velocity, appliedVolts, currentAmps, tempCelcius);
+    boolean isConnected = BaseStatusSignal.refreshAll(position, velocity, appliedVolts, currentAmps, tempCelcius)
+        .isOK();
+    disconnecctedAlert.set(!isConnected);
 
     inputs.position = Rotation2d.fromRotations(position.getValueAsDouble() * GEAR_RATIO);
     inputs.velocityRadPerSec = Units.rotationsToRadians(velocity.getValueAsDouble() * GEAR_RATIO);
