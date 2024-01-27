@@ -13,8 +13,13 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.util.Alert;
+import frc.robot.util.Alert.AlertType;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -29,6 +34,19 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
  * project.
  */
 public class Robot extends LoggedRobot {
+  private static final double lowBatteryVoltage = 10.0;
+  private static final double lowBatteryDisabledTime = 1.5;
+
+  private final Timer canErrorTimer = new Timer();
+  private final Timer canErrorTimerInitial = new Timer();
+  private final Timer disabledTimer = new Timer();
+  private final Alert logReceiverQueueAlert =
+      new Alert("Logging queue exceeded capacity, data will NOT be logged.", AlertType.WARNING);
+  private final Alert lowBatteryAlert =
+      new Alert(
+          "Battery voltage is very low, consider turning off the robot or replacing the battery.",
+          AlertType.WARNING);
+
   private Command autonomousCommand;
   private RobotContainer robotContainer;
 
@@ -85,6 +103,14 @@ public class Robot extends LoggedRobot {
     // Start AdvantageKit logger
     Logger.start();
 
+    // Start timers
+    canErrorTimer.reset();
+    canErrorTimer.start();
+    canErrorTimerInitial.reset();
+    canErrorTimerInitial.start();
+    disabledTimer.reset();
+    disabledTimer.start();
+
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our autonomous chooser on the dashboard.
     robotContainer = new RobotContainer();
@@ -99,6 +125,18 @@ public class Robot extends LoggedRobot {
     // This must be called from the robot's periodic block in order for anything in
     // the Command-based framework to work.
     CommandScheduler.getInstance().run();
+
+    // Check logging fault
+    logReceiverQueueAlert.set(Logger.getReceiverQueueFault());
+
+    // Update low battery alert
+    if (DriverStation.isEnabled()) {
+      disabledTimer.reset();
+    }
+    if (RobotController.getBatteryVoltage() < lowBatteryVoltage
+        && disabledTimer.hasElapsed(lowBatteryDisabledTime)) {
+      lowBatteryAlert.set(true);
+    }
   }
 
   /** This function is called once when the robot is disabled. */

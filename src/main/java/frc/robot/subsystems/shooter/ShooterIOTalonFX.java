@@ -8,6 +8,8 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
+import frc.robot.util.Alert;
+import frc.robot.util.Alert.AlertType;
 
 public class ShooterIOTalonFX implements ShooterIO {
   private final TalonFX leaderTalon;
@@ -22,6 +24,11 @@ public class ShooterIOTalonFX implements ShooterIO {
   private final StatusSignal<Double> followerTemperature;
 
   private final double GEAR_RATIO = 47.0 / 17.0;
+
+  private final Alert leaderDisconnectedAlert =
+      new Alert("Shooter leader Talon is disconnected, check CAN bus.", AlertType.ERROR);
+  private final Alert followerDisconnectedAlert =
+      new Alert("Shooter follower Talon is disconnected, check CAN bus.", AlertType.ERROR);
 
   public ShooterIOTalonFX() {
     switch (Constants.ROBOT) {
@@ -71,14 +78,18 @@ public class ShooterIOTalonFX implements ShooterIO {
 
   @Override
   public void updateInputs(ShooterIOInputs inputs) {
-    BaseStatusSignal.refreshAll(
-        leaderPosition,
-        leaderVelocity,
-        leaderAppliedVolts,
-        leaderCurrent,
-        followerCurrent,
-        leaderTemperature,
-        followerTemperature);
+    boolean leaderConnected =
+        BaseStatusSignal.refreshAll(
+                leaderPosition,
+                leaderVelocity,
+                leaderAppliedVolts,
+                leaderCurrent,
+                leaderTemperature)
+            .isOK();
+    boolean followerConnected =
+        BaseStatusSignal.refreshAll(followerCurrent, followerTemperature).isOK();
+    leaderDisconnectedAlert.set(!leaderConnected);
+    followerDisconnectedAlert.set(!followerConnected);
 
     inputs.positionRad = Units.rotationsToRadians(leaderPosition.getValueAsDouble()) * GEAR_RATIO;
     inputs.velocityRadPerSec =

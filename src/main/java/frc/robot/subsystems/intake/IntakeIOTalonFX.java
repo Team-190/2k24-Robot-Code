@@ -7,6 +7,8 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
+import frc.robot.util.Alert;
+import frc.robot.util.Alert.AlertType;
 
 public class IntakeIOTalonFX implements IntakeIO {
   private final TalonFX talon;
@@ -18,6 +20,9 @@ public class IntakeIOTalonFX implements IntakeIO {
   private final StatusSignal<Double> temperature;
 
   private final double GEAR_RATIO = 1;
+
+  private final Alert disconnectedAlert =
+      new Alert("Intake Talon is disconnected, check CAN bus.", AlertType.ERROR);
 
   public IntakeIOTalonFX() {
     switch (Constants.ROBOT) {
@@ -52,7 +57,9 @@ public class IntakeIOTalonFX implements IntakeIO {
 
   @Override
   public void updateInputs(IntakeIOInputs inputs) {
-    BaseStatusSignal.refreshAll(velocity, position, appliedVolts, current, temperature);
+    boolean connected =
+        BaseStatusSignal.refreshAll(velocity, position, appliedVolts, current, temperature).isOK();
+    disconnectedAlert.set(!connected);
 
     inputs.positionRad = Units.rotationsToRadians(position.getValueAsDouble()) * GEAR_RATIO;
     inputs.velocityRadPerSec = Units.rotationsToRadians(velocity.getValueAsDouble()) * GEAR_RATIO;
