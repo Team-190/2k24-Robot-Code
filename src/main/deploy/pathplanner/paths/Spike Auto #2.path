@@ -1,0 +1,49 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.888784902260143,
+        "y": 7.013920947742803
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.554150244551521,
+        "y": 6.73392051986416
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.339697206084804,
+        "y": 6.5732800504746915
+      },
+      "prevControl": {
+        "x": 2.5149846740974624,
+        "y": 6.7972584818242
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.5,
+    "maxAcceleration": 4.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 2.0,
+    "rotation": -160.82099197418927,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Spike Auto",
+  "previewStartingState": null,
+  "useDefaultConstraints": false
+}

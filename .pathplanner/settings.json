@@ -2,10 +2,15 @@
   "robotWidth": 0.635,
   "robotLength": 0.635,
   "holonomicMode": true,
-  "pathFolders": [],
+  "pathFolders": [
+    "6 Piece",
+    "Center Sweep",
+    "Spike+Center Sweep",
+    "Spike Auto"
+  ],
   "autoFolders": [],
   "defaultMaxVel": 4.5,
-  "defaultMaxAccel": 3.0,
+  "defaultMaxAccel": 4.5,
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 720.0,
   "maxModuleSpeed": 4.71

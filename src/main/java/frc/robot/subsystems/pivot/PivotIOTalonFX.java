@@ -22,7 +22,8 @@ public class PivotIOTalonFX implements PivotIO {
 
   private final double GEAR_RATIO = 1.0;
 
-  private final Alert disconnecctedAlert = new Alert("Pivot Talon is disconnected, check CAN bus.", AlertType.ERROR);
+  private final Alert disconnecctedAlert =
+      new Alert("Pivot Talon is disconnected, check CAN bus.", AlertType.ERROR);
 
   public PivotIOTalonFX() {
     switch (Constants.ROBOT) {
@@ -57,8 +58,9 @@ public class PivotIOTalonFX implements PivotIO {
 
   @Override
   public void updateInputs(PivotIOInputs inputs) {
-    boolean isConnected = BaseStatusSignal.refreshAll(position, velocity, appliedVolts, currentAmps, tempCelcius)
-        .isOK();
+    boolean isConnected =
+        BaseStatusSignal.refreshAll(position, velocity, appliedVolts, currentAmps, tempCelcius)
+            .isOK();
     disconnecctedAlert.set(!isConnected);
 
     inputs.position = Rotation2d.fromRotations(position.getValueAsDouble() * GEAR_RATIO);

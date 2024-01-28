@@ -14,6 +14,7 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -43,6 +44,11 @@ import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.ShooterIOSim;
 import frc.robot.subsystems.shooter.ShooterIOTalonFX;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionIOLimelight;
+import frc.robot.subsystems.vision.VisionIOSim;
+import frc.robot.subsystems.vision.VisionMode;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -58,6 +64,8 @@ public class RobotContainer {
   private Feeder feeder;
   private Intake intake;
   private Pivot pivot;
+  private Vision aprilTagVision;
+  private Vision noteVision;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -84,6 +92,9 @@ public class RobotContainer {
           intake = new Intake(new IntakeIOTalonFX());
           feeder = new Feeder(new FeederIOTalonFX());
           pivot = new Pivot(new PivotIOTalonFX());
+          aprilTagVision =
+              new Vision("AprilTagVision", new VisionIOLimelight(VisionMode.AprilTags));
+          noteVision = new Vision("NoteVision", new VisionIOLimelight(VisionMode.Notes));
           break;
 
         case ROBOT_SIM:
@@ -99,6 +110,9 @@ public class RobotContainer {
           intake = new Intake(new IntakeIOSim());
           feeder = new Feeder(new FeederIOSim());
           pivot = new Pivot(new PivotIOSim());
+          aprilTagVision =
+              new Vision("AprilTagVision", new VisionIOSim(VisionMode.AprilTags, drive::getPose));
+          noteVision = new Vision("NoteVision", new VisionIOSim(VisionMode.Notes, drive::getPose));
           break;
       }
     }
@@ -126,8 +140,36 @@ public class RobotContainer {
     if (pivot == null) {
       pivot = new Pivot(new PivotIO() {});
     }
+    if (aprilTagVision == null) {
+      aprilTagVision = new Vision("AprilTagVision", new VisionIO() {});
+    }
+    if (noteVision == null) {
+      noteVision = new Vision("NoteVision", new VisionIO() {});
+    }
+
+    // Set up subsystems
+    aprilTagVision.setGyroSupplier(drive::getRotation);
+    noteVision.setGyroSupplier(drive::getRotation);
 
     // Set up autos
+    NamedCommands.registerCommand(
+        "Track Note Center",
+        DriveCommands.moveTowardsTarget(
+            drive,
+            noteVision,
+            FieldConstants.fieldLength / 2.0,
+            VisionMode.Notes)); // removed the minus 0.5 for centerline
+    NamedCommands.registerCommand(
+        "Track Note Spike",
+        DriveCommands.moveTowardsTarget(
+            drive, noteVision, FieldConstants.startingLineX + 0.5, VisionMode.Notes));
+    NamedCommands.registerCommand(
+        "Track Speaker Far",
+        DriveCommands.moveTowardsTarget(drive, aprilTagVision, 3.75, VisionMode.AprilTags));
+    NamedCommands.registerCommand(
+        "Track Speaker Close",
+        DriveCommands.moveTowardsTarget(
+            drive, aprilTagVision, FieldConstants.startingLineX - 0.25, VisionMode.AprilTags));
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Set up SysId
@@ -169,9 +211,13 @@ public class RobotContainer {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
+            aprilTagVision,
+            noteVision,
             () -> -controller.getLeftY(),
             () -> -controller.getLeftX(),
-            () -> -controller.getRightX()));
+            () -> -controller.getRightX(),
+            controller.leftBumper(),
+            controller.rightBumper()));
     controller.x().onTrue(DriveCommands.XLock(drive));
     controller.b().onTrue(DriveCommands.resetHeading(drive));
     controller.leftTrigger().whileTrue(intake.runVoltage());

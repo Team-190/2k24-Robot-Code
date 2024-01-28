@@ -1,0 +1,127 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.3497792782622604,
+      "y": 5.56390053057884
+    },
+    "rotation": 180.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Vision Auto #1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Track Note Center"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Vision Auto #2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Track Speaker Far"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.15
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Vision Auto #3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Track Note Center"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Vision Auto #4"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.15
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Track Note Spike"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Vision Auto #5"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.15
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Track Note Spike"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Vision Auto #6"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.15
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Track Note Spike"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Track Speaker Close"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.15
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
