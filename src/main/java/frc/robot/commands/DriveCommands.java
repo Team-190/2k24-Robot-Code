@@ -84,7 +84,7 @@ public class DriveCommands {
       BooleanSupplier aprilTagTracking,
       BooleanSupplier noteTracking) {
 
-    @SuppressWarnings({ "resource" })
+    @SuppressWarnings({"resource"})
     PIDController aimController =
         new PIDController(autoAimKP.get(), 0, autoAimKD.get(), Constants.LOOP_PERIOD_SECS);
     aimController.enableContinuousInput(-Math.PI, Math.PI);
@@ -158,46 +158,52 @@ public class DriveCommands {
   public static final Command moveTowardsTarget(
       Drive drive, Vision vision, double blueXCoord, VisionMode targetType) {
 
-    @SuppressWarnings({ "resource" })
-    PIDController aimController = new PIDController(autoAimKP.get(), 0, autoAimKD.get(), Constants.LOOP_PERIOD_SECS);
+    @SuppressWarnings({"resource"})
+    PIDController aimController =
+        new PIDController(autoAimKP.get(), 0, autoAimKD.get(), Constants.LOOP_PERIOD_SECS);
     aimController.enableContinuousInput(-Math.PI, Math.PI);
 
-    DoubleSupplier targetXCoord = () -> {
-      boolean isRed = DriverStation.getAlliance().isPresent()
-          && DriverStation.getAlliance().get().equals(Alliance.Red);
-      return isRed ? FieldConstants.fieldLength - blueXCoord : blueXCoord;
-    };
+    DoubleSupplier targetXCoord =
+        () -> {
+          boolean isRed =
+              DriverStation.getAlliance().isPresent()
+                  && DriverStation.getAlliance().get().equals(Alliance.Red);
+          return isRed ? FieldConstants.fieldLength - blueXCoord : blueXCoord;
+        };
 
     return Commands.run(
-        () -> {
-          // Configure PID
-          aimController.setD(autoAimKD.get());
-          aimController.setP(autoAimKP.get());
+            () -> {
+              // Configure PID
+              aimController.setD(autoAimKD.get());
+              aimController.setP(autoAimKP.get());
 
-          // Convert to field relative speeds & send command
-          Optional<Rotation2d> targetGyroAngle = vision.getTargetGyroAngle();
-          double distanceT = MathUtil.clamp(
-              Math.abs(drive.getPose().getX() - targetXCoord.getAsDouble())
-                  / autoAimXVelRange.get(),
-              0.0,
-              1.0);
-          double speed = MathUtil.interpolate(autoAimXVelMin.get(), autoAimXVelMax.get(), distanceT);
-          drive.runVelocity(
-              new ChassisSpeeds(
-                  targetType.equals(VisionMode.AprilTags) ? speed : -speed,
-                  0,
-                  targetGyroAngle.isEmpty()
-                      ? 0.0
-                      : aimController.calculate(
-                          drive.getRotation().getRadians(),
-                          targetGyroAngle.get().getRadians())));
-        },
-        drive)
+              // Convert to field relative speeds & send command
+              Optional<Rotation2d> targetGyroAngle = vision.getTargetGyroAngle();
+              double distanceT =
+                  MathUtil.clamp(
+                      Math.abs(drive.getPose().getX() - targetXCoord.getAsDouble())
+                          / autoAimXVelRange.get(),
+                      0.0,
+                      1.0);
+              double speed =
+                  MathUtil.interpolate(autoAimXVelMin.get(), autoAimXVelMax.get(), distanceT);
+              drive.runVelocity(
+                  new ChassisSpeeds(
+                      targetType.equals(VisionMode.AprilTags) ? speed : -speed,
+                      0,
+                      targetGyroAngle.isEmpty()
+                          ? 0.0
+                          : aimController.calculate(
+                              drive.getRotation().getRadians(),
+                              targetGyroAngle.get().getRadians())));
+            },
+            drive)
         .until(
             () -> {
               boolean endAboveTargetXCoord;
-              boolean isRed = DriverStation.getAlliance().isPresent()
-                  && DriverStation.getAlliance().get().equals(Alliance.Red);
+              boolean isRed =
+                  DriverStation.getAlliance().isPresent()
+                      && DriverStation.getAlliance().get().equals(Alliance.Red);
               if (isRed) {
                 endAboveTargetXCoord = targetType.equals(VisionMode.AprilTags);
               } else {
@@ -211,7 +217,7 @@ public class DriveCommands {
             })
         .finallyDo(() -> drive.stop());
   }
-  
+
   public static final Command runSysIdQuasistatic(Drive drive, Direction direction) {
     return new SysIdRoutine(
             new SysIdRoutine.Config(
@@ -229,5 +235,4 @@ public class DriveCommands {
                 (volts) -> drive.runCharacterizationVolts(volts.in(Volts)), null, drive))
         .dynamic(direction);
   }
-
 }

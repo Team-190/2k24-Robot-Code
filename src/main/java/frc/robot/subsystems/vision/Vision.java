@@ -40,10 +40,10 @@ public class Vision extends VirtualSubsystem {
     Optional<Rotation2d> targetAngle = getTargetGyroAngle();
     Optional<Double> distance = getSpeakerDistance();
     if (targetAngle.isPresent()) {
-      Logger.recordOutput("Vision/TargetAngle", targetAngle.get());
+      Logger.recordOutput(name + "/TargetAngle", targetAngle.get());
     }
     if (distance.isPresent()) {
-      Logger.recordOutput("Vision/SpeakerDistance", distance.get());
+      Logger.recordOutput(name + "/SpeakerDistance", distance.get());
     }
   }
 

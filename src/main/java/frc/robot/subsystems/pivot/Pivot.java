@@ -57,7 +57,7 @@ public class Pivot extends SubsystemBase {
 
   public void periodic() {
     io.updateInputs(inputs);
-    Logger.processInputs("Shooter", inputs);
+    Logger.processInputs("Pivot", inputs);
 
     if (KP.hasChanged(hashCode())) {
       profiledFeedback.setP(KP.get());

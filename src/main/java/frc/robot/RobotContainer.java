@@ -43,7 +43,6 @@ import frc.robot.subsystems.pivot.PivotIOTalonFX;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.ShooterIOSim;
-import frc.robot.subsystems.shooter.ShooterIOTalonFX;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOLimelight;
@@ -88,7 +87,7 @@ public class RobotContainer {
                   new ModuleIOTalonFX(1),
                   new ModuleIOTalonFX(2),
                   new ModuleIOTalonFX(3));
-          shooter = new Shooter(new ShooterIOTalonFX());
+          shooter = new Shooter(new ShooterIOSim());
           intake = new Intake(new IntakeIOTalonFX());
           feeder = new Feeder(new FeederIOTalonFX());
           pivot = new Pivot(new PivotIOTalonFX());
@@ -224,6 +223,7 @@ public class RobotContainer {
     controller.rightTrigger().whileTrue(feeder.runVoltage());
     controller.a().whileTrue(pivot.pivot180());
     controller.y().whileTrue(pivot.pivot90());
+    controller.povUp().whileTrue(shooter.runDistance(aprilTagVision::getSpeakerDistance));
   }
 
   /**
