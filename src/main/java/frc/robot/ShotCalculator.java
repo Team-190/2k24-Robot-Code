@@ -35,8 +35,8 @@ public class ShotCalculator {
     shooterAngleMap.put(Units.inchesToMeters(180), 11.0);
 
     // Units: seconds
-    flightTimeMap.put(Units.inchesToMeters(40), 0.2);
-    flightTimeMap.put(Units.inchesToMeters(150), 0.5);
+    flightTimeMap.put(Units.inchesToMeters(40), 0.5);
+    flightTimeMap.put(Units.inchesToMeters(150), 0.8);
   }
 
   public static AimingParameters calculate(

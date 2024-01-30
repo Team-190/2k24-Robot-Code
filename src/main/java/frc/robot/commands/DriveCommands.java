@@ -119,13 +119,16 @@ public class DriveCommands {
               DriverStation.getAlliance().isPresent()
                   && DriverStation.getAlliance().get() == Alliance.Red;
           Optional<Rotation2d> targetGyroAngle = Optional.empty();
+          Rotation2d measuredGyroAngle = drive.getRotation();
           if (noteTracking.getAsBoolean()) {
             targetGyroAngle = noteVision.getTargetGyroAngle();
           } else if (aprilTagVision.getRobotPose().isPresent()) {
-            Translation2d robotPose = aprilTagVision.getRobotPose().get().getTranslation();
+            Pose2d visionPose = aprilTagVision.getRobotPose().get();
+            measuredGyroAngle = visionPose.getRotation();
             targetGyroAngle =
                 Optional.of(
-                    ShotCalculator.calculate(robotPose, drive.getFieldRelativeVelocity())
+                    ShotCalculator.calculate(
+                            visionPose.getTranslation(), drive.getFieldRelativeVelocity())
                         .robotAngle());
           }
           ChassisSpeeds chassisSpeeds =
@@ -135,7 +138,7 @@ public class DriveCommands {
                   (aprilTagTracking.getAsBoolean() || noteTracking.getAsBoolean())
                           && targetGyroAngle.isPresent()
                       ? aimController.calculate(
-                          drive.getRotation().getRadians(), targetGyroAngle.get().getRadians())
+                          measuredGyroAngle.getRadians(), targetGyroAngle.get().getRadians())
                       : omega * drive.getMaxAngularSpeedRadPerSec(),
                   isFlipped
                       ? drive.getRotation().plus(new Rotation2d(Math.PI))
