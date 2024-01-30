@@ -94,6 +94,7 @@ public class VisionIOSim implements VisionIO {
     if (inputs.tv) {
       inputs.tx = tx;
       inputs.ty = ty;
+      inputs.robotPose = new Pose3d(poseSupplier.get());
     }
   }
 }

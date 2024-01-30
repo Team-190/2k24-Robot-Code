@@ -148,8 +148,8 @@ public class RobotContainer {
     }
 
     // Set up subsystems
-    aprilTagVision.setGyroSupplier(drive::getRotation);
-    noteVision.setGyroSupplier(drive::getRotation);
+    aprilTagVision.setDrivePoseSupplier(drive::getPose);
+    noteVision.setDrivePoseSupplier(drive::getPose);
 
     // Set up autos
     NamedCommands.registerCommand(
@@ -224,7 +224,7 @@ public class RobotContainer {
     controller.rightTrigger().whileTrue(feeder.runVoltage());
     controller.a().whileTrue(pivot.pivot180());
     controller.y().whileTrue(pivot.pivot90());
-    controller.povUp().whileTrue(shooter.runDistance(aprilTagVision::getSpeakerDistance));
+    // controller.povUp().whileTrue(shooter.runDistance(aprilTagVision::getSpeakerDistance));
   }
 
   /**

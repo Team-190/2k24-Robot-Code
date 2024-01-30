@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants;
 import frc.robot.FieldConstants;
+import frc.robot.ShotCalculator;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionMode;
@@ -114,13 +115,19 @@ public class DriveCommands {
           aimController.setP(autoAimKP.get());
 
           // Get robot relative vel
-          Optional<Rotation2d> targetGyroAngle =
-              noteTracking.getAsBoolean()
-                  ? noteVision.getTargetGyroAngle()
-                  : aprilTagVision.getTargetGyroAngle();
           boolean isFlipped =
               DriverStation.getAlliance().isPresent()
                   && DriverStation.getAlliance().get() == Alliance.Red;
+          Optional<Rotation2d> targetGyroAngle = Optional.empty();
+          if (noteTracking.getAsBoolean()) {
+            targetGyroAngle = noteVision.getTargetGyroAngle();
+          } else if (aprilTagVision.getRobotPose().isPresent()) {
+            Translation2d robotPose = aprilTagVision.getRobotPose().get().getTranslation();
+            targetGyroAngle =
+                Optional.of(
+                    ShotCalculator.calculate(robotPose, drive.getFieldRelativeVelocity())
+                        .robotAngle());
+          }
           ChassisSpeeds chassisSpeeds =
               ChassisSpeeds.fromFieldRelativeSpeeds(
                   linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),

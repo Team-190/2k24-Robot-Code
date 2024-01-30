@@ -259,6 +259,13 @@ public class Drive extends SubsystemBase {
     return states;
   }
 
+  /** Returns the field relative velocity in X and Y. */
+  public Translation2d getFieldRelativeVelocity() {
+    ChassisSpeeds chassisSpeeds = kinematics.toChassisSpeeds(getModuleStates());
+    return new Translation2d(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond)
+        .rotateBy(getRotation());
+  }
+
   /** Returns the current odometry pose. */
   @AutoLogOutput(key = "Odometry/Robot")
   public Pose2d getPose() {

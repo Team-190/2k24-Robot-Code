@@ -4,15 +4,11 @@ import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
-import java.util.Optional;
-import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 public class Shooter extends SubsystemBase {
@@ -23,9 +19,6 @@ public class Shooter extends SubsystemBase {
 
   private final ShooterIO io;
   private final ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
-
-  private static final InterpolatingDoubleTreeMap speakerDistanceToShooterSpeed =
-      new InterpolatingDoubleTreeMap();
 
   private SimpleMotorFeedforward feedforward;
   private final PIDController feedback;
@@ -68,14 +61,6 @@ public class Shooter extends SubsystemBase {
       default:
         break;
     }
-
-    speakerDistanceToShooterSpeed.put(Units.inchesToMeters(60), 10.0);
-    speakerDistanceToShooterSpeed.put(Units.inchesToMeters(80), 17.0);
-    speakerDistanceToShooterSpeed.put(Units.inchesToMeters(100), 9.0);
-    speakerDistanceToShooterSpeed.put(Units.inchesToMeters(120), 30.0);
-    speakerDistanceToShooterSpeed.put(Units.inchesToMeters(140), 19.0);
-    speakerDistanceToShooterSpeed.put(Units.inchesToMeters(160), 88.0);
-    speakerDistanceToShooterSpeed.put(Units.inchesToMeters(180), 10.0);
   }
 
   public Shooter(ShooterIO io) {
@@ -135,17 +120,17 @@ public class Shooter extends SubsystemBase {
         });
   }
 
-  public Command runDistance(Supplier<Optional<Double>> getSpeakerDistance) {
-    return runEnd(
-        () -> {
-          Optional<Double> distOptional = getSpeakerDistance.get();
-          if (distOptional.isPresent())
-            setVelocity(speakerDistanceToShooterSpeed.get(distOptional.get()));
-        },
-        () -> {
-          stop();
-        });
-  }
+  // public Command runDistance(Supplier<Optional<Double>> getSpeakerDistance) {
+  //   return runEnd(
+  //       () -> {
+  //         Optional<Double> distOptional = getSpeakerDistance.get();
+  //         if (distOptional.isPresent())
+  //           setVelocity(speakerDistanceToShooterSpeed.get(distOptional.get()));
+  //       },
+  //       () -> {
+  //         stop();
+  //       });
+  // }
 
   /** Returns a command to run a quasistatic test in the specified direction. */
   public Command runSysIdQuasistatic(SysIdRoutine.Direction direction) {
