@@ -32,6 +32,7 @@ public class VisionIOLimelight implements VisionIO {
         botpose.getLastChange() * 0.000001
             - botpose.get()[6]
                 * 0.001; // Calculate the time (in seconds) when the Limelight captured the frame
+
     inputs.tx = Rotation2d.fromDegrees(tx.get());
     inputs.ty = Rotation2d.fromDegrees(ty.get());
     inputs.tv = tv.get() != 0;

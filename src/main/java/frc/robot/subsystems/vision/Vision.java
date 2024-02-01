@@ -19,9 +19,12 @@ public class Vision extends VirtualSubsystem {
   private final double SPEAKER_TAG_HEIGHT = Units.inchesToMeters(57.13);
   private final double CAMERA_HEIGHT = Units.inchesToMeters(8.75);
   private final LoggedTunableNumber CAMERA_ANGLE = new LoggedTunableNumber("Vision/CameraAngle");
+  private double lastValidTimeStamp = Double.NEGATIVE_INFINITY;
+  private Pose2d lastValidRobotPose = new Pose2d();
+  private static final double BUFFER_SECONDS = 3;
 
   private final TimeInterpolatableBuffer<Pose2d> robotPoseBuffer =
-      TimeInterpolatableBuffer.createBuffer(0.5);
+      TimeInterpolatableBuffer.createBuffer(BUFFER_SECONDS);
   private Supplier<Pose2d> drivePoseSupplier = null;
 
   public Vision(String name, VisionIO io) {
@@ -35,7 +38,10 @@ public class Vision extends VirtualSubsystem {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs(name, inputs);
-
+    if (inputs.tv) {
+      lastValidTimeStamp = inputs.timeStamp;
+      lastValidRobotPose = inputs.robotPose.toPose2d();
+    }
     Pose2d robotPose = drivePoseSupplier.get();
     robotPoseBuffer.addSample(Timer.getFPGATimestamp(), robotPose);
 
@@ -77,10 +83,11 @@ public class Vision extends VirtualSubsystem {
   }
 
   public Optional<Pose2d> getRobotPose() {
-    if (robotPoseBuffer.getSample(inputs.timeStamp).isPresent() && inputs.tv) {
+    if ((Timer.getFPGATimestamp() - lastValidTimeStamp) <= BUFFER_SECONDS
+        && robotPoseBuffer.getSample(lastValidTimeStamp).isPresent()) {
       Pose2d currentPoseFromDrive = drivePoseSupplier.get();
-      Pose2d capturePoseFromDrive = robotPoseBuffer.getSample(inputs.timeStamp).get();
-      Pose2d capturePoseFromCam = inputs.robotPose.toPose2d();
+      Pose2d capturePoseFromDrive = robotPoseBuffer.getSample(lastValidTimeStamp).get();
+      Pose2d capturePoseFromCam = lastValidRobotPose;
 
       Pose2d currentPoseFromCam =
           capturePoseFromCam.plus(currentPoseFromDrive.minus(capturePoseFromDrive));

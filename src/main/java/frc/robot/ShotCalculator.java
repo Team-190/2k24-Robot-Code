@@ -48,17 +48,20 @@ public class ShotCalculator {
         fieldRelativePose.plus(fieldRelativeVelocity.times(flightTimeMap.get(distanceToSpeaker)));
     double effectiveDistanceToSpeaker = effectiveAimingPose.getDistance(speakerPose);
 
+    Rotation2d setpointAngle = speakerPose.minus(effectiveAimingPose).getAngle();
+    double tangentialVelocity = -fieldRelativeVelocity.rotateBy(setpointAngle.unaryMinus()).getY();
+    double radialVelocity = tangentialVelocity / effectiveDistanceToSpeaker;
     Logger.recordOutput("ShotCalculator/effectiveDistanceToSpeaker", effectiveDistanceToSpeaker);
     Logger.recordOutput(
         "ShotCalculator/effectiveAimingPose", new Pose2d(effectiveAimingPose, new Rotation2d()));
-    Logger.recordOutput(
-        "ShotCalculator/robotAngle", speakerPose.minus(effectiveAimingPose).getAngle());
+    Logger.recordOutput("ShotCalculator/robotAngle", setpointAngle);
     return new AimingParameters(
-        speakerPose.minus(effectiveAimingPose).getAngle(),
+        setpointAngle,
+        radialVelocity,
         shooterSpeedMap.get(effectiveDistanceToSpeaker),
         new Rotation2d(shooterAngleMap.get(effectiveDistanceToSpeaker)));
   }
 
   public static record AimingParameters(
-      Rotation2d robotAngle, double shooterSpeed, Rotation2d shooterAngle) {}
+      Rotation2d robotAngle, double radialVelocity, double shooterSpeed, Rotation2d shooterAngle) {}
 }

@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants;
 import frc.robot.FieldConstants;
 import frc.robot.ShotCalculator;
+import frc.robot.ShotCalculator.AimingParameters;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionMode;
@@ -59,8 +60,8 @@ public class DriveCommands {
         autoAimKD.initDefault(0);
         break;
       case ROBOT_2K24_TEST:
-        autoAimKP.initDefault(7);
-        autoAimKD.initDefault(0.125);
+        autoAimKP.initDefault(8);
+        autoAimKD.initDefault(0.08);
         break;
       case ROBOT_SIM:
         autoAimKP.initDefault(7);
@@ -104,6 +105,10 @@ public class DriveCommands {
           linearMagnitude = linearMagnitude * linearMagnitude;
           omega = Math.copySign(omega * omega, omega);
 
+          if (aprilTagTracking.getAsBoolean()) {
+            linearMagnitude = Math.min(linearMagnitude, 0.75);
+          }
+
           // Calcaulate new linear velocity
           Translation2d linearVelocity =
               new Pose2d(new Translation2d(), linearDirection)
@@ -120,25 +125,31 @@ public class DriveCommands {
                   && DriverStation.getAlliance().get() == Alliance.Red;
           Optional<Rotation2d> targetGyroAngle = Optional.empty();
           Rotation2d measuredGyroAngle = drive.getRotation();
+          double feedForwardRadialVelocity = 0.0;
+
+          double robotRelativeXVel = linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec();
+          double robotRelativeYVel = linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec();
+
           if (noteTracking.getAsBoolean()) {
             targetGyroAngle = noteVision.getTargetGyroAngle();
           } else if (aprilTagVision.getRobotPose().isPresent()) {
             Pose2d visionPose = aprilTagVision.getRobotPose().get();
             measuredGyroAngle = visionPose.getRotation();
-            targetGyroAngle =
-                Optional.of(
-                    ShotCalculator.calculate(
-                            visionPose.getTranslation(), drive.getFieldRelativeVelocity())
-                        .robotAngle());
+            AimingParameters calculatedAim =
+                ShotCalculator.calculate(
+                    visionPose.getTranslation(), drive.getFieldRelativeVelocity());
+            targetGyroAngle = Optional.of(calculatedAim.robotAngle());
+            feedForwardRadialVelocity = calculatedAim.radialVelocity();
           }
           ChassisSpeeds chassisSpeeds =
               ChassisSpeeds.fromFieldRelativeSpeeds(
-                  linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
-                  linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+                  robotRelativeXVel,
+                  robotRelativeYVel,
                   (aprilTagTracking.getAsBoolean() || noteTracking.getAsBoolean())
                           && targetGyroAngle.isPresent()
-                      ? aimController.calculate(
-                          measuredGyroAngle.getRadians(), targetGyroAngle.get().getRadians())
+                      ? feedForwardRadialVelocity
+                          + aimController.calculate(
+                              measuredGyroAngle.getRadians(), targetGyroAngle.get().getRadians())
                       : omega * drive.getMaxAngularSpeedRadPerSec(),
                   isFlipped
                       ? drive.getRotation().plus(new Rotation2d(Math.PI))
