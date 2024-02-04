@@ -19,7 +19,7 @@ public class IntakeIOTalonFX implements IntakeIO {
   private final StatusSignal<Double> current;
   private final StatusSignal<Double> temperature;
 
-  private final double GEAR_RATIO = 1;
+  private final double GEAR_RATIO = 2.0;
 
   private final Alert disconnectedAlert =
       new Alert("Intake Talon is disconnected, check CAN bus.", AlertType.ERROR);
@@ -27,13 +27,13 @@ public class IntakeIOTalonFX implements IntakeIO {
   public IntakeIOTalonFX() {
     switch (Constants.ROBOT) {
       case ROBOT_2K24_C:
-        talon = new TalonFX(10);
+        talon = new TalonFX(54);
         break;
       case ROBOT_2K24_P:
-        talon = new TalonFX(10);
+        talon = new TalonFX(54);
         break;
       case ROBOT_2K24_TEST:
-        talon = new TalonFX(10);
+        talon = new TalonFX(54);
         break;
       default:
         throw new RuntimeException("Invalid robot");
@@ -61,8 +61,8 @@ public class IntakeIOTalonFX implements IntakeIO {
         BaseStatusSignal.refreshAll(velocity, position, appliedVolts, current, temperature).isOK();
     disconnectedAlert.set(!connected);
 
-    inputs.positionRad = Units.rotationsToRadians(position.getValueAsDouble()) * GEAR_RATIO;
-    inputs.velocityRadPerSec = Units.rotationsToRadians(velocity.getValueAsDouble()) * GEAR_RATIO;
+    inputs.positionRad = Units.rotationsToRadians(position.getValueAsDouble()) / GEAR_RATIO;
+    inputs.velocityRadPerSec = Units.rotationsToRadians(velocity.getValueAsDouble()) / GEAR_RATIO;
     inputs.appliedVolts = appliedVolts.getValueAsDouble();
     inputs.currentAmps = new double[] {current.getValueAsDouble()};
     inputs.tempCelcius = new double[] {temperature.getValueAsDouble()};

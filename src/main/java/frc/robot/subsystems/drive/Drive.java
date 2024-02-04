@@ -204,6 +204,7 @@ public class Drive extends SubsystemBase {
     // Log setpoint states
     Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
     Logger.recordOutput("SwerveStates/SetpointsOptimized", optimizedSetpointStates);
+    Logger.recordOutput("SwerveStates/X Component", getChassisSpeeds().vxMetersPerSecond);
   }
 
   /** Stops the drive. */
@@ -257,6 +258,11 @@ public class Drive extends SubsystemBase {
       states[i] = modules[i].getPosition();
     }
     return states;
+  }
+
+  /** Returns the field relative velocity in X and Y. */
+  public ChassisSpeeds getChassisSpeeds() {
+    return kinematics.toChassisSpeeds(getModuleStates());
   }
 
   /** Returns the current odometry pose. */
