@@ -65,7 +65,7 @@ public class ModuleIOTalonFX implements ModuleIO {
   private final StatusSignal<Double> turnTemp;
 
   // Gear ratios for SDS MK4i L2, adjust as necessary
-  private final double DRIVE_GEAR_RATIO = (50.0 / 14.0) * (17.0 / 27.0) * (45.0 / 15.0);
+  private final double DRIVE_GEAR_RATIO = (50.0 / 14.0) * (16.0 / 28.0) * (45.0 / 15.0); // L3 Gearing
   private final double TURN_GEAR_RATIO = 150.0 / 7.0;
 
   private final boolean isTurnMotorInverted = true;
@@ -143,25 +143,25 @@ public class ModuleIOTalonFX implements ModuleIO {
             driveTalon = new TalonFX(30, "drive");
             turnTalon = new TalonFX(31, "drive");
             cancoder = new CANcoder(32, "drive");
-            absoluteEncoderOffset = Rotation2d.fromRadians(-0.880505);
+            absoluteEncoderOffset = Rotation2d.fromRadians(0.0);
             break;
           case 1:
             driveTalon = new TalonFX(40, "drive");
             turnTalon = new TalonFX(41, "drive");
             cancoder = new CANcoder(42, "drive");
-            absoluteEncoderOffset = Rotation2d.fromRadians(-1.198039);
+            absoluteEncoderOffset = Rotation2d.fromRadians(0.0);
             break;
           case 2:
             driveTalon = new TalonFX(10, "drive");
             turnTalon = new TalonFX(11, "drive");
             cancoder = new CANcoder(12, "drive");
-            absoluteEncoderOffset = Rotation2d.fromRadians(0.874369);
+            absoluteEncoderOffset = Rotation2d.fromRadians(0.0);
             break;
           case 3:
             driveTalon = new TalonFX(20, "drive");
             turnTalon = new TalonFX(21, "drive");
             cancoder = new CANcoder(22, "drive");
-            absoluteEncoderOffset = Rotation2d.fromRadians(1.291612);
+            absoluteEncoderOffset = Rotation2d.fromRadians(0.0);
             break;
           default:
             throw new RuntimeException("Invalid module index");

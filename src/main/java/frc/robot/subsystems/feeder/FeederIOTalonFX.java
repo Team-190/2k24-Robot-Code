@@ -11,13 +11,20 @@ import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
 
 public class FeederIOTalonFX implements FeederIO {
-  private final TalonFX talon;
+  private final TalonFX upperFeederTalon;
+  private final TalonFX lowerFeederTalon;
 
-  private final StatusSignal<Double> position;
-  private final StatusSignal<Double> velocity;
-  private final StatusSignal<Double> appliedVolts;
-  private final StatusSignal<Double> current;
-  private final StatusSignal<Double> temperature;
+  private final StatusSignal<Double> upperPosition;
+  private final StatusSignal<Double> upperVelocity;
+  private final StatusSignal<Double> upperAppliedVolts;
+  private final StatusSignal<Double> upperCurrent;
+  private final StatusSignal<Double> upperTemperature;
+
+  private final StatusSignal<Double> lowerPosition;
+  private final StatusSignal<Double> lowerVelocity;
+  private final StatusSignal<Double> lowerAppliedVolts;
+  private final StatusSignal<Double> lowerCurrent;
+  private final StatusSignal<Double> lowerTemperature;
 
   private final double GEAR_RATIO = 1;
 
@@ -27,13 +34,16 @@ public class FeederIOTalonFX implements FeederIO {
   public FeederIOTalonFX() {
     switch (Constants.ROBOT) {
       case ROBOT_2K24_C:
-        talon = new TalonFX(10);
+        lowerFeederTalon = new TalonFX(42);
+        upperFeederTalon = new TalonFX(43);
         break;
       case ROBOT_2K24_P:
-        talon = new TalonFX(10);
+        lowerFeederTalon = new TalonFX(42);
+        upperFeederTalon = new TalonFX(43);
         break;
       case ROBOT_2K24_TEST:
-        talon = new TalonFX(10);
+        lowerFeederTalon = new TalonFX(42);
+        upperFeederTalon = new TalonFX(43);
         break;
       default:
         throw new RuntimeException("Invalid robot");
@@ -42,34 +52,61 @@ public class FeederIOTalonFX implements FeederIO {
     var config = new TalonFXConfiguration();
     config.CurrentLimits.StatorCurrentLimit = 40.0;
     config.CurrentLimits.StatorCurrentLimitEnable = true;
-    talon.getConfigurator().apply(config);
 
-    position = talon.getPosition();
-    velocity = talon.getVelocity();
-    appliedVolts = talon.getMotorVoltage();
-    current = talon.getStatorCurrent();
-    temperature = talon.getDeviceTemp();
+    upperFeederTalon.getConfigurator().apply(config);
+    lowerFeederTalon.getConfigurator().apply(config);
 
-    BaseStatusSignal.setUpdateFrequencyForAll(100.0, velocity);
-    BaseStatusSignal.setUpdateFrequencyForAll(50.0, position, appliedVolts, current, temperature);
-    talon.optimizeBusUtilization();
+    upperPosition = upperFeederTalon.getPosition();
+    upperVelocity = upperFeederTalon.getVelocity();
+    upperAppliedVolts = upperFeederTalon.getMotorVoltage();
+    upperCurrent = upperFeederTalon.getStatorCurrent();
+    upperTemperature = upperFeederTalon.getDeviceTemp();
+
+    lowerPosition = lowerFeederTalon.getPosition();
+    lowerVelocity = lowerFeederTalon.getVelocity();
+    lowerAppliedVolts = lowerFeederTalon.getMotorVoltage();
+    lowerCurrent = lowerFeederTalon.getStatorCurrent();
+    lowerTemperature = lowerFeederTalon.getDeviceTemp();
+
+    BaseStatusSignal.setUpdateFrequencyForAll(100.0, upperVelocity);
+    BaseStatusSignal.setUpdateFrequencyForAll(
+        50.0, upperPosition, upperAppliedVolts, upperCurrent, upperTemperature);
+    upperFeederTalon.optimizeBusUtilization();
+
+    BaseStatusSignal.setUpdateFrequencyForAll(100.0, lowerVelocity);
+    BaseStatusSignal.setUpdateFrequencyForAll(
+        50.0, lowerPosition, lowerAppliedVolts, lowerCurrent, lowerTemperature);
+    lowerFeederTalon.optimizeBusUtilization();
   }
 
   @Override
   public void updateInputs(FeederIOInputs inputs) {
     boolean connected =
-        BaseStatusSignal.refreshAll(velocity, position, appliedVolts, current, temperature).isOK();
+        BaseStatusSignal.refreshAll(
+                upperVelocity, upperPosition, upperAppliedVolts, upperCurrent, upperTemperature)
+            .isOK();
     disconnectedAlert.set(!connected);
 
-    inputs.positionRad = Units.rotationsToRadians(position.getValueAsDouble()) * GEAR_RATIO;
-    inputs.velocityRadPerSec = Units.rotationsToRadians(velocity.getValueAsDouble()) * GEAR_RATIO;
-    inputs.appliedVolts = appliedVolts.getValueAsDouble();
-    inputs.currentAmps = new double[] {current.getValueAsDouble()};
-    inputs.tempCelcius = new double[] {temperature.getValueAsDouble()};
+    inputs.upperPositionRad =
+        Units.rotationsToRadians(upperPosition.getValueAsDouble()) * GEAR_RATIO;
+    inputs.upperVelocityRadPerSec =
+        Units.rotationsToRadians(upperVelocity.getValueAsDouble()) * GEAR_RATIO;
+    inputs.upperAppliedVolts = upperAppliedVolts.getValueAsDouble();
+    inputs.upperCurrentAmps = new double[] {upperCurrent.getValueAsDouble()};
+    inputs.upperTempCelcius = new double[] {upperTemperature.getValueAsDouble()};
+
+    inputs.lowerPositionRad =
+        Units.rotationsToRadians(lowerPosition.getValueAsDouble()) * GEAR_RATIO;
+    inputs.lowerVelocityRadPerSec =
+        Units.rotationsToRadians(lowerVelocity.getValueAsDouble()) * GEAR_RATIO;
+    inputs.lowerAppliedVolts = lowerAppliedVolts.getValueAsDouble();
+    inputs.lowerCurrentAmps = new double[] {lowerCurrent.getValueAsDouble()};
+    inputs.lowerTempCelcius = new double[] {lowerTemperature.getValueAsDouble()};
   }
 
   @Override
   public void setVoltage(double volts) {
-    talon.setControl(new VoltageOut(volts));
+    upperFeederTalon.setControl(new VoltageOut(volts));
+    lowerFeederTalon.setControl(new VoltageOut(volts));
   }
 }
