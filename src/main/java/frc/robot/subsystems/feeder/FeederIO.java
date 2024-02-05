@@ -21,6 +21,9 @@ public interface FeederIO {
   /** Updates the set of loggable inputs. */
   public default void updateInputs(FeederIOInputs inputs) {}
 
-  /** Run the drive motor at the specified voltage. */
-  public default void setVoltage(double volts) {}
+  /** Run the upper feeder motor at the specified voltage. */
+  public default void setUpperVoltage(double volts) {}
+
+  /** Run the lower feeder motor at the specified voltage. */
+  public default void setLowerVoltage(double volts) {}
 }

@@ -7,7 +7,6 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -23,11 +22,7 @@ public class Shooter extends SubsystemBase {
   private static final LoggedTunableNumber KP = new LoggedTunableNumber("Shooter/Kp");
   private static final LoggedTunableNumber KD = new LoggedTunableNumber("Shooter/Kd");
 
-  private static final double LEFT_KS = 0.0;
-  private static final double LEFT_KV = 0.0;
-
-  private static final double RIGHT_KS = 0.0;
-  private static final double RIGHT_KV = 0.0;
+  private static final LoggedTunableNumber SPEED = new LoggedTunableNumber("Shooter/Speed");
 
   private final ShooterIO io;
   private final ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
@@ -35,18 +30,19 @@ public class Shooter extends SubsystemBase {
   private static final InterpolatingDoubleTreeMap speakerDistanceToShooterSpeed =
       new InterpolatingDoubleTreeMap();
 
-  private SimpleMotorFeedforward leftFeedforward;
-  private SimpleMotorFeedforward rightFeedforward;
+  private static SimpleMotorFeedforward leftFeedforward;
+  private static SimpleMotorFeedforward rightFeedforward;
 
-  private final PIDController feedback;
+  private final PIDController leftFeedback;
+  private final PIDController rightFeedback;
   private boolean isOpenLoop = true;
   private double openLoopVoltage = 0.0;
   private final SysIdRoutine sysIdRoutine =
       new SysIdRoutine(
           new SysIdRoutine.Config(
-              null,
-              null,
-              Seconds.of(6.0),
+              Volts.of(0.2).per(Seconds.of(1.0)),
+              Volts.of(3.5),
+              Seconds.of(180.0),
               (state) -> Logger.recordOutput("Shooter/sysIDState", state.toString())),
           new SysIdRoutine.Mechanism((volts) -> setVoltage(volts.in(Volts)), null, this));
 
@@ -54,19 +50,30 @@ public class Shooter extends SubsystemBase {
     switch (Constants.ROBOT) {
       case ROBOT_2K24_C:
       case ROBOT_2K24_P:
-        KP.initDefault(0.0);
+        KP.initDefault(0.035);
         KD.initDefault(0.0);
-        RATIO.initDefault(0.0);
+        RATIO.initDefault(1.0);
+        SPEED.initDefault(0.0);
+        leftFeedforward = new SimpleMotorFeedforward(0.49147, 0.0069249);
+        rightFeedforward = new SimpleMotorFeedforward(0.72165, 0.0075142);
         break;
       case ROBOT_2K24_TEST:
-        KP.initDefault(0.05);
+        KP.initDefault(0.035);
         KD.initDefault(0.0);
-        RATIO.initDefault(0.0);
+        RATIO.initDefault(1.0);
+        SPEED.initDefault(0.0);
+
+        leftFeedforward = new SimpleMotorFeedforward(0.49147, 0.0069249);
+        rightFeedforward = new SimpleMotorFeedforward(0.72165, 0.0075142);
         break;
       case ROBOT_SIM:
-        KP.initDefault(0.05);
+        KP.initDefault(0.035);
         KD.initDefault(0.0);
-        RATIO.initDefault(0.0);
+        RATIO.initDefault(1.0);
+        SPEED.initDefault(0.0);
+
+        leftFeedforward = new SimpleMotorFeedforward(0.49147, 0.0069249);
+        rightFeedforward = new SimpleMotorFeedforward(0.72165, 0.0075142);
         break;
       default:
         break;
@@ -83,11 +90,8 @@ public class Shooter extends SubsystemBase {
 
   public Shooter(ShooterIO io) {
     this.io = io;
-
-    leftFeedforward = new SimpleMotorFeedforward(LEFT_KS, LEFT_KV);
-    rightFeedforward = new SimpleMotorFeedforward(RIGHT_KS, RIGHT_KV);
-
-    feedback = new PIDController(KP.get(), 0.0, KD.get(), Constants.LOOP_PERIOD_SECS);
+    leftFeedback = new PIDController(KP.get(), 0.0, KD.get(), Constants.LOOP_PERIOD_SECS);
+    rightFeedback = new PIDController(KP.get(), 0.0, KD.get(), Constants.LOOP_PERIOD_SECS);
   }
 
   public void periodic() {
@@ -96,20 +100,22 @@ public class Shooter extends SubsystemBase {
 
     // Adjust models based on tunable numbers
     if (KP.hasChanged(hashCode())) {
-      feedback.setP(KP.get());
+      leftFeedback.setP(KP.get());
+      rightFeedback.setP(KP.get());
     }
     if (KD.hasChanged(hashCode())) {
-      feedback.setD(KD.get());
+      leftFeedback.setD(KD.get());
+      rightFeedback.setD(KD.get());
     }
 
     // Run control
     if (!isOpenLoop) {
       io.setLeftVoltage(
-          leftFeedforward.calculate(feedback.getSetpoint())
-              + feedback.calculate(inputs.leftVelocityRadPerSec));
+          leftFeedforward.calculate(leftFeedback.getSetpoint())
+              + leftFeedback.calculate(inputs.leftVelocityRadPerSec));
       io.setRightVoltage(
-          rightFeedforward.calculate(feedback.getSetpoint())
-              + feedback.calculate(inputs.rightVelocityRadPerSec));
+          rightFeedforward.calculate(rightFeedback.getSetpoint())
+              + rightFeedback.calculate(inputs.rightVelocityRadPerSec));
     } else {
       io.setLeftVoltage(openLoopVoltage);
       io.setRightVoltage(openLoopVoltage);
@@ -118,7 +124,8 @@ public class Shooter extends SubsystemBase {
 
   private void setVelocity(double velocityRadPerSec) {
     isOpenLoop = false;
-    feedback.setSetpoint(velocityRadPerSec);
+    leftFeedback.setSetpoint(velocityRadPerSec);
+    rightFeedback.setSetpoint(velocityRadPerSec * RATIO.get());
   }
 
   private void stop() {
@@ -131,14 +138,8 @@ public class Shooter extends SubsystemBase {
     openLoopVoltage = volts;
   }
 
-  public Command runVelocity(double velocityRadPerSec) {
-    return startEnd(
-        () -> {
-          setVelocity(velocityRadPerSec);
-        },
-        () -> {
-          stop();
-        });
+  public Command runVelocity() {
+    return runEnd(() -> setVelocity(SPEED.get()), () -> stop());
   }
 
   public Command runDistance(Supplier<Optional<Double>> getSpeakerDistance) {
@@ -153,14 +154,11 @@ public class Shooter extends SubsystemBase {
         });
   }
 
-  public Command runSysId() {
-    return Commands.sequence(
-        sysIdRoutine.quasistatic(Direction.kForward),
-        Commands.waitSeconds(6),
-        sysIdRoutine.quasistatic(Direction.kReverse),
-        Commands.waitSeconds(6),
-        sysIdRoutine.dynamic(Direction.kForward),
-        Commands.waitSeconds(6),
-        sysIdRoutine.dynamic(Direction.kReverse));
+  public Command runSysIdQuasistatic(Direction direction) {
+    return sysIdRoutine.quasistatic(direction);
+  }
+
+  public Command runSysIdDynamic(Direction direction) {
+    return sysIdRoutine.dynamic(direction);
   }
 }

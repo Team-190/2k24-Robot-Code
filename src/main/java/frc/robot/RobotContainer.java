@@ -31,15 +31,19 @@ import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.feeder.FeederIO;
 import frc.robot.subsystems.feeder.FeederIOSim;
+import frc.robot.subsystems.feeder.FeederIOTalonFX;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.pivot.Pivot;
 import frc.robot.subsystems.pivot.PivotIO;
 import frc.robot.subsystems.pivot.PivotIOSim;
+import frc.robot.subsystems.pivot.PivotIOTalonFX;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.ShooterIOSim;
+import frc.robot.subsystems.shooter.ShooterIOTalonFX;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOLimelight;
@@ -84,9 +88,9 @@ public class RobotContainer {
                   new ModuleIOTalonFX(1),
                   new ModuleIOTalonFX(2),
                   new ModuleIOTalonFX(3));
-          // shooter = new Shooter(new ShooterIOTalonFX());
-          // intake = new Intake(new IntakeIOTalonFX());
-          // feeder = new Feeder(new FeederIOTalonFX());
+          shooter = new Shooter(new ShooterIOTalonFX());
+          intake = new Intake(new IntakeIOTalonFX());
+          feeder = new Feeder(new FeederIOTalonFX());
           // pivot = new Pivot(new PivotIOTalonFX());
           aprilTagVision =
               new Vision("AprilTagVision", new VisionIOLimelight(VisionMode.AprilTags));
@@ -182,7 +186,15 @@ public class RobotContainer {
       autoChooser.addOption(
           "Drive SysId (Dynamic Reverse)",
           DriveCommands.runSysIdDynamic(drive, Direction.kReverse));
-      autoChooser.addOption("Shooter SysId", shooter.runSysId());
+      autoChooser.addOption(
+          "Shooter SysId (Quasistatic Forward)", shooter.runSysIdQuasistatic(Direction.kForward));
+      autoChooser.addOption(
+          "Shooter SysId (Quasistatic Reverse)", shooter.runSysIdQuasistatic(Direction.kReverse));
+      autoChooser.addOption(
+          "Shooter SysId (Dynamic Forward)", shooter.runSysIdDynamic(Direction.kForward));
+      autoChooser.addOption(
+          "Shooter SysId (Dynamic Reverse)", shooter.runSysIdDynamic(Direction.kReverse));
+
       autoChooser.addOption("Intake SysID", intake.runSysId());
     }
 
@@ -209,10 +221,10 @@ public class RobotContainer {
             controller.rightBumper()));
     controller.x().onTrue(DriveCommands.XLock(drive));
     controller.b().onTrue(DriveCommands.resetHeading(drive));
-    controller.leftTrigger().whileTrue(intake.runVoltage());
-    controller.rightTrigger().whileTrue(feeder.runVoltage());
-    controller.y().whileTrue(pivot.deploy());
-    controller.povUp().whileTrue(shooter.runDistance(aprilTagVision::getSpeakerDistance));
+    controller.leftTrigger().whileTrue(intake.runVoltage().alongWith(feeder.intake()));
+    var shooterCommand = shooter.runVelocity();
+    controller.a().toggleOnTrue(shooterCommand);
+    controller.rightTrigger().and(shooterCommand::isScheduled).whileTrue(feeder.shoot());
   }
 
   /**

@@ -3,7 +3,6 @@ package frc.robot.subsystems.shooter;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.util.Units;
@@ -30,45 +29,46 @@ public class ShooterIOTalonFX implements ShooterIO {
   private final double GEAR_RATIO = 68.0 / 24.0;
 
   private final Alert leftDisconnectedAlert =
-      new Alert("Shooter Left Talon is disconnected, check CAN bus.", AlertType.ERROR);
+      new Alert("Shooter left Talon is disconnected, check CAN bus.", AlertType.ERROR);
   private final Alert rightDisconnectedAlert =
-      new Alert("Shooter Right Talon is disconnected, check CAN bus.", AlertType.ERROR);
+      new Alert("Shooter right Talon is disconnected, check CAN bus.", AlertType.ERROR);
 
   public ShooterIOTalonFX() {
     switch (Constants.ROBOT) {
       case ROBOT_2K24_C:
-        leftShooterTalon = new TalonFX(44);
-        rightShooterTalon = new TalonFX(45);
+        leftShooterTalon = new TalonFX(45);
+        rightShooterTalon = new TalonFX(44);
         break;
       case ROBOT_2K24_P:
-        leftShooterTalon = new TalonFX(44);
-        rightShooterTalon = new TalonFX(45);
+        leftShooterTalon = new TalonFX(45);
+        rightShooterTalon = new TalonFX(44);
         break;
       case ROBOT_2K24_TEST:
-        leftShooterTalon = new TalonFX(44);
-        rightShooterTalon = new TalonFX(45);
+        leftShooterTalon = new TalonFX(45);
+        rightShooterTalon = new TalonFX(44);
         break;
       default:
         throw new RuntimeException("Invalid robot");
     }
 
     var config = new TalonFXConfiguration();
-    config.CurrentLimits.StatorCurrentLimit = 40.0;
-    config.CurrentLimits.StatorCurrentLimitEnable = true;
+    config.CurrentLimits.SupplyCurrentLimit = 60.0;
+    config.CurrentLimits.SupplyCurrentLimitEnable = true;
     leftShooterTalon.getConfigurator().apply(config);
     rightShooterTalon.getConfigurator().apply(config);
-    rightShooterTalon.setControl(new Follower(leftShooterTalon.getDeviceID(), true));
+
+    rightShooterTalon.setInverted(true);
 
     leftPosition = leftShooterTalon.getPosition();
     leftVelocity = leftShooterTalon.getVelocity();
     leftAppliedVolts = leftShooterTalon.getMotorVoltage();
-    leftCurrent = leftShooterTalon.getStatorCurrent();
+    leftCurrent = leftShooterTalon.getSupplyCurrent();
     leftTemperature = leftShooterTalon.getDeviceTemp();
 
     rightPosition = rightShooterTalon.getPosition();
     rightVelocity = rightShooterTalon.getVelocity();
     rightAppliedVolts = rightShooterTalon.getMotorVoltage();
-    rightCurrent = rightShooterTalon.getStatorCurrent();
+    rightCurrent = rightShooterTalon.getSupplyCurrent();
     rightTemperature = rightShooterTalon.getDeviceTemp();
 
     BaseStatusSignal.setUpdateFrequencyForAll(100.0, leftVelocity);
@@ -89,7 +89,10 @@ public class ShooterIOTalonFX implements ShooterIO {
         BaseStatusSignal.refreshAll(
                 leftPosition, leftVelocity, leftAppliedVolts, leftCurrent, leftTemperature)
             .isOK();
-    boolean rightConnected = BaseStatusSignal.refreshAll(rightCurrent, rightTemperature).isOK();
+    boolean rightConnected =
+        BaseStatusSignal.refreshAll(
+                rightPosition, rightVelocity, rightAppliedVolts, rightCurrent, rightTemperature)
+            .isOK();
     leftDisconnectedAlert.set(!leftConnected);
     rightDisconnectedAlert.set(!rightConnected);
 

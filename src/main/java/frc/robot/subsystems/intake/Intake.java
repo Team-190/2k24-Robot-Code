@@ -18,10 +18,10 @@ import org.littletonrobotics.junction.Logger;
 public class Intake extends SubsystemBase {
   private static final double WHEEL_RADIUS = 0.0381;
   private static final LoggedTunableNumber voltage = new LoggedTunableNumber("Intake/voltage");
-  private static final LoggedTunableNumber multiplier =
+  private static final LoggedTunableNumber MULTIPLIER =
       new LoggedTunableNumber("Intake/multiplier");
-  private static final LoggedTunableNumber nomagicnumbers =
-      new LoggedTunableNumber("Intake/no magic numbers here");
+  private static final LoggedTunableNumber MINUMUM_VOLTAGE =
+      new LoggedTunableNumber("Intake/minumum voltage");
 
   private final IntakeIO io;
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
@@ -34,19 +34,19 @@ public class Intake extends SubsystemBase {
     switch (Constants.ROBOT) {
       case ROBOT_2K24_C:
       case ROBOT_2K24_P:
-        feedforward = new SimpleMotorFeedforward(0.13255, 0.034863);
-        multiplier.initDefault(1.5);
-        nomagicnumbers.initDefault(3);
+        feedforward = new SimpleMotorFeedforward(0.20375, 0.028081);
+        MULTIPLIER.initDefault(1.5);
+        MINUMUM_VOLTAGE.initDefault(3);
         break;
       case ROBOT_2K24_TEST:
-        feedforward = new SimpleMotorFeedforward(0.13255, 0.034863);
-        multiplier.initDefault(1.5);
-        nomagicnumbers.initDefault(3);
+        feedforward = new SimpleMotorFeedforward(0.20375, 0.028081);
+        MULTIPLIER.initDefault(1.5);
+        MINUMUM_VOLTAGE.initDefault(3);
         break;
       case ROBOT_SIM:
-        feedforward = new SimpleMotorFeedforward(0.13255, 0.034863);
-        multiplier.initDefault(1.5);
-        nomagicnumbers.initDefault(3);
+        feedforward = new SimpleMotorFeedforward(0.20375, 0.028081);
+        MULTIPLIER.initDefault(1.5);
+        MINUMUM_VOLTAGE.initDefault(3);
         break;
       default:
         break;
@@ -87,9 +87,9 @@ public class Intake extends SubsystemBase {
               Math.max(
                   feedforward.calculate(
                       -chassisSpeedsSupplier.get().vxMetersPerSecond
-                          * multiplier.get()
+                          * MULTIPLIER.get()
                           / WHEEL_RADIUS),
-                  nomagicnumbers.get());
+                  MINUMUM_VOLTAGE.get());
           Logger.recordOutput("Intake/Voltage", volts);
           io.setVoltage(volts);
         },

@@ -19,7 +19,7 @@ public class IntakeIOTalonFX implements IntakeIO {
   private final StatusSignal<Double> current;
   private final StatusSignal<Double> temperature;
 
-  private final double GEAR_RATIO = 2.0;
+  private final double GEAR_RATIO = 1.6;
 
   private final Alert disconnectedAlert =
       new Alert("Intake Talon is disconnected, check CAN bus.", AlertType.ERROR);
@@ -27,27 +27,27 @@ public class IntakeIOTalonFX implements IntakeIO {
   public IntakeIOTalonFX() {
     switch (Constants.ROBOT) {
       case ROBOT_2K24_C:
-        talon = new TalonFX(54);
+        talon = new TalonFX(40);
         break;
       case ROBOT_2K24_P:
-        talon = new TalonFX(54);
+        talon = new TalonFX(40);
         break;
       case ROBOT_2K24_TEST:
-        talon = new TalonFX(54);
+        talon = new TalonFX(40);
         break;
       default:
         throw new RuntimeException("Invalid robot");
     }
 
     var config = new TalonFXConfiguration();
-    config.CurrentLimits.StatorCurrentLimit = 40.0;
-    config.CurrentLimits.StatorCurrentLimitEnable = true;
+    config.CurrentLimits.SupplyCurrentLimit = 60.0;
+    config.CurrentLimits.SupplyCurrentLimitEnable = true;
     talon.getConfigurator().apply(config);
 
     position = talon.getPosition();
     velocity = talon.getVelocity();
     appliedVolts = talon.getMotorVoltage();
-    current = talon.getStatorCurrent();
+    current = talon.getSupplyCurrent();
     temperature = talon.getDeviceTemp();
 
     BaseStatusSignal.setUpdateFrequencyForAll(100.0, velocity);

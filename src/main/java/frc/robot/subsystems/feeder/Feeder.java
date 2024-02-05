@@ -9,11 +9,18 @@ public class Feeder extends SubsystemBase {
 
   private final FeederIO io;
   private final FeederIOInputsAutoLogged inputs = new FeederIOInputsAutoLogged();
-  private static final LoggedTunableNumber voltage = new LoggedTunableNumber("Feeder/voltage");
+  private static final LoggedTunableNumber shootUpperVoltage =
+      new LoggedTunableNumber("Feeder/shootUpperVoltage");
+  private static final LoggedTunableNumber shootLowerVoltage =
+      new LoggedTunableNumber("Feeder/shootLowerVoltage");
+  private static final LoggedTunableNumber intakeVoltage =
+      new LoggedTunableNumber("Feeder/Intake voltage");
 
   public Feeder(FeederIO io) {
     this.io = io;
-    voltage.initDefault(0.0);
+    shootUpperVoltage.initDefault(9.0);
+    shootLowerVoltage.initDefault(9.0);
+    intakeVoltage.initDefault(6.0);
   }
 
   public void periodic() {
@@ -22,16 +29,20 @@ public class Feeder extends SubsystemBase {
   }
 
   private void stop() {
-    io.setVoltage(0.0);
+    io.setUpperVoltage(0.0);
+    io.setLowerVoltage(0.0);
   }
 
-  public Command runVoltage() {
-    return startEnd(
+  public Command shoot() {
+    return runEnd(
         () -> {
-          io.setVoltage(voltage.get());
+          io.setUpperVoltage(shootUpperVoltage.get());
+          io.setLowerVoltage(shootLowerVoltage.get());
         },
-        () -> {
-          stop();
-        });
+        () -> stop());
+  }
+
+  public Command intake() {
+    return runEnd(() -> io.setLowerVoltage(intakeVoltage.get()), () -> stop());
   }
 }

@@ -31,11 +31,14 @@ public class FeederIOSim implements FeederIO {
   }
 
   @Override
-  public void setVoltage(double volts) {
+  public void setUpperVoltage(double volts) {
     upperAppliedVolts = MathUtil.clamp(volts, -12.0, 12.0);
-    lowerAppliedVolts = MathUtil.clamp(volts, -12.0, 12.0);
-
     upperMotorSim.setInputVoltage(upperAppliedVolts);
+  }
+
+  @Override
+  public void setLowerVoltage(double volts) {
+    lowerAppliedVolts = MathUtil.clamp(volts, -12.0, 12.0);
     lowerMotorSim.setInputVoltage(lowerAppliedVolts);
   }
 }

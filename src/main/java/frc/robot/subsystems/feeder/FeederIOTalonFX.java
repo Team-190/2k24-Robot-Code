@@ -26,10 +26,14 @@ public class FeederIOTalonFX implements FeederIO {
   private final StatusSignal<Double> lowerCurrent;
   private final StatusSignal<Double> lowerTemperature;
 
-  private final double GEAR_RATIO = 1;
+  private final double UPPER_GEAR_RATIO = 2.0;
+  private final double LOWER_GEAR_RATIO = 5.0;
 
-  private final Alert disconnectedAlert =
-      new Alert("Feeder Talon is disconnected, check CAN bus.", AlertType.ERROR);
+  private final Alert upperDisconnectedAlert =
+      new Alert("Feeder upper Talon is disconnected, check CAN bus.", AlertType.ERROR);
+
+  private final Alert lowerDisconnectedAlert =
+      new Alert("Feeder lower Talon is disconnected, check CAN bus.", AlertType.ERROR);
 
   public FeederIOTalonFX() {
     switch (Constants.ROBOT) {
@@ -50,8 +54,8 @@ public class FeederIOTalonFX implements FeederIO {
     }
 
     var config = new TalonFXConfiguration();
-    config.CurrentLimits.StatorCurrentLimit = 40.0;
-    config.CurrentLimits.StatorCurrentLimitEnable = true;
+    config.CurrentLimits.SupplyCurrentLimit = 40.0;
+    config.CurrentLimits.SupplyCurrentLimitEnable = true;
 
     upperFeederTalon.getConfigurator().apply(config);
     lowerFeederTalon.getConfigurator().apply(config);
@@ -59,13 +63,13 @@ public class FeederIOTalonFX implements FeederIO {
     upperPosition = upperFeederTalon.getPosition();
     upperVelocity = upperFeederTalon.getVelocity();
     upperAppliedVolts = upperFeederTalon.getMotorVoltage();
-    upperCurrent = upperFeederTalon.getStatorCurrent();
+    upperCurrent = upperFeederTalon.getSupplyCurrent();
     upperTemperature = upperFeederTalon.getDeviceTemp();
 
     lowerPosition = lowerFeederTalon.getPosition();
     lowerVelocity = lowerFeederTalon.getVelocity();
     lowerAppliedVolts = lowerFeederTalon.getMotorVoltage();
-    lowerCurrent = lowerFeederTalon.getStatorCurrent();
+    lowerCurrent = lowerFeederTalon.getSupplyCurrent();
     lowerTemperature = lowerFeederTalon.getDeviceTemp();
 
     BaseStatusSignal.setUpdateFrequencyForAll(100.0, upperVelocity);
@@ -81,32 +85,42 @@ public class FeederIOTalonFX implements FeederIO {
 
   @Override
   public void updateInputs(FeederIOInputs inputs) {
-    boolean connected =
+    boolean upperConnected =
         BaseStatusSignal.refreshAll(
                 upperVelocity, upperPosition, upperAppliedVolts, upperCurrent, upperTemperature)
             .isOK();
-    disconnectedAlert.set(!connected);
+    upperDisconnectedAlert.set(!upperConnected);
+
+    boolean lowerConnected =
+        BaseStatusSignal.refreshAll(
+                lowerVelocity, lowerPosition, lowerAppliedVolts, lowerCurrent, lowerTemperature)
+            .isOK();
+    lowerDisconnectedAlert.set(!lowerConnected);
 
     inputs.upperPositionRad =
-        Units.rotationsToRadians(upperPosition.getValueAsDouble()) * GEAR_RATIO;
+        Units.rotationsToRadians(upperPosition.getValueAsDouble()) / UPPER_GEAR_RATIO;
     inputs.upperVelocityRadPerSec =
-        Units.rotationsToRadians(upperVelocity.getValueAsDouble()) * GEAR_RATIO;
+        Units.rotationsToRadians(upperVelocity.getValueAsDouble()) / UPPER_GEAR_RATIO;
     inputs.upperAppliedVolts = upperAppliedVolts.getValueAsDouble();
     inputs.upperCurrentAmps = new double[] {upperCurrent.getValueAsDouble()};
     inputs.upperTempCelcius = new double[] {upperTemperature.getValueAsDouble()};
 
     inputs.lowerPositionRad =
-        Units.rotationsToRadians(lowerPosition.getValueAsDouble()) * GEAR_RATIO;
+        Units.rotationsToRadians(lowerPosition.getValueAsDouble()) / LOWER_GEAR_RATIO;
     inputs.lowerVelocityRadPerSec =
-        Units.rotationsToRadians(lowerVelocity.getValueAsDouble()) * GEAR_RATIO;
+        Units.rotationsToRadians(lowerVelocity.getValueAsDouble()) / LOWER_GEAR_RATIO;
     inputs.lowerAppliedVolts = lowerAppliedVolts.getValueAsDouble();
     inputs.lowerCurrentAmps = new double[] {lowerCurrent.getValueAsDouble()};
     inputs.lowerTempCelcius = new double[] {lowerTemperature.getValueAsDouble()};
   }
 
   @Override
-  public void setVoltage(double volts) {
+  public void setUpperVoltage(double volts) {
     upperFeederTalon.setControl(new VoltageOut(volts));
+  }
+
+  @Override
+  public void setLowerVoltage(double volts) {
     lowerFeederTalon.setControl(new VoltageOut(volts));
   }
 }
