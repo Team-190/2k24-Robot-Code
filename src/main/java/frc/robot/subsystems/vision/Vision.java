@@ -16,7 +16,7 @@ public class Vision extends VirtualSubsystem {
   private final VisionIOInputsAutoLogged inputs;
   private final double CAMERA_OFFSET = Units.inchesToMeters(14);
   private final double SPEAKER_TAG_HEIGHT = Units.inchesToMeters(57.13);
-  private final double CAMERA_HEIGHT = Units.inchesToMeters(8.75);
+  private final double CAMERA_HEIGHT = Units.inchesToMeters(13.375);
   private final LoggedTunableNumber CAMERA_ANGLE = new LoggedTunableNumber("Vision/CameraAngle");
 
   private final TimeInterpolatableBuffer<Rotation2d> gyroBuffer =
@@ -27,7 +27,7 @@ public class Vision extends VirtualSubsystem {
     this.name = name;
     this.io = io;
     inputs = new VisionIOInputsAutoLogged();
-    CAMERA_ANGLE.initDefault(0.6109);
+    CAMERA_ANGLE.initDefault(0.5236);
   }
 
   @Override
