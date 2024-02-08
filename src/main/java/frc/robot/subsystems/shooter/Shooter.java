@@ -1,35 +1,41 @@
 package frc.robot.subsystems.shooter;
 
-import static edu.wpi.first.units.Units.Volts;
+import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
 public class Shooter extends SubsystemBase {
-  private static final LoggedTunableNumber KS = new LoggedTunableNumber("Shooter/Ks");
-  private static final LoggedTunableNumber KV = new LoggedTunableNumber("Shooter/Kv");
+  private static final LoggedTunableNumber RATIO = new LoggedTunableNumber("Shooter/Ratio");
+
   private static final LoggedTunableNumber KP = new LoggedTunableNumber("Shooter/Kp");
   private static final LoggedTunableNumber KD = new LoggedTunableNumber("Shooter/Kd");
+
+  private static final LoggedTunableNumber SPEED = new LoggedTunableNumber("Shooter/Speed");
 
   private final ShooterIO io;
   private final ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
 
-  private SimpleMotorFeedforward feedforward;
-  private final PIDController feedback;
+  private static SimpleMotorFeedforward leftFeedforward;
+  private static SimpleMotorFeedforward rightFeedforward;
+
+  private final PIDController leftFeedback;
+  private final PIDController rightFeedback;
   private boolean isOpenLoop = true;
   private double openLoopVoltage = 0.0;
   private final SysIdRoutine sysIdRoutine =
       new SysIdRoutine(
           new SysIdRoutine.Config(
-              null,
-              null,
-              null,
+              Volts.of(0.2).per(Seconds.of(1.0)),
+              Volts.of(3.5),
+              Seconds.of(180.0),
               (state) -> Logger.recordOutput("Shooter/sysIDState", state.toString())),
           new SysIdRoutine.Mechanism((volts) -> setVoltage(volts.in(Volts)), null, this));
 
@@ -37,26 +43,30 @@ public class Shooter extends SubsystemBase {
     switch (Constants.ROBOT) {
       case ROBOT_2K24_C:
       case ROBOT_2K24_P:
-        KS.initDefault(0.0);
-        KV.initDefault(0.0);
-        KP.initDefault(0.0);
+        KP.initDefault(0.035);
         KD.initDefault(0.0);
+        RATIO.initDefault(2.0 / 3.0);
+        SPEED.initDefault(400);
+        leftFeedforward = new SimpleMotorFeedforward(0.49147, 0.0069249);
+        rightFeedforward = new SimpleMotorFeedforward(0.72165, 0.0075142);
         break;
       case ROBOT_2K24_TEST:
-        // KS.initDefault(0.0);
-        // KV.initDefault(0.0);
-        // KP.initDefault(0.0);
-        // KD.initDefault(0.0);
-        KS.initDefault(0.0);
-        KV.initDefault(0.037989);
-        KP.initDefault(0.05);
+        KP.initDefault(0.035);
         KD.initDefault(0.0);
+        RATIO.initDefault(2.0 / 3.0);
+        SPEED.initDefault(400);
+
+        leftFeedforward = new SimpleMotorFeedforward(0.49147, 0.0069249);
+        rightFeedforward = new SimpleMotorFeedforward(0.72165, 0.0075142);
         break;
       case ROBOT_SIM:
-        KS.initDefault(0.0);
-        KV.initDefault(0.037989);
-        KP.initDefault(0.05);
+        KP.initDefault(0.035);
         KD.initDefault(0.0);
+        RATIO.initDefault(2.0 / 3.0);
+        SPEED.initDefault(400);
+
+        leftFeedforward = new SimpleMotorFeedforward(0.49147, 0.0069249);
+        rightFeedforward = new SimpleMotorFeedforward(0.72165, 0.0075142);
         break;
       default:
         break;
@@ -65,9 +75,8 @@ public class Shooter extends SubsystemBase {
 
   public Shooter(ShooterIO io) {
     this.io = io;
-
-    feedforward = new SimpleMotorFeedforward(KS.get(), KV.get());
-    feedback = new PIDController(KP.get(), 0.0, KD.get(), Constants.LOOP_PERIOD_SECS);
+    leftFeedback = new PIDController(KP.get(), 0.0, KD.get(), Constants.LOOP_PERIOD_SECS);
+    rightFeedback = new PIDController(KP.get(), 0.0, KD.get(), Constants.LOOP_PERIOD_SECS);
   }
 
   public void periodic() {
@@ -75,29 +84,33 @@ public class Shooter extends SubsystemBase {
     Logger.processInputs("Shooter", inputs);
 
     // Adjust models based on tunable numbers
-    if (KS.hasChanged(hashCode()) || KV.hasChanged(hashCode())) {
-      feedforward = new SimpleMotorFeedforward(KS.get(), KV.get());
-    }
     if (KP.hasChanged(hashCode())) {
-      feedback.setP(KP.get());
+      leftFeedback.setP(KP.get());
+      rightFeedback.setP(KP.get());
     }
     if (KD.hasChanged(hashCode())) {
-      feedback.setD(KD.get());
+      leftFeedback.setD(KD.get());
+      rightFeedback.setD(KD.get());
     }
 
     // Run control
     if (!isOpenLoop) {
-      io.setVoltage(
-          feedforward.calculate(feedback.getSetpoint())
-              + feedback.calculate(inputs.velocityRadPerSec));
+      io.setLeftVoltage(
+          leftFeedforward.calculate(leftFeedback.getSetpoint())
+              + leftFeedback.calculate(inputs.leftVelocityRadPerSec));
+      io.setRightVoltage(
+          rightFeedforward.calculate(rightFeedback.getSetpoint())
+              + rightFeedback.calculate(inputs.rightVelocityRadPerSec));
     } else {
-      io.setVoltage(openLoopVoltage);
+      io.setLeftVoltage(openLoopVoltage);
+      io.setRightVoltage(openLoopVoltage);
     }
   }
 
   private void setVelocity(double velocityRadPerSec) {
     isOpenLoop = false;
-    feedback.setSetpoint(velocityRadPerSec);
+    leftFeedback.setSetpoint(velocityRadPerSec);
+    rightFeedback.setSetpoint(velocityRadPerSec * RATIO.get());
   }
 
   private void stop() {
@@ -110,14 +123,8 @@ public class Shooter extends SubsystemBase {
     openLoopVoltage = volts;
   }
 
-  public Command runVelocity(double velocityRadPerSec) {
-    return startEnd(
-        () -> {
-          setVelocity(velocityRadPerSec);
-        },
-        () -> {
-          stop();
-        });
+  public Command runVelocity() {
+    return runEnd(() -> setVelocity(SPEED.get()), () -> stop());
   }
 
   // public Command runDistance(Supplier<Optional<Double>> getSpeakerDistance) {
@@ -132,13 +139,11 @@ public class Shooter extends SubsystemBase {
   //       });
   // }
 
-  /** Returns a command to run a quasistatic test in the specified direction. */
-  public Command runSysIdQuasistatic(SysIdRoutine.Direction direction) {
+  public Command runSysIdQuasistatic(Direction direction) {
     return sysIdRoutine.quasistatic(direction);
   }
 
-  /** Returns a command to run a dynamic test in the specified direction. */
-  public Command runSysIdDynamic(SysIdRoutine.Direction direction) {
+  public Command runSysIdDynamic(Direction direction) {
     return sysIdRoutine.dynamic(direction);
   }
 }

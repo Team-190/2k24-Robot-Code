@@ -6,23 +6,35 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.Constants;
 
 public class ShooterIOSim implements ShooterIO {
-  private DCMotorSim motorSim = new DCMotorSim(DCMotor.getKrakenX60(2), 2.0, 0.004);
-  private double appliedVolts = 0.0;
+  private DCMotorSim leftMotorSim = new DCMotorSim(DCMotor.getKrakenX60(2), 2.0, 0.004);
+  private DCMotorSim rightMotorSim = new DCMotorSim(DCMotor.getKrakenX60(2), 2.0, 0.004);
+
+  private double leftAppliedVolts = 0.0;
+  private double rightAppliedVolts = 0.0;
 
   @Override
   public void updateInputs(ShooterIOInputs inputs) {
-    motorSim.update(Constants.LOOP_PERIOD_SECS);
+    leftMotorSim.update(Constants.LOOP_PERIOD_SECS);
 
-    inputs.positionRad = motorSim.getAngularPositionRad();
-    inputs.velocityRadPerSec = motorSim.getAngularVelocityRadPerSec();
-    inputs.appliedVolts = appliedVolts;
-    inputs.currentAmps = new double[] {Math.abs(motorSim.getCurrentDrawAmps())};
-    inputs.tempCelcius = new double[] {};
+    inputs.leftPositionRad = leftMotorSim.getAngularPositionRad();
+    inputs.leftVelocityRadPerSec = leftMotorSim.getAngularVelocityRadPerSec();
+    inputs.leftAppliedVolts = leftAppliedVolts;
+    inputs.leftCurrentAmps = new double[] {Math.abs(leftMotorSim.getCurrentDrawAmps())};
+    inputs.leftTempCelcius = new double[] {};
+
+    inputs.rightPositionRad = rightMotorSim.getAngularPositionRad();
+    inputs.rightVelocityRadPerSec = rightMotorSim.getAngularVelocityRadPerSec();
+    inputs.rightAppliedVolts = rightAppliedVolts;
+    inputs.rightCurrentAmps = new double[] {Math.abs(rightMotorSim.getCurrentDrawAmps())};
+    inputs.rightTempCelcius = new double[] {};
   }
 
   @Override
-  public void setVoltage(double volts) {
-    appliedVolts = MathUtil.clamp(volts, -12.0, 12.0);
-    motorSim.setInputVoltage(appliedVolts);
+  public void setLeftVoltage(double volts) {
+    leftAppliedVolts = MathUtil.clamp(volts, -12.0, 12.0);
+    rightAppliedVolts = MathUtil.clamp(volts, -12.0, 12.0);
+
+    leftMotorSim.setInputVoltage(leftAppliedVolts);
+    rightMotorSim.setInputVoltage(rightAppliedVolts);
   }
 }

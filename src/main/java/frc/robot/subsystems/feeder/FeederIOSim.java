@@ -6,23 +6,50 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.Constants;
 
 public class FeederIOSim implements FeederIO {
-  private DCMotorSim motorSim = new DCMotorSim(DCMotor.getKrakenX60(1), 2.0, 0.004);
-  private double appliedVolts = 0.0;
+  private DCMotorSim upperMotorSim = new DCMotorSim(DCMotor.getKrakenX60(1), 2.0, 0.004);
+  private DCMotorSim lowerLeftMotorSim = new DCMotorSim(DCMotor.getKrakenX60(1), 2.0, 0.004);
+  private DCMotorSim lowerRightMotorSim = new DCMotorSim(DCMotor.getKrakenX60(1), 2.0, 0.004);
+
+  private double upperAppliedVolts = 0.0;
+  private double lowerLeftAppliedVolts = 0.0;
+  private double lowerRightAppliedVolts = 0.0;
 
   @Override
   public void updateInputs(FeederIOInputs inputs) {
-    motorSim.update(Constants.LOOP_PERIOD_SECS);
+    upperMotorSim.update(Constants.LOOP_PERIOD_SECS);
+    lowerLeftMotorSim.update(Constants.LOOP_PERIOD_SECS);
 
-    inputs.positionRad = motorSim.getAngularPositionRad();
-    inputs.velocityRadPerSec = motorSim.getAngularVelocityRadPerSec();
-    inputs.appliedVolts = appliedVolts;
-    inputs.currentAmps = new double[] {Math.abs(motorSim.getCurrentDrawAmps())};
-    inputs.tempCelcius = new double[] {};
+    inputs.upperPositionRad = upperMotorSim.getAngularPositionRad();
+    inputs.upperVelocityRadPerSec = upperMotorSim.getAngularVelocityRadPerSec();
+    inputs.upperAppliedVolts = upperAppliedVolts;
+    inputs.upperCurrentAmps = new double[] {Math.abs(upperMotorSim.getCurrentDrawAmps())};
+    inputs.upperTempCelcius = new double[] {};
+
+    inputs.lowerLeftPositionRad = lowerLeftMotorSim.getAngularPositionRad();
+    inputs.lowerLeftVelocityRadPerSec = lowerLeftMotorSim.getAngularVelocityRadPerSec();
+    inputs.lowerLeftAppliedVolts = lowerLeftAppliedVolts;
+    inputs.lowerLeftCurrentAmps = new double[] {Math.abs(lowerLeftMotorSim.getCurrentDrawAmps())};
+    inputs.lowerLeftTempCelcius = new double[] {};
+
+    inputs.lowerRightPositionRad = lowerRightMotorSim.getAngularPositionRad();
+    inputs.lowerRightVelocityRadPerSec = lowerRightMotorSim.getAngularVelocityRadPerSec();
+    inputs.lowerRightAppliedVolts = lowerRightAppliedVolts;
+    inputs.lowerRightCurrentAmps = new double[] {Math.abs(lowerRightMotorSim.getCurrentDrawAmps())};
+    inputs.lowerRightTempCelcius = new double[] {};
   }
 
   @Override
-  public void setVoltage(double volts) {
-    appliedVolts = MathUtil.clamp(volts, -12.0, 12.0);
-    motorSim.setInputVoltage(appliedVolts);
+  public void setUpperVoltage(double volts) {
+    upperAppliedVolts = MathUtil.clamp(volts, -12.0, 12.0);
+    upperMotorSim.setInputVoltage(upperAppliedVolts);
+  }
+
+  @Override
+  public void setLowerVoltage(double volts) {
+    lowerLeftAppliedVolts = MathUtil.clamp(volts, -12.0, 12.0);
+    lowerLeftMotorSim.setInputVoltage(lowerLeftAppliedVolts);
+
+    lowerRightAppliedVolts = -MathUtil.clamp(volts, -12.0, 12.0);
+    lowerRightMotorSim.setInputVoltage(lowerRightAppliedVolts);
   }
 }

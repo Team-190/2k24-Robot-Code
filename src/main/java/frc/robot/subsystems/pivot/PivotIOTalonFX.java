@@ -20,7 +20,7 @@ public class PivotIOTalonFX implements PivotIO {
   private final StatusSignal<Double> currentAmps;
   private final StatusSignal<Double> tempCelcius;
 
-  private final double GEAR_RATIO = 1.0;
+  private final double GEAR_RATIO = 5.0;
 
   private final Alert disconnecctedAlert =
       new Alert("Pivot Talon is disconnected, check CAN bus.", AlertType.ERROR);
@@ -28,27 +28,28 @@ public class PivotIOTalonFX implements PivotIO {
   public PivotIOTalonFX() {
     switch (Constants.ROBOT) {
       case ROBOT_2K24_C:
-        pivotTalon = new TalonFX(10);
+        pivotTalon = new TalonFX(41);
         break;
       case ROBOT_2K24_P:
-        pivotTalon = new TalonFX(10);
+        pivotTalon = new TalonFX(41);
         break;
       case ROBOT_2K24_TEST:
-        pivotTalon = new TalonFX(10);
+        pivotTalon = new TalonFX(41);
         break;
       default:
         throw new RuntimeException("Invalid robot");
     }
 
     var config = new TalonFXConfiguration();
-    config.CurrentLimits.StatorCurrentLimit = 40.0;
-    config.CurrentLimits.StatorCurrentLimitEnable = true;
+    config.CurrentLimits.SupplyCurrentLimit = 60.0;
+    config.CurrentLimits.SupplyCurrentLimitEnable = true;
     pivotTalon.getConfigurator().apply(config);
+    pivotTalon.setPosition(0.0);
 
     position = pivotTalon.getPosition();
     velocity = pivotTalon.getVelocity();
     appliedVolts = pivotTalon.getMotorVoltage();
-    currentAmps = pivotTalon.getStatorCurrent();
+    currentAmps = pivotTalon.getSupplyCurrent();
     tempCelcius = pivotTalon.getDeviceTemp();
 
     BaseStatusSignal.setUpdateFrequencyForAll(
@@ -63,8 +64,8 @@ public class PivotIOTalonFX implements PivotIO {
             .isOK();
     disconnecctedAlert.set(!isConnected);
 
-    inputs.position = Rotation2d.fromRotations(position.getValueAsDouble() * GEAR_RATIO);
-    inputs.velocityRadPerSec = Units.rotationsToRadians(velocity.getValueAsDouble() * GEAR_RATIO);
+    inputs.position = Rotation2d.fromRotations(position.getValueAsDouble() / GEAR_RATIO);
+    inputs.velocityRadPerSec = Units.rotationsToRadians(velocity.getValueAsDouble() / GEAR_RATIO);
     inputs.appliedVolts = appliedVolts.getValueAsDouble();
     inputs.currentAmps = new double[] {currentAmps.getValueAsDouble()};
     inputs.tempCelcius = new double[] {tempCelcius.getValueAsDouble()};

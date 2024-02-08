@@ -7,7 +7,8 @@ import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.robot.Constants;
 
 public class PivotIOSim implements PivotIO {
-  private static final double GEAR_RATIO = 1.0;
+  private static final double GEAR_RATIO = 88.0 / 14.0;
+  ;
   private SingleJointedArmSim pivotSim =
       new SingleJointedArmSim(
           DCMotor.getKrakenX60(1), GEAR_RATIO, 0.004, 0.25, 0, Math.PI, true, 0);
