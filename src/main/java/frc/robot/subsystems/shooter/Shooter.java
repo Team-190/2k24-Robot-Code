@@ -52,16 +52,16 @@ public class Shooter extends SubsystemBase {
       case ROBOT_2K24_P:
         KP.initDefault(0.035);
         KD.initDefault(0.0);
-        RATIO.initDefault(1.0);
-        SPEED.initDefault(0.0);
+        RATIO.initDefault(2.0 / 3.0);
+        SPEED.initDefault(400);
         leftFeedforward = new SimpleMotorFeedforward(0.49147, 0.0069249);
         rightFeedforward = new SimpleMotorFeedforward(0.72165, 0.0075142);
         break;
       case ROBOT_2K24_TEST:
         KP.initDefault(0.035);
         KD.initDefault(0.0);
-        RATIO.initDefault(1.0);
-        SPEED.initDefault(0.0);
+        RATIO.initDefault(2.0 / 3.0);
+        SPEED.initDefault(400);
 
         leftFeedforward = new SimpleMotorFeedforward(0.49147, 0.0069249);
         rightFeedforward = new SimpleMotorFeedforward(0.72165, 0.0075142);
@@ -69,8 +69,8 @@ public class Shooter extends SubsystemBase {
       case ROBOT_SIM:
         KP.initDefault(0.035);
         KD.initDefault(0.0);
-        RATIO.initDefault(1.0);
-        SPEED.initDefault(0.0);
+        RATIO.initDefault(2.0 / 3.0);
+        SPEED.initDefault(400);
 
         leftFeedforward = new SimpleMotorFeedforward(0.49147, 0.0069249);
         rightFeedforward = new SimpleMotorFeedforward(0.72165, 0.0075142);

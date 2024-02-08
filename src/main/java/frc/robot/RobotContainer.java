@@ -148,7 +148,6 @@ public class RobotContainer {
     // Set up subsystems
     aprilTagVision.setGyroSupplier(drive::getRotation);
     noteVision.setGyroSupplier(drive::getRotation);
-    intake.setChassisSpeedsSupplier(drive::getChassisSpeeds);
 
     // Set up autos
     NamedCommands.registerCommand(
@@ -193,8 +192,6 @@ public class RobotContainer {
           "Shooter SysId (Dynamic Forward)", shooter.runSysIdDynamic(Direction.kForward));
       autoChooser.addOption(
           "Shooter SysId (Dynamic Reverse)", shooter.runSysIdDynamic(Direction.kReverse));
-
-      autoChooser.addOption("Intake SysID", intake.runSysId());
     }
 
     // Configure the button bindings

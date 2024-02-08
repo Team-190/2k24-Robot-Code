@@ -5,6 +5,7 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
 import frc.robot.util.Alert;
@@ -41,7 +42,7 @@ public class FeederIOTalonFX implements FeederIO {
 
   private final Alert lowerLeftDisconnectedAlert =
       new Alert("Feeder lower left Talon is disconnected, check CAN bus.", AlertType.ERROR);
-      
+
   private final Alert lowerRightDisconnectedAlert =
       new Alert("Feeder lower right Talon is disconnected, check CAN bus.", AlertType.ERROR);
 
@@ -54,13 +55,13 @@ public class FeederIOTalonFX implements FeederIO {
         break;
       case ROBOT_2K24_P:
         lowerLeftFeederTalon = new TalonFX(42);
-                lowerRightFeederTalon = new TalonFX(47);
+        lowerRightFeederTalon = new TalonFX(47);
 
         upperFeederTalon = new TalonFX(43);
         break;
       case ROBOT_2K24_TEST:
         lowerLeftFeederTalon = new TalonFX(42);
-                lowerRightFeederTalon = new TalonFX(47);
+        lowerRightFeederTalon = new TalonFX(47);
 
         upperFeederTalon = new TalonFX(43);
         break;
@@ -71,12 +72,13 @@ public class FeederIOTalonFX implements FeederIO {
     var config = new TalonFXConfiguration();
     config.CurrentLimits.SupplyCurrentLimit = 40.0;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
+    config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
     upperFeederTalon.getConfigurator().apply(config);
     lowerLeftFeederTalon.getConfigurator().apply(config);
     lowerRightFeederTalon.getConfigurator().apply(config);
 
-    lowerRightFeederTalon.setInverted(true);
+    lowerLeftFeederTalon.setInverted(true);
 
     upperPosition = upperFeederTalon.getPosition();
     upperVelocity = upperFeederTalon.getVelocity();
@@ -96,9 +98,22 @@ public class FeederIOTalonFX implements FeederIO {
     lowerRightCurrent = lowerRightFeederTalon.getSupplyCurrent();
     lowerRightTemperature = lowerRightFeederTalon.getDeviceTemp();
 
-    BaseStatusSignal.setUpdateFrequencyForAll(100.0, upperVelocity, lowerLeftVelocity, lowerRightVelocity);
     BaseStatusSignal.setUpdateFrequencyForAll(
-        50.0, upperPosition, upperAppliedVolts, upperCurrent, upperTemperature, lowerLeftPosition, lowerLeftAppliedVolts, lowerLeftCurrent, lowerLeftTemperature, lowerRightPosition, lowerRightAppliedVolts, lowerRightCurrent, lowerRightTemperature);
+        100.0, upperVelocity, lowerLeftVelocity, lowerRightVelocity);
+    BaseStatusSignal.setUpdateFrequencyForAll(
+        50.0,
+        upperPosition,
+        upperAppliedVolts,
+        upperCurrent,
+        upperTemperature,
+        lowerLeftPosition,
+        lowerLeftAppliedVolts,
+        lowerLeftCurrent,
+        lowerLeftTemperature,
+        lowerRightPosition,
+        lowerRightAppliedVolts,
+        lowerRightCurrent,
+        lowerRightTemperature);
     upperFeederTalon.optimizeBusUtilization();
     lowerLeftFeederTalon.optimizeBusUtilization();
     lowerRightFeederTalon.optimizeBusUtilization();
@@ -114,13 +129,21 @@ public class FeederIOTalonFX implements FeederIO {
 
     boolean lowerLeftConnected =
         BaseStatusSignal.refreshAll(
-                lowerLeftVelocity, lowerLeftPosition, lowerLeftAppliedVolts, lowerLeftCurrent, lowerLeftTemperature)
+                lowerLeftVelocity,
+                lowerLeftPosition,
+                lowerLeftAppliedVolts,
+                lowerLeftCurrent,
+                lowerLeftTemperature)
             .isOK();
     lowerLeftDisconnectedAlert.set(!lowerLeftConnected);
 
     boolean lowerRightConnected =
         BaseStatusSignal.refreshAll(
-                lowerRightVelocity, lowerRightPosition, lowerRightAppliedVolts, lowerRightCurrent, lowerRightTemperature)
+                lowerRightVelocity,
+                lowerRightPosition,
+                lowerRightAppliedVolts,
+                lowerRightCurrent,
+                lowerRightTemperature)
             .isOK();
     lowerRightDisconnectedAlert.set(!lowerRightConnected);
 
@@ -138,8 +161,8 @@ public class FeederIOTalonFX implements FeederIO {
         Units.rotationsToRadians(lowerLeftVelocity.getValueAsDouble()) / LOWER_GEAR_RATIO;
     inputs.lowerLeftAppliedVolts = lowerLeftAppliedVolts.getValueAsDouble();
     inputs.lowerLeftCurrentAmps = new double[] {lowerLeftCurrent.getValueAsDouble()};
-    inputs.lowerLeftTempCelcius = new double[] { lowerLeftTemperature.getValueAsDouble() };
-    
+    inputs.lowerLeftTempCelcius = new double[] {lowerLeftTemperature.getValueAsDouble()};
+
     inputs.lowerRightPositionRad =
         Units.rotationsToRadians(lowerRightPosition.getValueAsDouble()) / LOWER_GEAR_RATIO;
     inputs.lowerRightVelocityRadPerSec =
