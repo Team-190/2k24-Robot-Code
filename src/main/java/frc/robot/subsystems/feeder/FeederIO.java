@@ -11,11 +11,17 @@ public interface FeederIO {
     public double[] upperCurrentAmps = new double[] {};
     public double[] upperTempCelcius = new double[] {};
 
-    public double lowerPositionRad = 0.0;
-    public double lowerVelocityRadPerSec = 0.0;
-    public double lowerAppliedVolts = 0.0;
-    public double[] lowerCurrentAmps = new double[] {};
-    public double[] lowerTempCelcius = new double[] {};
+    public double lowerLeftPositionRad = 0.0;
+    public double lowerLeftVelocityRadPerSec = 0.0;
+    public double lowerLeftAppliedVolts = 0.0;
+    public double[] lowerLeftCurrentAmps = new double[] {};
+    public double[] lowerLeftTempCelcius = new double[] {};
+
+    public double lowerRightPositionRad = 0.0;
+    public double lowerRightVelocityRadPerSec = 0.0;
+    public double lowerRightAppliedVolts = 0.0;
+    public double[] lowerRightCurrentAmps = new double[] {};
+    public double[] lowerRightTempCelcius = new double[] {};
   }
 
   /** Updates the set of loggable inputs. */

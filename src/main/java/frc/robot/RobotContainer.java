@@ -39,7 +39,6 @@ import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.pivot.Pivot;
 import frc.robot.subsystems.pivot.PivotIO;
 import frc.robot.subsystems.pivot.PivotIOSim;
-import frc.robot.subsystems.pivot.PivotIOTalonFX;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.ShooterIOSim;
