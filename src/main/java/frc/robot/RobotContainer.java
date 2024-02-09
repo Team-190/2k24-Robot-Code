@@ -146,8 +146,8 @@ public class RobotContainer {
     }
 
     // Set up subsystems
-    aprilTagVision.setGyroSupplier(drive::getRotation);
-    noteVision.setGyroSupplier(drive::getRotation);
+    aprilTagVision.setDrivePoseSupplier(drive::getPose);
+    noteVision.setDrivePoseSupplier(drive::getPose);
 
     // Set up autos
     NamedCommands.registerCommand(

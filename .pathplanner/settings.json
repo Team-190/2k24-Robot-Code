@@ -5,8 +5,11 @@
   "pathFolders": [
     "6 Piece",
     "Center Sweep",
-    "Spike+Center Sweep",
-    "Spike Auto"
+    "Left Auto",
+    "Middle Auto",
+    "Right Auto",
+    "Spike Auto",
+    "Spike+Center Sweep"
   ],
   "autoFolders": [],
   "defaultMaxVel": 4.5,

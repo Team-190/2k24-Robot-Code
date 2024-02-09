@@ -1,5 +1,6 @@
 package frc.robot.subsystems.vision;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
 import edu.wpi.first.math.util.Units;
@@ -18,10 +19,13 @@ public class Vision extends VirtualSubsystem {
   private final double SPEAKER_TAG_HEIGHT = Units.inchesToMeters(57.13);
   private final double CAMERA_HEIGHT = Units.inchesToMeters(13.375);
   private final LoggedTunableNumber CAMERA_ANGLE = new LoggedTunableNumber("Vision/CameraAngle");
+  private double lastValidTimeStamp = Double.NEGATIVE_INFINITY;
+  private Pose2d lastValidRobotPose = new Pose2d();
+  private static final double BUFFER_SECONDS = 3;
 
-  private final TimeInterpolatableBuffer<Rotation2d> gyroBuffer =
-      TimeInterpolatableBuffer.createBuffer(0.5);
-  private Supplier<Rotation2d> gyroSupplier = null;
+  private final TimeInterpolatableBuffer<Pose2d> robotPoseBuffer =
+      TimeInterpolatableBuffer.createBuffer(BUFFER_SECONDS);
+  private Supplier<Pose2d> drivePoseSupplier = null;
 
   public Vision(String name, VisionIO io) {
     this.name = name;
@@ -34,23 +38,31 @@ public class Vision extends VirtualSubsystem {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs(name, inputs);
+    if (inputs.tv) {
+      lastValidTimeStamp = inputs.timeStamp;
+      lastValidRobotPose = inputs.robotPose.toPose2d();
+    }
+    Pose2d robotPose = drivePoseSupplier.get();
+    robotPoseBuffer.addSample(Timer.getFPGATimestamp(), robotPose);
 
-    Rotation2d gyroPosition = gyroSupplier.get();
-    gyroBuffer.addSample(Timer.getFPGATimestamp(), gyroPosition);
     Optional<Rotation2d> targetAngle = getTargetGyroAngle();
     Optional<Double> distance = getSpeakerDistance();
+    Optional<Pose2d> calculatedRobotPose = getRobotPose();
     if (targetAngle.isPresent()) {
       Logger.recordOutput(name + "/TargetAngle", targetAngle.get());
     }
     if (distance.isPresent()) {
       Logger.recordOutput(name + "/SpeakerDistance", distance.get());
     }
+    if (calculatedRobotPose.isPresent()) {
+      Logger.recordOutput(name + "/CalculatedRobotPose", calculatedRobotPose.get());
+    }
   }
 
   public Optional<Rotation2d> getTargetGyroAngle() {
-    Optional<Rotation2d> gyroPosition = gyroBuffer.getSample(inputs.timeStamp);
-    if (gyroPosition.isPresent() && inputs.tv) {
-      return Optional.of(gyroPosition.get().minus(inputs.tx));
+    Optional<Pose2d> robotPose = robotPoseBuffer.getSample(inputs.timeStamp);
+    if (robotPose.isPresent() && inputs.tv) {
+      return Optional.of(robotPose.get().getRotation().minus(inputs.tx));
     } else {
       return Optional.empty();
     }
@@ -66,7 +78,21 @@ public class Vision extends VirtualSubsystem {
     return Optional.empty();
   }
 
-  public void setGyroSupplier(Supplier<Rotation2d> gyroSupplier) {
-    this.gyroSupplier = gyroSupplier;
+  public void setDrivePoseSupplier(Supplier<Pose2d> drivePoseSupplier) {
+    this.drivePoseSupplier = drivePoseSupplier;
+  }
+
+  public Optional<Pose2d> getRobotPose() {
+    if ((Timer.getFPGATimestamp() - lastValidTimeStamp) <= BUFFER_SECONDS
+        && robotPoseBuffer.getSample(lastValidTimeStamp).isPresent()) {
+      Pose2d currentPoseFromDrive = drivePoseSupplier.get();
+      Pose2d capturePoseFromDrive = robotPoseBuffer.getSample(lastValidTimeStamp).get();
+      Pose2d capturePoseFromCam = lastValidRobotPose;
+
+      Pose2d currentPoseFromCam =
+          capturePoseFromCam.plus(currentPoseFromDrive.minus(capturePoseFromDrive));
+      return Optional.of(currentPoseFromCam);
+    }
+    return Optional.empty();
   }
 }
