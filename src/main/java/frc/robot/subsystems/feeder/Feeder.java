@@ -1,5 +1,6 @@
 package frc.robot.subsystems.feeder;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.LoggedTunableNumber;
@@ -16,16 +17,19 @@ public class Feeder extends SubsystemBase {
   private static final LoggedTunableNumber intakeVoltage =
       new LoggedTunableNumber("Feeder/Intake voltage");
 
+  private static final DigitalInput sensor = new DigitalInput(0);
+
   public Feeder(FeederIO io) {
     this.io = io;
     shootUpperVoltage.initDefault(9.0);
     shootLowerVoltage.initDefault(9.0);
-    intakeVoltage.initDefault(6.0);
+    intakeVoltage.initDefault(12.0);
   }
 
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Feeder", inputs);
+    Logger.recordOutput("sensor has note", sensor.get());
   }
 
   private void stop() {
@@ -43,6 +47,7 @@ public class Feeder extends SubsystemBase {
   }
 
   public Command intake() {
-    return runEnd(() -> io.setLowerVoltage(intakeVoltage.get()), () -> stop());
+    return runEnd(() -> io.setLowerVoltage(intakeVoltage.get()), () -> stop())
+        .until(() -> sensor.get());
   }
 }
