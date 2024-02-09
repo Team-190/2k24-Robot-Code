@@ -46,8 +46,8 @@ public class Drive extends SubsystemBase {
   private static final double TRACK_WIDTH_Y;
   private static final double DRIVE_BASE_RADIUS;
   private static final double MAX_ANGULAR_SPEED;
-  private final LinearFilter xFilter = LinearFilter.movingAverage(6);
-  private final LinearFilter yFilter = LinearFilter.movingAverage(6);
+  private final LinearFilter xFilter = LinearFilter.movingAverage(10);
+  private final LinearFilter yFilter = LinearFilter.movingAverage(10);
   private double filteredX = 0;
   private double filteredY = 0;
 
@@ -276,7 +276,7 @@ public class Drive extends SubsystemBase {
   /** Returns the field relative velocity in X and Y. */
   @AutoLogOutput
   public Translation2d getFieldRelativeVelocity() {
-    return new Translation2d(filteredX, filteredY).rotateBy(getRotation());
+    return new Translation2d(filteredX, filteredY);
   }
 
   /** Returns the current odometry pose. */
