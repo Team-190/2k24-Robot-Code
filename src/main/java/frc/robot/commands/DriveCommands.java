@@ -52,12 +52,19 @@ public class DriveCommands {
   private static final LoggedTunableNumber autoAimXVelRange =
       new LoggedTunableNumber("autoaim/xvelrange", 0.5);
 
+  private static final LoggedTunableNumber autoAimDeadband =
+      new LoggedTunableNumber("autoaim/deadband", 0.03);
+
+  private static final LoggedTunableNumber autoAimVelocityDeadband =
+      new LoggedTunableNumber("autoaim/velocitydeadband", 0.05);
+
   static {
     switch (Constants.ROBOT) {
       case ROBOT_2K24_C:
       case ROBOT_2K24_P:
         autoAimKP.initDefault(0);
         autoAimKD.initDefault(0);
+
         break;
       case ROBOT_2K24_TEST:
         autoAimKP.initDefault(8);
@@ -135,12 +142,25 @@ public class DriveCommands {
           } else if (aprilTagVision.getRobotPose().isPresent()) {
             Pose2d visionPose = aprilTagVision.getRobotPose().get();
             measuredGyroAngle = visionPose.getRotation();
+
+            Translation2d deadbandFieldRelativeVelocity =
+                (drive.getFieldRelativeVelocity().getNorm() < autoAimVelocityDeadband.get())
+                    ? new Translation2d(0, 0)
+                    : drive.getFieldRelativeVelocity();
+
             AimingParameters calculatedAim =
                 ShotCalculator.calculate(
-                    visionPose.getTranslation(), drive.getFieldRelativeVelocity());
+                    visionPose.getTranslation(), deadbandFieldRelativeVelocity);
             targetGyroAngle = Optional.of(calculatedAim.robotAngle());
             feedForwardRadialVelocity = calculatedAim.radialVelocity();
           }
+
+          // double pidOutput =
+          //     aimController.calculate(
+          //         measuredGyroAngle.getRadians(), targetGyroAngle.get().getRadians());
+
+          // if (Math.abs(aimController.getPositionError()) < autoAimDeadband.get()) pidOutput = 0;
+
           ChassisSpeeds chassisSpeeds =
               ChassisSpeeds.fromFieldRelativeSpeeds(
                   robotRelativeXVel,
@@ -148,12 +168,26 @@ public class DriveCommands {
                   (aprilTagTracking.getAsBoolean() || noteTracking.getAsBoolean())
                           && targetGyroAngle.isPresent()
                       ? feedForwardRadialVelocity
-                          + aimController.calculate(
-                              measuredGyroAngle.getRadians(), targetGyroAngle.get().getRadians())
+                          + (Math.abs(measuredGyroAngle.minus(targetGyroAngle.get()).getRadians())
+                                  < autoAimDeadband.get()
+                              ? 0
+                              : aimController.calculate(
+                                  measuredGyroAngle.getRadians(),
+                                  targetGyroAngle.get().getRadians()))
                       : omega * drive.getMaxAngularSpeedRadPerSec(),
                   isFlipped
                       ? drive.getRotation().plus(new Rotation2d(Math.PI))
                       : drive.getRotation());
+          // if (targetGyroAngle.isPresent()
+          //     && targetGyroAngle.get().getRadians()
+          //             - (isFlipped
+          //                 ? drive.getRotation().plus(new Rotation2d(Math.PI)).getRadians()
+          //                 : drive.getRotation().getRadians())
+          //         < 0.15) {
+          //   chassisSpeeds.vyMetersPerSecond = 0;
+          //   chassisSpeeds.vxMetersPerSecond = 0;
+          // }
+
           if (noteTracking.getAsBoolean()) {
             chassisSpeeds.vyMetersPerSecond = 0;
           }

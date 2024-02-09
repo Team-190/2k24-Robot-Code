@@ -19,6 +19,7 @@ import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -45,6 +46,10 @@ public class Drive extends SubsystemBase {
   private static final double TRACK_WIDTH_Y;
   private static final double DRIVE_BASE_RADIUS;
   private static final double MAX_ANGULAR_SPEED;
+  private final LinearFilter xFilter = LinearFilter.movingAverage(6);
+  private final LinearFilter yFilter = LinearFilter.movingAverage(6);
+  private double filteredX = 0;
+  private double filteredY = 0;
 
   static {
     switch (Constants.ROBOT) {
@@ -177,6 +182,14 @@ public class Drive extends SubsystemBase {
 
       // Apply update
       odometry.update(rawGyroRotation, modulePositions);
+
+      ChassisSpeeds chassisSpeeds = kinematics.toChassisSpeeds(getModuleStates());
+      Translation2d rawFieldRelativeVelocity =
+          new Translation2d(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond)
+              .rotateBy(getRotation());
+
+      filteredX = xFilter.calculate(rawFieldRelativeVelocity.getX());
+      filteredY = yFilter.calculate(rawFieldRelativeVelocity.getY());
     }
 
     // Log CANivore utilization
@@ -261,10 +274,9 @@ public class Drive extends SubsystemBase {
   }
 
   /** Returns the field relative velocity in X and Y. */
+  @AutoLogOutput
   public Translation2d getFieldRelativeVelocity() {
-    ChassisSpeeds chassisSpeeds = kinematics.toChassisSpeeds(getModuleStates());
-    return new Translation2d(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond)
-        .rotateBy(getRotation());
+    return new Translation2d(filteredX, filteredY).rotateBy(getRotation());
   }
 
   /** Returns the current odometry pose. */
