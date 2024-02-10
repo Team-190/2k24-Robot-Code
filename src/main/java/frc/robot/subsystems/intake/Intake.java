@@ -16,13 +16,13 @@ public class Intake extends SubsystemBase {
     switch (Constants.ROBOT) {
       case ROBOT_2K24_C:
       case ROBOT_2K24_P:
-        voltage.initDefault(3);
+        voltage.initDefault(7);
         break;
       case ROBOT_2K24_TEST:
-        voltage.initDefault(3);
+        voltage.initDefault(7);
         break;
       case ROBOT_SIM:
-        voltage.initDefault(3);
+        voltage.initDefault(7);
         break;
       default:
         break;
