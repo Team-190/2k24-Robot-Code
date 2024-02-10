@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.*;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -25,6 +26,8 @@ public class Shooter extends SubsystemBase {
 
   private static SimpleMotorFeedforward leftFeedforward;
   private static SimpleMotorFeedforward rightFeedforward;
+
+  private boolean isShooting = false;
 
   private final PIDController leftFeedback;
   private final PIDController rightFeedback;
@@ -123,8 +126,20 @@ public class Shooter extends SubsystemBase {
     openLoopVoltage = volts;
   }
 
+  public boolean isShooting() {
+    return isShooting;
+  }
+
   public Command runVelocity() {
-    return runEnd(() -> setVelocity(SPEED.get()), () -> stop());
+    return runEnd(
+        () -> {
+          setVelocity(SPEED.get());
+          isShooting = true;
+        },
+        () -> {
+          stop();
+          isShooting = false;
+        });
   }
 
   // public Command runDistance(Supplier<Optional<Double>> getSpeakerDistance) {
@@ -139,11 +154,14 @@ public class Shooter extends SubsystemBase {
   //       });
   // }
 
-  public Command runSysIdQuasistatic(Direction direction) {
-    return sysIdRoutine.quasistatic(direction);
-  }
-
-  public Command runSysIdDynamic(Direction direction) {
-    return sysIdRoutine.dynamic(direction);
+  public Command runSysId() {
+    return Commands.sequence(
+        sysIdRoutine.quasistatic(Direction.kForward),
+        Commands.waitSeconds(4),
+        sysIdRoutine.quasistatic(Direction.kReverse),
+        Commands.waitSeconds(4),
+        sysIdRoutine.dynamic(Direction.kForward),
+        Commands.waitSeconds(4),
+        sysIdRoutine.dynamic(Direction.kReverse));
   }
 }

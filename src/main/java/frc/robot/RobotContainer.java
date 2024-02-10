@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.Mode;
+import frc.robot.commands.CompositeCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -152,22 +153,16 @@ public class RobotContainer {
     // Set up autos
     NamedCommands.registerCommand(
         "Track Note Center",
-        DriveCommands.moveTowardsTarget(
-            drive,
-            noteVision,
-            FieldConstants.fieldLength / 2.0,
-            VisionMode.Notes)); // removed the minus 0.5 for centerline
+        CompositeCommands.getTrackNoteCenterCommand(drive, intake, feeder, noteVision));
     NamedCommands.registerCommand(
         "Track Note Spike",
-        DriveCommands.moveTowardsTarget(
-            drive, noteVision, FieldConstants.startingLineX + 0.5, VisionMode.Notes));
+        CompositeCommands.getTrackNoteSpikeCommand(drive, intake, feeder, noteVision));
     NamedCommands.registerCommand(
-        "Track Speaker Far",
-        DriveCommands.moveTowardsTarget(drive, aprilTagVision, 3.75, VisionMode.AprilTags));
+        "Track Speaker Far", CompositeCommands.getTrackSpeakerFarCommand(drive, aprilTagVision));
     NamedCommands.registerCommand(
         "Track Speaker Close",
-        DriveCommands.moveTowardsTarget(
-            drive, aprilTagVision, FieldConstants.startingLineX - 0.25, VisionMode.AprilTags));
+        CompositeCommands.getTrackSpeakerCloseCommand(drive, aprilTagVision));
+
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Set up SysId
@@ -184,14 +179,7 @@ public class RobotContainer {
       autoChooser.addOption(
           "Drive SysId (Dynamic Reverse)",
           DriveCommands.runSysIdDynamic(drive, Direction.kReverse));
-      autoChooser.addOption(
-          "Shooter SysId (Quasistatic Forward)", shooter.runSysIdQuasistatic(Direction.kForward));
-      autoChooser.addOption(
-          "Shooter SysId (Quasistatic Reverse)", shooter.runSysIdQuasistatic(Direction.kReverse));
-      autoChooser.addOption(
-          "Shooter SysId (Dynamic Forward)", shooter.runSysIdDynamic(Direction.kForward));
-      autoChooser.addOption(
-          "Shooter SysId (Dynamic Reverse)", shooter.runSysIdDynamic(Direction.kReverse));
+      autoChooser.addOption("Shooter SysId", shooter.runSysId());
     }
 
     // Configure the button bindings
@@ -217,10 +205,12 @@ public class RobotContainer {
             controller.rightBumper()));
     controller.x().onTrue(DriveCommands.XLock(drive));
     controller.b().onTrue(DriveCommands.resetHeading(drive));
-    controller.leftTrigger().whileTrue(intake.runVoltage().alongWith(feeder.intake()));
-    var shooterCommand = shooter.runVelocity();
-    controller.a().toggleOnTrue(shooterCommand);
-    controller.rightTrigger().and(shooterCommand::isScheduled).whileTrue(feeder.shoot());
+    controller.leftTrigger().whileTrue(CompositeCommands.getIntakeCommand(intake, feeder));
+    controller.a().toggleOnTrue(CompositeCommands.getAccelerateShooterCommand(shooter));
+    controller
+        .rightTrigger()
+        .and(shooter::isShooting)
+        .whileTrue(CompositeCommands.getShootCommand(feeder));
   }
 
   /**
