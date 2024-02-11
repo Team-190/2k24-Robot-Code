@@ -17,22 +17,22 @@ public class ShotCalculator {
 
   static {
     // Units: radians/second
-    shooterSpeedMap.put(Units.inchesToMeters(60), 10.0);
-    shooterSpeedMap.put(Units.inchesToMeters(80), 17.0);
-    shooterSpeedMap.put(Units.inchesToMeters(100), 9.0);
-    shooterSpeedMap.put(Units.inchesToMeters(120), 30.0);
-    shooterSpeedMap.put(Units.inchesToMeters(140), 19.0);
-    shooterSpeedMap.put(Units.inchesToMeters(160), 88.0);
-    shooterSpeedMap.put(Units.inchesToMeters(180), 10.0);
+    shooterSpeedMap.put(Units.inchesToMeters(60), 200.0);
+    // shooterSpeedMap.put(Units.inchesToMeters(80), 10.0);
+    // shooterSpeedMap.put(Units.inchesToMeters(100), 12.0);
+    shooterSpeedMap.put(Units.inchesToMeters(120), 400.0);
+    // shooterSpeedMap.put(Units.inchesToMeters(140), 19.0);
+    // shooterSpeedMap.put(Units.inchesToMeters(160), 88.0);
+    shooterSpeedMap.put(Units.inchesToMeters(180), 600.0);
 
     // Units: radians
-    shooterAngleMap.put(Units.inchesToMeters(60), 1.0);
-    shooterAngleMap.put(Units.inchesToMeters(80), 0.0);
-    shooterAngleMap.put(Units.inchesToMeters(100), 3.5);
-    shooterAngleMap.put(Units.inchesToMeters(120), 3.0);
-    shooterAngleMap.put(Units.inchesToMeters(140), 1.9);
-    shooterAngleMap.put(Units.inchesToMeters(160), 8.0);
-    shooterAngleMap.put(Units.inchesToMeters(180), 11.0);
+    shooterAngleMap.put(Units.inchesToMeters(60), 3.0);
+    // shooterAngleMap.put(Units.inchesToMeters(80), 2.5);
+    // shooterAngleMap.put(Units.inchesToMeters(100), 2.0);
+    shooterAngleMap.put(Units.inchesToMeters(120), 2.0);
+    // shooterAngleMap.put(Units.inchesToMeters(140), 1.9);
+    // shooterAngleMap.put(Units.inchesToMeters(160), 8.0);
+    shooterAngleMap.put(Units.inchesToMeters(180), 1.0);
 
     // Units: seconds
     flightTimeMap.put(Units.inchesToMeters(40), 0.5);

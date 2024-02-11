@@ -4,17 +4,29 @@ import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants;
+import frc.robot.FieldConstants;
+import frc.robot.ShotCalculator;
+import frc.robot.ShotCalculator.AimingParameters;
+import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.LoggedTunableNumber;
+import java.util.Optional;
+import java.util.function.Supplier;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Shooter extends SubsystemBase {
-  private static final LoggedTunableNumber RATIO = new LoggedTunableNumber("Shooter/Ratio");
+  private static final LoggedTunableNumber DIFFERENCE =
+      new LoggedTunableNumber("Shooter/Difference");
 
   private static final LoggedTunableNumber KP = new LoggedTunableNumber("Shooter/Kp");
   private static final LoggedTunableNumber KD = new LoggedTunableNumber("Shooter/Kd");
@@ -42,13 +54,21 @@ public class Shooter extends SubsystemBase {
               (state) -> Logger.recordOutput("Shooter/sysIDState", state.toString())),
           new SysIdRoutine.Mechanism((volts) -> setVoltage(volts.in(Volts)), null, this));
 
+  private static enum SpinDirection {
+    COUNTERCLOCKWISE,
+    CLOCKWISE,
+    YEET
+  }
+
+  @AutoLogOutput private SpinDirection spinDirection = SpinDirection.CLOCKWISE;
+
   static {
     switch (Constants.ROBOT) {
       case ROBOT_2K24_C:
       case ROBOT_2K24_P:
         KP.initDefault(0.035);
         KD.initDefault(0.0);
-        RATIO.initDefault(2.0 / 3.0);
+        DIFFERENCE.initDefault(2.0 / 3.0);
         SPEED.initDefault(400);
         leftFeedforward = new SimpleMotorFeedforward(0.49147, 0.0069249);
         rightFeedforward = new SimpleMotorFeedforward(0.72165, 0.0075142);
@@ -56,7 +76,7 @@ public class Shooter extends SubsystemBase {
       case ROBOT_2K24_TEST:
         KP.initDefault(0.035);
         KD.initDefault(0.0);
-        RATIO.initDefault(2.0 / 3.0);
+        DIFFERENCE.initDefault(2.0 / 3.0);
         SPEED.initDefault(400);
 
         leftFeedforward = new SimpleMotorFeedforward(0.49147, 0.0069249);
@@ -65,7 +85,7 @@ public class Shooter extends SubsystemBase {
       case ROBOT_SIM:
         KP.initDefault(0.035);
         KD.initDefault(0.0);
-        RATIO.initDefault(2.0 / 3.0);
+        DIFFERENCE.initDefault(2.0 / 3.0);
         SPEED.initDefault(400);
 
         leftFeedforward = new SimpleMotorFeedforward(0.49147, 0.0069249);
@@ -112,8 +132,16 @@ public class Shooter extends SubsystemBase {
 
   private void setVelocity(double velocityRadPerSec) {
     isOpenLoop = false;
-    leftFeedback.setSetpoint(velocityRadPerSec);
-    rightFeedback.setSetpoint(velocityRadPerSec * RATIO.get());
+    if (spinDirection.equals(SpinDirection.COUNTERCLOCKWISE)) {
+      leftFeedback.setSetpoint(velocityRadPerSec - DIFFERENCE.get());
+      rightFeedback.setSetpoint(velocityRadPerSec);
+    } else if (spinDirection.equals(SpinDirection.CLOCKWISE)) {
+      leftFeedback.setSetpoint(velocityRadPerSec);
+      rightFeedback.setSetpoint(velocityRadPerSec - DIFFERENCE.get());
+    } else {
+      leftFeedback.setSetpoint(velocityRadPerSec);
+      rightFeedback.setSetpoint(velocityRadPerSec);
+    }
   }
 
   private void stop() {
@@ -142,17 +170,45 @@ public class Shooter extends SubsystemBase {
         });
   }
 
-  // public Command runDistance(Supplier<Optional<Double>> getSpeakerDistance) {
-  //   return runEnd(
-  //       () -> {
-  //         Optional<Double> distOptional = getSpeakerDistance.get();
-  //         if (distOptional.isPresent())
-  //           setVelocity(speakerDistanceToShooterSpeed.get(distOptional.get()));
-  //       },
-  //       () -> {
-  //         stop();
-  //       });
-  // }
+  public Command runDistance(
+      Supplier<Optional<Translation2d>> robotPoseSupplier,
+      Supplier<Translation2d> velocitySupplier) {
+    return runEnd(
+        () -> {
+          if (robotPoseSupplier.get().isPresent()) {
+            AimingParameters aimingParameters =
+                ShotCalculator.calculate(robotPoseSupplier.get().get(), velocitySupplier.get());
+            if (spinDirection.equals(SpinDirection.YEET)) {
+              spinDirection = SpinDirection.CLOCKWISE;
+            }
+            Rotation2d effectiveRobotAngle = aimingParameters.robotAngle();
+
+            Translation2d speakerPose =
+                AllianceFlipUtil.apply(
+                    FieldConstants.Speaker.centerSpeakerOpening.getTranslation());
+            double distanceToSpeaker = robotPoseSupplier.get().get().getDistance(speakerPose);
+
+            if (distanceToSpeaker > 1.5) {
+              if (DriverStation.getAlliance().isPresent()
+                  && DriverStation.getAlliance().get().equals(Alliance.Blue)) {
+                effectiveRobotAngle = effectiveRobotAngle.minus(Rotation2d.fromDegrees(180));
+              }
+              if (effectiveRobotAngle.getDegrees() > 15) {
+                spinDirection = SpinDirection.COUNTERCLOCKWISE;
+              } else if (effectiveRobotAngle.getDegrees() < -15) {
+                spinDirection = SpinDirection.CLOCKWISE;
+              }
+            }
+
+            setVelocity(
+                ShotCalculator.calculate(robotPoseSupplier.get().get(), velocitySupplier.get())
+                    .shooterSpeed());
+          }
+        },
+        () -> {
+          stop();
+        });
+  }
 
   public Command runSysId() {
     return Commands.sequence(
