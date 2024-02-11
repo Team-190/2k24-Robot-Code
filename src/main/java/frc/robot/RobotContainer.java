@@ -212,12 +212,12 @@ public class RobotContainer {
         .rightTrigger()
         .and(shooter::isShooting)
         .whileTrue(CompositeCommands.getShootCommand(feeder));
-    controller
-        .y()
-        .onTrue(
-            shooter.runDistance(
-                () -> Optional.of(drive.getPose().getTranslation()),
-                drive::getFieldRelativeVelocity));
+    // controller
+    //     .y()
+    //     .onTrue(
+    //         shooter.runDistance(
+    //             () -> Optional.of(drive.getPose().getTranslation()),
+    //             drive::getFieldRelativeVelocity));
   }
 
   /**
