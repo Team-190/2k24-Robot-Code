@@ -35,8 +35,8 @@ public class CompositeCommands {
         drive, aprilTagVision, FieldConstants.startingLineX - 0.25, VisionMode.AprilTags);
   }
 
-  public static final Command getIntakeCommand(Intake intake, Feeder feeder) {
-    return intake.runVoltage().alongWith(feeder.intake());
+  public static final Command getCollectCommand(Intake intake, Feeder feeder) {
+    return intake.collect().alongWith(feeder.intake());
   }
 
   public static final Command getAccelerateShooterCommand(Shooter shooter) {

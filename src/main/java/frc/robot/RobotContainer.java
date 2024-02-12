@@ -49,7 +49,6 @@ import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.subsystems.vision.VisionIOSim;
 import frc.robot.subsystems.vision.VisionMode;
-import java.util.Optional;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -206,7 +205,7 @@ public class RobotContainer {
             controller.rightBumper()));
     controller.x().onTrue(DriveCommands.XLock(drive));
     controller.b().onTrue(DriveCommands.resetHeading(drive));
-    controller.leftTrigger().whileTrue(CompositeCommands.getIntakeCommand(intake, feeder));
+    controller.leftTrigger().whileTrue(CompositeCommands.getCollectCommand(intake, feeder));
     controller.a().toggleOnTrue(CompositeCommands.getAccelerateShooterCommand(shooter));
     controller
         .rightTrigger()
