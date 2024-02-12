@@ -12,9 +12,9 @@
     "data": {
       "commands": [
         {
-          "type": "wait",
+          "type": "named",
           "data": {
-            "waitTime": 0.15
+            "name": "Shoot"
           }
         },
         {
@@ -42,9 +42,9 @@
           }
         },
         {
-          "type": "wait",
+          "type": "named",
           "data": {
-            "waitTime": 0.15
+            "name": "Shoot"
           }
         },
         {
@@ -72,9 +72,9 @@
           }
         },
         {
-          "type": "wait",
+          "type": "named",
           "data": {
-            "waitTime": 0.15
+            "name": "Shoot"
           }
         },
         {
@@ -102,9 +102,9 @@
           }
         },
         {
-          "type": "wait",
+          "type": "named",
           "data": {
-            "waitTime": 0.15
+            "name": "Shoot"
           }
         }
       ]

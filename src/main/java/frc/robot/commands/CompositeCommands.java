@@ -14,25 +14,26 @@ public class CompositeCommands {
       Drive drive, Intake intake, Feeder feeder, Vision noteVision) {
     return DriveCommands.moveTowardsTarget(
             drive, noteVision, FieldConstants.fieldLength / 2.0, VisionMode.Notes)
-        .alongWith(intake.runVoltage())
-        .alongWith(feeder.intake());
+        .alongWith(getCollectCommand(intake, feeder));
   }
 
   public static final Command getTrackNoteSpikeCommand(
       Drive drive, Intake intake, Feeder feeder, Vision noteVision) {
     return DriveCommands.moveTowardsTarget(
             drive, noteVision, FieldConstants.startingLineX + 0.5, VisionMode.Notes)
-        .alongWith(intake.runVoltage())
-        .alongWith(feeder.intake());
+        .alongWith(getCollectCommand(intake, feeder));
   }
 
-  public static final Command getTrackSpeakerFarCommand(Drive drive, Vision aprilTagVision) {
-    return DriveCommands.moveTowardsTarget(drive, aprilTagVision, 3.75, VisionMode.AprilTags);
-  }
-
-  public static final Command getTrackSpeakerCloseCommand(Drive drive, Vision aprilTagVision) {
+  public static final Command getTrackSpeakerFarCommand(Drive drive, Shooter shooter, Vision aprilTagVision) {
     return DriveCommands.moveTowardsTarget(
-        drive, aprilTagVision, FieldConstants.startingLineX - 0.25, VisionMode.AprilTags);
+        drive, aprilTagVision, 3.75, VisionMode.AprilTags)
+        .alongWith(getAccelerateShooterCommand(shooter));
+  }
+
+  public static final Command getTrackSpeakerCloseCommand(Drive drive, Shooter shooter, Vision aprilTagVision) {
+    return DriveCommands.moveTowardsTarget(
+        drive, aprilTagVision, FieldConstants.startingLineX - 0.25, VisionMode.AprilTags)
+        .alongWith(getAccelerateShooterCommand(shooter));
   }
 
   public static final Command getCollectCommand(Intake intake, Feeder feeder) {
@@ -44,6 +45,6 @@ public class CompositeCommands {
   }
 
   public static final Command getShootCommand(Feeder feeder) {
-    return feeder.shoot();
+    return feeder.shoot().withTimeout(0.5);
   }
 }
