@@ -164,7 +164,7 @@ public class RobotContainer {
         CompositeCommands.getTrackSpeakerCloseCommand(drive, shooter, aprilTagVision));
     NamedCommands.registerCommand(
         "Shoot",
-        CompositeCommands.getShootCommand(feeder));
+        CompositeCommands.getShootCommand(feeder).withTimeout(0.5));
 
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
@@ -214,12 +214,6 @@ public class RobotContainer {
         .rightTrigger()
         .and(shooter::isShooting)
         .whileTrue(CompositeCommands.getShootCommand(feeder));
-    // controller
-    //     .y()
-    //     .onTrue(
-    //         shooter.runDistance(
-    //             () -> Optional.of(drive.getPose().getTranslation()),
-    //             drive::getFieldRelativeVelocity));
   }
 
   /**

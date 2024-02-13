@@ -45,6 +45,6 @@ public class CompositeCommands {
   }
 
   public static final Command getShootCommand(Feeder feeder) {
-    return feeder.shoot().withTimeout(0.5);
+    return feeder.shoot();
   }
 }
