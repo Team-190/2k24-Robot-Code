@@ -10,7 +10,8 @@ import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
 public class Intake extends SubsystemBase {
-  private static final LoggedTunableNumber rollersVoltage = new LoggedTunableNumber("Rollers/voltage");
+  private static final LoggedTunableNumber rollersVoltage =
+      new LoggedTunableNumber("Rollers/voltage");
 
   private static final LoggedTunableNumber INTAKE_KP = new LoggedTunableNumber("Intake/kP");
   private static final LoggedTunableNumber INTAKE_KD = new LoggedTunableNumber("Intake/kD");
@@ -116,8 +117,11 @@ public class Intake extends SubsystemBase {
     return startEnd(
         () -> {
           setPosition(INTAKE_DEPLOYED_POSITION.get());
-          runVoltage();
+          io.setRollersVoltage(rollersVoltage.get());
         },
-        () -> setPosition(INTAKE_STOWED_POSITION.get()));
+        () -> {
+          setPosition(INTAKE_STOWED_POSITION.get());
+          stopRollers();
+        });
   }
 }
