@@ -1,4 +1,4 @@
-package frc.robot.subsystems.pivot;
+package frc.robot.subsystems.hood;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
@@ -11,8 +11,8 @@ import frc.robot.Constants;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
 
-public class PivotIOTalonFX implements PivotIO {
-  private final TalonFX pivotTalon;
+public class HoodIOTalonFX implements HoodIO {
+  private final TalonFX hoodTalon;
 
   private final StatusSignal<Double> position;
   private final StatusSignal<Double> velocity;
@@ -25,16 +25,16 @@ public class PivotIOTalonFX implements PivotIO {
   private final Alert disconnecctedAlert =
       new Alert("Pivot Talon is disconnected, check CAN bus.", AlertType.ERROR);
 
-  public PivotIOTalonFX() {
+  public HoodIOTalonFX() {
     switch (Constants.ROBOT) {
       case ROBOT_2K24_C:
-        pivotTalon = new TalonFX(41);
+        hoodTalon = new TalonFX(41);
         break;
       case ROBOT_2K24_P:
-        pivotTalon = new TalonFX(41);
+        hoodTalon = new TalonFX(41);
         break;
       case ROBOT_2K24_TEST:
-        pivotTalon = new TalonFX(41);
+        hoodTalon = new TalonFX(41);
         break;
       default:
         throw new RuntimeException("Invalid robot");
@@ -43,22 +43,22 @@ public class PivotIOTalonFX implements PivotIO {
     var config = new TalonFXConfiguration();
     config.CurrentLimits.SupplyCurrentLimit = 60.0;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
-    pivotTalon.getConfigurator().apply(config);
-    pivotTalon.setPosition(0.0);
+    hoodTalon.getConfigurator().apply(config);
+    hoodTalon.setPosition(0.0);
 
-    position = pivotTalon.getPosition();
-    velocity = pivotTalon.getVelocity();
-    appliedVolts = pivotTalon.getMotorVoltage();
-    currentAmps = pivotTalon.getSupplyCurrent();
-    tempCelcius = pivotTalon.getDeviceTemp();
+    position = hoodTalon.getPosition();
+    velocity = hoodTalon.getVelocity();
+    appliedVolts = hoodTalon.getMotorVoltage();
+    currentAmps = hoodTalon.getSupplyCurrent();
+    tempCelcius = hoodTalon.getDeviceTemp();
 
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0, position, velocity, appliedVolts, currentAmps, tempCelcius);
-    pivotTalon.optimizeBusUtilization();
+    hoodTalon.optimizeBusUtilization();
   }
 
   @Override
-  public void updateInputs(PivotIOInputs inputs) {
+  public void updateInputs(HoodIOInputs inputs) {
     boolean isConnected =
         BaseStatusSignal.refreshAll(position, velocity, appliedVolts, currentAmps, tempCelcius)
             .isOK();
@@ -73,6 +73,6 @@ public class PivotIOTalonFX implements PivotIO {
 
   @Override
   public void setVoltage(double volts) {
-    pivotTalon.setControl(new VoltageOut(volts));
+    hoodTalon.setControl(new VoltageOut(volts));
   }
 }

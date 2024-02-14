@@ -1,29 +1,32 @@
-package frc.robot.subsystems.pivot;
+package frc.robot.subsystems.hood;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.ShotCalculator;
+import frc.robot.ShotCalculator.AimingParameters;
 import frc.robot.util.LoggedTunableNumber;
+import java.util.Optional;
+import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
-public class Pivot extends SubsystemBase {
-  private static final LoggedTunableNumber KP = new LoggedTunableNumber("Pivot/Kp");
-  private static final LoggedTunableNumber KD = new LoggedTunableNumber("Pivot/Kd");
+public class Hood extends SubsystemBase {
+  private static final LoggedTunableNumber KP = new LoggedTunableNumber("Hood/Kp");
+  private static final LoggedTunableNumber KD = new LoggedTunableNumber("Hood/Kd");
   private static final LoggedTunableNumber MAX_VELOCITY =
-      new LoggedTunableNumber("Pivot/MaxVelocity");
+      new LoggedTunableNumber("Hood/MaxVelocity");
   private static final LoggedTunableNumber MAX_ACCELERATION =
-      new LoggedTunableNumber("Pivot/MaxAcceleration");
+      new LoggedTunableNumber("Hood/MaxAcceleration");
 
   private static final LoggedTunableNumber STOWED_POSITION =
-      new LoggedTunableNumber("Pivot/StowedPosition");
-  private static final LoggedTunableNumber DEPLOYED_POSITION =
-      new LoggedTunableNumber("Pivot/DeployedPosition");
+      new LoggedTunableNumber("Hood/StowedPosition");
 
-  private final PivotIO io;
-  private final PivotIOInputsAutoLogged inputs = new PivotIOInputsAutoLogged();
+  private final HoodIO io;
+  private final HoodIOInputsAutoLogged inputs = new HoodIOInputsAutoLogged();
 
   private final ProfiledPIDController profiledFeedback;
 
@@ -35,31 +38,28 @@ public class Pivot extends SubsystemBase {
         KD.initDefault(0.0);
         MAX_VELOCITY.initDefault(0.0);
         MAX_ACCELERATION.initDefault(0.0);
-        STOWED_POSITION.initDefault(0.0);
-        DEPLOYED_POSITION.initDefault(0.0);
+        STOWED_POSITION.initDefault(20.0);
         break;
       case ROBOT_2K24_TEST:
         KP.initDefault(0.0);
         KD.initDefault(0.0);
         MAX_VELOCITY.initDefault(0.0);
         MAX_ACCELERATION.initDefault(0.0);
-        STOWED_POSITION.initDefault(0.0);
-        DEPLOYED_POSITION.initDefault(0.0);
+        STOWED_POSITION.initDefault(20.0);
         break;
       case ROBOT_SIM:
         KP.initDefault(0.0);
         KD.initDefault(0.0);
         MAX_VELOCITY.initDefault(0.0);
         MAX_ACCELERATION.initDefault(0.0);
-        STOWED_POSITION.initDefault(0.0);
-        DEPLOYED_POSITION.initDefault(0.0);
+        STOWED_POSITION.initDefault(20.0);
         break;
       default:
         break;
     }
   }
 
-  public Pivot(PivotIO io) {
+  public Hood(HoodIO io) {
     this.io = io;
     profiledFeedback =
         new ProfiledPIDController(
@@ -73,7 +73,7 @@ public class Pivot extends SubsystemBase {
 
   public void periodic() {
     io.updateInputs(inputs);
-    Logger.processInputs("Pivot", inputs);
+    Logger.processInputs("Hood", inputs);
 
     if (KP.hasChanged(hashCode())) {
       profiledFeedback.setP(KP.get());
@@ -93,16 +93,25 @@ public class Pivot extends SubsystemBase {
       profiledFeedback.reset(inputs.position.getRadians(), 0);
     }
 
-    Logger.recordOutput("Pivot/goal", profiledFeedback.getGoal().position);
-    Logger.recordOutput("Pivot/setpoint", profiledFeedback.getSetpoint().position);
+    Logger.recordOutput("Hood/goal", profiledFeedback.getGoal().position);
+    Logger.recordOutput("Hood/setpoint", profiledFeedback.getSetpoint().position);
   }
 
-  public void setPosition(double positionRad) {
+  private void setPosition(double positionRad) {
     profiledFeedback.setGoal(positionRad);
   }
 
-  public Command deploy() {
-    return startEnd(
-        () -> setPosition(DEPLOYED_POSITION.get()), () -> setPosition(STOWED_POSITION.get()));
+  public Command setPosition(
+      Supplier<Optional<Translation2d>> robotPoseSupplier,
+      Supplier<Translation2d> velocitySupplier) {
+    return runEnd(
+        () -> {
+          if (robotPoseSupplier.get().isPresent()) {
+            AimingParameters aimingParameters =
+                ShotCalculator.calculate(robotPoseSupplier.get().get(), velocitySupplier.get());
+            setPosition(aimingParameters.shooterAngle().getRadians());
+          }
+        },
+        () -> setPosition(STOWED_POSITION.get()));
   }
 }

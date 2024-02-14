@@ -33,13 +33,14 @@ import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.feeder.FeederIO;
 import frc.robot.subsystems.feeder.FeederIOSim;
 import frc.robot.subsystems.feeder.FeederIOTalonFX;
+import frc.robot.subsystems.hood.Hood;
+import frc.robot.subsystems.hood.HoodIO;
+import frc.robot.subsystems.hood.HoodIOSim;
+import frc.robot.subsystems.hood.HoodIOTalonFX;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.intake.IntakeIOTalonFX;
-import frc.robot.subsystems.pivot.Pivot;
-import frc.robot.subsystems.pivot.PivotIO;
-import frc.robot.subsystems.pivot.PivotIOSim;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.ShooterIOSim;
@@ -61,9 +62,9 @@ public class RobotContainer {
   // Subsystems
   private Drive drive;
   private Shooter shooter;
+  private Hood hood;
   private Feeder feeder;
   private Intake intake;
-  private Pivot pivot;
   private Vision aprilTagVision;
   private Vision noteVision;
 
@@ -89,9 +90,9 @@ public class RobotContainer {
                   new ModuleIOTalonFX(2),
                   new ModuleIOTalonFX(3));
           shooter = new Shooter(new ShooterIOTalonFX());
+          hood = new Hood(new HoodIOTalonFX());
           intake = new Intake(new IntakeIOTalonFX());
           feeder = new Feeder(new FeederIOTalonFX());
-          // pivot = new Pivot(new PivotIOTalonFX());
           aprilTagVision =
               new Vision("AprilTagVision", new VisionIOLimelight(VisionMode.AprilTags));
           noteVision = new Vision("NoteVision", new VisionIOLimelight(VisionMode.Notes));
@@ -107,9 +108,9 @@ public class RobotContainer {
                   new ModuleIOSim(),
                   new ModuleIOSim());
           shooter = new Shooter(new ShooterIOSim());
+          hood = new Hood(new HoodIOSim());
           intake = new Intake(new IntakeIOSim());
           feeder = new Feeder(new FeederIOSim());
-          pivot = new Pivot(new PivotIOSim());
           aprilTagVision =
               new Vision("AprilTagVision", new VisionIOSim(VisionMode.AprilTags, drive::getPose));
           noteVision = new Vision("NoteVision", new VisionIOSim(VisionMode.Notes, drive::getPose));
@@ -130,14 +131,14 @@ public class RobotContainer {
     if (shooter == null) {
       shooter = new Shooter(new ShooterIO() {});
     }
+    if (hood == null) {
+      hood = new Hood(new HoodIO() {});
+    }
     if (intake == null) {
       intake = new Intake(new IntakeIO() {});
     }
     if (feeder == null) {
       feeder = new Feeder(new FeederIO() {});
-    }
-    if (pivot == null) {
-      pivot = new Pivot(new PivotIO() {});
     }
     if (aprilTagVision == null) {
       aprilTagVision = new Vision("AprilTagVision", new VisionIO() {});
