@@ -158,13 +158,13 @@ public class RobotContainer {
         "Track Note Spike",
         CompositeCommands.getTrackNoteSpikeCommand(drive, intake, feeder, noteVision));
     NamedCommands.registerCommand(
-        "Track Speaker Far", CompositeCommands.getTrackSpeakerFarCommand(drive, shooter, aprilTagVision));
+        "Track Speaker Far",
+        CompositeCommands.getTrackSpeakerFarCommand(drive, shooter, aprilTagVision));
     NamedCommands.registerCommand(
         "Track Speaker Close",
         CompositeCommands.getTrackSpeakerCloseCommand(drive, shooter, aprilTagVision));
     NamedCommands.registerCommand(
-        "Shoot",
-        CompositeCommands.getShootCommand(feeder).withTimeout(0.5));
+        "Shoot", CompositeCommands.getShootCommand(feeder).withTimeout(0.5));
 
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
