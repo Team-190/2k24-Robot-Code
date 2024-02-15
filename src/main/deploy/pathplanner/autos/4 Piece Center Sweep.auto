@@ -8,20 +8,7 @@
     "rotation": 179.09061955080097
   },
   "command": {
-    "type": "sequential",
-    "data": {
-      "commands": [
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Target Lock"
-                }
-              },
-              {
+    
                 "type": "sequential",
                 "data": {
                   "commands": [
@@ -153,13 +140,7 @@
                     }
                   ]
                 }
-              }
-            ]
-          }
-        }
-      ]
-    }
-  },
+              },
   "folder": null,
   "choreoAuto": false
 }

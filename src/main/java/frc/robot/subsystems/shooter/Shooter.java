@@ -31,7 +31,8 @@ public class Shooter extends SubsystemBase {
   private static final LoggedTunableNumber KP = new LoggedTunableNumber("Shooter/Kp");
   private static final LoggedTunableNumber KD = new LoggedTunableNumber("Shooter/Kd");
 
-  private static final LoggedTunableNumber DEFAULT_SPEED = new LoggedTunableNumber("Shooter/Default Speed");
+  private static final LoggedTunableNumber DEFAULT_SPEED =
+      new LoggedTunableNumber("Shooter/Default Speed");
 
   private final ShooterIO io;
   private final ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();

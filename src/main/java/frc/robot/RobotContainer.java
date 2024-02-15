@@ -158,7 +158,6 @@ public class RobotContainer {
         CompositeCommands.getTrackSpeakerCloseCommand(drive, hood, shooter, aprilTagVision));
     NamedCommands.registerCommand(
         "Shoot", CompositeCommands.getShootCommand(feeder).withTimeout(0.5));
-    NamedCommands.registerCommand("Target Lock", CompositeCommands.getAccelerateShooterCommand(drive, hood, shooter, aprilTagVision));
 
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
@@ -208,6 +207,6 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return autoChooser.get();
+    return Constants.TUNING_MODE ? autoChooser.get() : autoChooser.get().alongWith(CompositeCommands.getAccelerateShooterCommand(drive, hood, shooter, aprilTagVision));
   }
 }
