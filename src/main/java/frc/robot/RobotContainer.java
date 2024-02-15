@@ -160,10 +160,10 @@ public class RobotContainer {
         CompositeCommands.getTrackNoteSpikeCommand(drive, intake, feeder, noteVision));
     NamedCommands.registerCommand(
         "Track Speaker Far",
-        CompositeCommands.getTrackSpeakerFarCommand(drive, shooter, aprilTagVision));
+        CompositeCommands.getTrackSpeakerFarCommand(drive, hood, shooter, aprilTagVision));
     NamedCommands.registerCommand(
         "Track Speaker Close",
-        CompositeCommands.getTrackSpeakerCloseCommand(drive, shooter, aprilTagVision));
+        CompositeCommands.getTrackSpeakerCloseCommand(drive, hood, shooter, aprilTagVision));
     NamedCommands.registerCommand(
         "Shoot", CompositeCommands.getShootCommand(feeder).withTimeout(0.5));
 
@@ -210,7 +210,7 @@ public class RobotContainer {
     controller.x().onTrue(DriveCommands.XLock(drive));
     controller.b().onTrue(DriveCommands.resetHeading(drive));
     controller.leftTrigger().whileTrue(CompositeCommands.getCollectCommand(intake, feeder));
-    controller.a().toggleOnTrue(CompositeCommands.getAccelerateShooterCommand(shooter));
+    controller.a().toggleOnTrue(CompositeCommands.getAccelerateShooterCommand(drive, hood, shooter, aprilTagVision));
     controller
         .rightTrigger()
         .and(shooter::isShooting)
