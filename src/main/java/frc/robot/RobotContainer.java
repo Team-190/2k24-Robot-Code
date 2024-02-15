@@ -210,7 +210,10 @@ public class RobotContainer {
     controller.x().onTrue(DriveCommands.XLock(drive));
     controller.b().onTrue(DriveCommands.resetHeading(drive));
     controller.leftTrigger().whileTrue(CompositeCommands.getCollectCommand(intake, feeder));
-    controller.a().toggleOnTrue(CompositeCommands.getAccelerateShooterCommand(drive, hood, shooter, aprilTagVision));
+    controller
+        .a()
+        .toggleOnTrue(
+            CompositeCommands.getAccelerateShooterCommand(drive, hood, shooter, aprilTagVision));
     controller
         .rightTrigger()
         .and(shooter::isShooting)
