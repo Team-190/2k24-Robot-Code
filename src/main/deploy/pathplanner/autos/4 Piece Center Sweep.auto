@@ -12,129 +12,149 @@
     "data": {
       "commands": [
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "Shoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Center Sweep #1"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Track Note Center"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Center Sweep #2"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Track Speaker Far"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Center Sweep #3"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Track Note Center"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Center Sweep #4"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Track Speaker Far"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Center Sweep #5"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Track Note Center"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Center Sweep #6"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Track Speaker Far"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Center Sweep #7"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Track Note Center"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Center Sweep #8"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Track Speaker Far"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Target Lock"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Shoot"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Center Sweep #1"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Track Note Center"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Center Sweep #2"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Track Speaker Far"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Shoot"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Center Sweep #3"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Track Note Center"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Center Sweep #4"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Track Speaker Far"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Shoot"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Center Sweep #5"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Track Note Center"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Center Sweep #6"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Track Speaker Far"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Shoot"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Center Sweep #7"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Track Note Center"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Center Sweep #8"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Track Speaker Far"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Shoot"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
           }
         }
       ]

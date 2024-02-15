@@ -31,7 +31,7 @@ public class Shooter extends SubsystemBase {
   private static final LoggedTunableNumber KP = new LoggedTunableNumber("Shooter/Kp");
   private static final LoggedTunableNumber KD = new LoggedTunableNumber("Shooter/Kd");
 
-  private static final LoggedTunableNumber SPEED = new LoggedTunableNumber("Shooter/Speed");
+  private static final LoggedTunableNumber DEFAULT_SPEED = new LoggedTunableNumber("Shooter/Default Speed");
 
   private final ShooterIO io;
   private final ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
@@ -69,7 +69,7 @@ public class Shooter extends SubsystemBase {
         KP.initDefault(0.035);
         KD.initDefault(0.0);
         DIFFERENCE.initDefault(2.0 / 3.0);
-        SPEED.initDefault(400);
+        DEFAULT_SPEED.initDefault(400);
         leftFeedforward = new SimpleMotorFeedforward(0.49147, 0.0069249);
         rightFeedforward = new SimpleMotorFeedforward(0.72165, 0.0075142);
         break;
@@ -77,7 +77,7 @@ public class Shooter extends SubsystemBase {
         KP.initDefault(0.035);
         KD.initDefault(0.0);
         DIFFERENCE.initDefault(2.0 / 3.0);
-        SPEED.initDefault(400);
+        DEFAULT_SPEED.initDefault(400);
 
         leftFeedforward = new SimpleMotorFeedforward(0.49147, 0.0069249);
         rightFeedforward = new SimpleMotorFeedforward(0.72165, 0.0075142);
@@ -86,7 +86,7 @@ public class Shooter extends SubsystemBase {
         KP.initDefault(0.035);
         KD.initDefault(0.0);
         DIFFERENCE.initDefault(2.0 / 3.0);
-        SPEED.initDefault(400);
+        DEFAULT_SPEED.initDefault(400);
 
         leftFeedforward = new SimpleMotorFeedforward(0.49147, 0.0069249);
         rightFeedforward = new SimpleMotorFeedforward(0.72165, 0.0075142);
@@ -161,7 +161,7 @@ public class Shooter extends SubsystemBase {
   public Command runVelocity() {
     return runEnd(
         () -> {
-          setVelocity(SPEED.get());
+          setVelocity(DEFAULT_SPEED.get());
           isShooting = true;
         },
         () -> {
@@ -203,6 +203,10 @@ public class Shooter extends SubsystemBase {
             setVelocity(
                 ShotCalculator.calculate(robotPoseSupplier.get().get(), velocitySupplier.get())
                     .shooterSpeed());
+          } else {
+            if (DriverStation.isAutonomous()) {
+              setVelocity(DEFAULT_SPEED.get());
+            }
           }
         },
         () -> {

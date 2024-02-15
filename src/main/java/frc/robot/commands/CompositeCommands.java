@@ -28,15 +28,13 @@ public class CompositeCommands {
 
   public static final Command getTrackSpeakerFarCommand(
       Drive drive, Hood hood, Shooter shooter, Vision aprilTagVision) {
-    return DriveCommands.moveTowardsTarget(drive, aprilTagVision, 3.75, VisionMode.AprilTags)
-        .alongWith(getAccelerateShooterCommand(drive, hood, shooter, aprilTagVision));
+    return DriveCommands.moveTowardsTarget(drive, aprilTagVision, 3.75, VisionMode.AprilTags);
   }
 
   public static final Command getTrackSpeakerCloseCommand(
       Drive drive, Hood hood, Shooter shooter, Vision aprilTagVision) {
     return DriveCommands.moveTowardsTarget(
-            drive, aprilTagVision, FieldConstants.startingLineX - 0.25, VisionMode.AprilTags)
-        .alongWith(getAccelerateShooterCommand(drive, hood, shooter, aprilTagVision));
+        drive, aprilTagVision, FieldConstants.startingLineX - 0.25, VisionMode.AprilTags);
   }
 
   public static final Command getCollectCommand(Intake intake, Feeder feeder) {
