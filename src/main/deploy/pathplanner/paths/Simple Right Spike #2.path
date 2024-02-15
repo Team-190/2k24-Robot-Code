@@ -1,0 +1,49 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.9045123807922586,
+        "y": 4.070564534960625
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.534461059432202,
+        "y": 4.021873571623774
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.2131007014089956,
+        "y": 4.197161039636433
+      },
+      "prevControl": {
+        "x": 2.524722866764834,
+        "y": 4.109517305630104
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 4.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 3.0,
+    "rotation": 156.0375110254218,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Simple Autos",
+  "previewStartingState": null,
+  "useDefaultConstraints": false
+}
