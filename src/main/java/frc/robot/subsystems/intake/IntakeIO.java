@@ -1,6 +1,6 @@
 package frc.robot.subsystems.intake;
 
-import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface IntakeIO {
@@ -12,11 +12,8 @@ public interface IntakeIO {
     public double[] rollersCurrentAmps = new double[] {};
     public double[] rollersTempCelcius = new double[] {};
 
-    public Rotation2d intakePositionRad = new Rotation2d();
-    public double intakeVelocityRadPerSec = 0.0;
-    public double intakeAppliedVolts = 0.0;
-    public double[] intakeCurrentAmps = new double[] {};
-    public double[] intakeTempCelcius = new double[] {};
+    public Value leftPosition = Value.kReverse;
+    public Value rightPosition = Value.kReverse;
   }
 
   /** Updates the set of loggable inputs. */
@@ -25,6 +22,9 @@ public interface IntakeIO {
   /** Run the rollers motor at the specified voltage. */
   public default void setRollersVoltage(double volts) {}
 
-  /** Run the intake motor at the specified voltage. */
-  public default void setIntakeVoltage(double volts) {}
+  /** set the intake to the specified position. */
+  public default void setIntakePosition(Value position) {}
+
+  /** toggle the intake to the position it currently is not in */
+  public default void toggleIntakePosition() {}
 }

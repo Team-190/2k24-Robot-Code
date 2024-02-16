@@ -14,16 +14,18 @@ import java.util.Optional;
 public class CompositeCommands {
   public static final Command getTrackNoteCenterCommand(
       Drive drive, Intake intake, Feeder feeder, Vision noteVision) {
-    return DriveCommands.moveTowardsTarget(
-            drive, noteVision, FieldConstants.fieldLength / 2.0, VisionMode.Notes)
-        .alongWith(getCollectCommand(intake, feeder));
+    return (DriveCommands.moveTowardsTarget(
+                drive, noteVision, FieldConstants.fieldLength / 2.0, VisionMode.Notes)
+            .alongWith(getCollectCommand(intake, feeder)))
+        .andThen(getToggleIntakeCommand(intake));
   }
 
   public static final Command getTrackNoteSpikeCommand(
       Drive drive, Intake intake, Feeder feeder, Vision noteVision) {
-    return DriveCommands.moveTowardsTarget(
-            drive, noteVision, FieldConstants.startingLineX + 0.5, VisionMode.Notes)
-        .alongWith(getCollectCommand(intake, feeder));
+    return (DriveCommands.moveTowardsTarget(
+                drive, noteVision, FieldConstants.startingLineX + 0.5, VisionMode.Notes)
+            .alongWith(getCollectCommand(intake, feeder)))
+        .andThen(getToggleIntakeCommand(intake));
   }
 
   public static final Command getTrackSpeakerFarCommand(
@@ -38,7 +40,11 @@ public class CompositeCommands {
   }
 
   public static final Command getCollectCommand(Intake intake, Feeder feeder) {
-    return intake.collect().alongWith(feeder.intake());
+    return intake.deployIntake().alongWith(intake.runVoltage()).alongWith(feeder.intake());
+  }
+
+  public static final Command getToggleIntakeCommand(Intake intake) {
+    return intake.toggleIntake();
   }
 
   public static final Command getAccelerateShooterCommand(

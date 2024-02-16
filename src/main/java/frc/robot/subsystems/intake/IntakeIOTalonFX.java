@@ -5,15 +5,18 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import frc.robot.Constants;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
 
 public class IntakeIOTalonFX implements IntakeIO {
   private final TalonFX rollersTalon;
-  private final TalonFX intakeTalon;
+  private final DoubleSolenoid leftSolenoid;
+  private final DoubleSolenoid rightSolenoid;
 
   private final StatusSignal<Double> rollersPosition;
   private final StatusSignal<Double> rollersVelocity;
@@ -21,34 +24,27 @@ public class IntakeIOTalonFX implements IntakeIO {
   private final StatusSignal<Double> rollersCurrent;
   private final StatusSignal<Double> rollersTemperature;
 
-  private final StatusSignal<Double> intakePosition;
-  private final StatusSignal<Double> intakeVelocity;
-  private final StatusSignal<Double> intakeAppliedVolts;
-  private final StatusSignal<Double> intakeCurrent;
-  private final StatusSignal<Double> intakeTemperature;
-
   private final double ROLLERS_GEAR_RATIO = 1.6;
-  private final double INTAKE_GEAR_RATIO = 1.0;
 
   private final Alert rollersDisconnectedAlert =
       new Alert("Rollers Talon is disconnected, check CAN bus.", AlertType.ERROR);
-
-  private final Alert intakeDisconnectedAlert =
-      new Alert("Intake Talon is disconnected, check CAN bus.", AlertType.ERROR);
 
   public IntakeIOTalonFX() {
     switch (Constants.ROBOT) {
       case ROBOT_2K24_C:
         rollersTalon = new TalonFX(40);
-        intakeTalon = new TalonFX(41);
+        leftSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 0, 1);
+        rightSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 2, 3);
         break;
       case ROBOT_2K24_P:
         rollersTalon = new TalonFX(40);
-        intakeTalon = new TalonFX(41);
+        leftSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 0, 1);
+        rightSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 2, 3);
         break;
       case ROBOT_2K24_TEST:
         rollersTalon = new TalonFX(40);
-        intakeTalon = new TalonFX(41);
+        leftSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 0, 1);
+        rightSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 2, 3);
         break;
       default:
         throw new RuntimeException("Invalid robot");
@@ -65,23 +61,9 @@ public class IntakeIOTalonFX implements IntakeIO {
     rollersCurrent = rollersTalon.getSupplyCurrent();
     rollersTemperature = rollersTalon.getDeviceTemp();
 
-    intakePosition = intakeTalon.getPosition();
-    intakeVelocity = intakeTalon.getVelocity();
-    intakeAppliedVolts = intakeTalon.getMotorVoltage();
-    intakeCurrent = intakeTalon.getSupplyCurrent();
-    intakeTemperature = intakeTalon.getDeviceTemp();
-
-    BaseStatusSignal.setUpdateFrequencyForAll(100.0, rollersVelocity, intakeVelocity);
+    BaseStatusSignal.setUpdateFrequencyForAll(100.0, rollersVelocity);
     BaseStatusSignal.setUpdateFrequencyForAll(
-        50.0,
-        rollersPosition,
-        rollersAppliedVolts,
-        rollersCurrent,
-        rollersTemperature,
-        intakePosition,
-        intakeAppliedVolts,
-        intakeCurrent,
-        intakeTemperature);
+        50.0, rollersPosition, rollersAppliedVolts, rollersCurrent, rollersTemperature);
     rollersTalon.optimizeBusUtilization();
   }
 
@@ -97,16 +79,6 @@ public class IntakeIOTalonFX implements IntakeIO {
             .isOK();
     rollersDisconnectedAlert.set(!rollersConnected);
 
-    boolean intakeConnected =
-        BaseStatusSignal.refreshAll(
-                intakeVelocity,
-                intakePosition,
-                intakeAppliedVolts,
-                intakeCurrent,
-                intakeTemperature)
-            .isOK();
-    intakeDisconnectedAlert.set(!intakeConnected);
-
     inputs.rollersPositionRad =
         Units.rotationsToRadians(rollersPosition.getValueAsDouble()) / ROLLERS_GEAR_RATIO;
     inputs.rollersVelocityRadPerSec =
@@ -115,14 +87,8 @@ public class IntakeIOTalonFX implements IntakeIO {
     inputs.rollersCurrentAmps = new double[] {rollersCurrent.getValueAsDouble()};
     inputs.rollersTempCelcius = new double[] {rollersTemperature.getValueAsDouble()};
 
-    inputs.intakePositionRad =
-        Rotation2d.fromRadians(
-            Units.rotationsToRadians(intakePosition.getValueAsDouble()) / INTAKE_GEAR_RATIO);
-    inputs.intakeVelocityRadPerSec =
-        Units.rotationsToRadians(intakeVelocity.getValueAsDouble()) / INTAKE_GEAR_RATIO;
-    inputs.intakeAppliedVolts = intakeAppliedVolts.getValueAsDouble();
-    inputs.intakeCurrentAmps = new double[] {intakeCurrent.getValueAsDouble()};
-    inputs.intakeTempCelcius = new double[] {intakeTemperature.getValueAsDouble()};
+    inputs.leftPosition = leftSolenoid.get();
+    inputs.rightPosition = rightSolenoid.get();
   }
 
   @Override
@@ -131,7 +97,14 @@ public class IntakeIOTalonFX implements IntakeIO {
   }
 
   @Override
-  public void setIntakeVoltage(double volts) {
-    intakeTalon.setControl(new VoltageOut(volts));
+  public void setIntakePosition(Value position) {
+    leftSolenoid.set(position);
+    rightSolenoid.set(position);
+  }
+
+  @Override
+  public void toggleIntakePosition() {
+    leftSolenoid.toggle();
+    rightSolenoid.toggle();
   }
 }

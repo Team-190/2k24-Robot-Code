@@ -196,6 +196,7 @@ public class RobotContainer {
     controller.x().onTrue(DriveCommands.XLock(drive));
     controller.b().onTrue(DriveCommands.resetHeading(drive));
     controller.leftTrigger().whileTrue(CompositeCommands.getCollectCommand(intake, feeder));
+    controller.leftBumper().onTrue(CompositeCommands.getToggleIntakeCommand(intake));
     controller
         .a()
         .toggleOnTrue(
@@ -207,6 +208,12 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return Constants.TUNING_MODE ? autoChooser.get() : autoChooser.get().alongWith(CompositeCommands.getAccelerateShooterCommand(drive, hood, shooter, aprilTagVision));
+    return Constants.TUNING_MODE
+        ? autoChooser.get()
+        : autoChooser
+            .get()
+            .alongWith(
+                CompositeCommands.getAccelerateShooterCommand(
+                    drive, hood, shooter, aprilTagVision));
   }
 }
