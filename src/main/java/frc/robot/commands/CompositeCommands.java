@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.FieldConstants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.feeder.Feeder;
@@ -40,7 +41,8 @@ public class CompositeCommands {
   }
 
   public static final Command getCollectCommand(Intake intake, Feeder feeder) {
-    return intake.deployIntake().alongWith(intake.runVoltage()).alongWith(feeder.intake());
+    return Commands.sequence(
+        intake.deployIntake(), Commands.parallel(intake.runVoltage(), feeder.intake()));
   }
 
   public static final Command getToggleIntakeCommand(Intake intake) {
