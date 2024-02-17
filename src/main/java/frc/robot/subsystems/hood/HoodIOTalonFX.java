@@ -23,7 +23,7 @@ public class HoodIOTalonFX implements HoodIO {
   private final double GEAR_RATIO = 5.0;
 
   private final Alert disconnecctedAlert =
-      new Alert("Pivot Talon is disconnected, check CAN bus.", AlertType.ERROR);
+      new Alert("Hood Talon is disconnected, check CAN bus.", AlertType.ERROR);
 
   public HoodIOTalonFX() {
     switch (Constants.ROBOT) {
