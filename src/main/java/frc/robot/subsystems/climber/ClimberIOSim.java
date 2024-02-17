@@ -8,25 +8,11 @@ import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 public class ClimberIOSim implements ClimberIO {
   private ElevatorSim leftClimberSim =
       new ElevatorSim(
-          DCMotor.getKrakenX60(1),
-          10.0,
-          7.0,
-          Units.inchesToMeters(0.25),
-          0.0,
-          0.0,
-          false,
-          0.0);
+          DCMotor.getKrakenX60(1), 10.0, 7.0, Units.inchesToMeters(0.25), 0.0, 0.0, false, 0.0);
 
   private ElevatorSim rightClimberSim =
       new ElevatorSim(
-          DCMotor.getKrakenX60(1),
-          10.0,
-          7.0,
-          Units.inchesToMeters(0.25),
-          0.0,
-          0.0,
-          false,
-          0.0);
+          DCMotor.getKrakenX60(1), 10.0, 7.0, Units.inchesToMeters(0.25), 0.0, 0.0, false, 0.0);
 
   private double leftAppliedVolts;
   private double rightAppliedVolts;
@@ -36,13 +22,13 @@ public class ClimberIOSim implements ClimberIO {
     inputs.leftPositionMeters = leftClimberSim.getPositionMeters();
     inputs.leftVelocityMetersPerSec = leftClimberSim.getVelocityMetersPerSecond();
     inputs.leftAppliedVolts = leftAppliedVolts;
-    inputs.leftCurrentAmps = new double[] { leftClimberSim.getCurrentDrawAmps() };
+    inputs.leftCurrentAmps = new double[] {leftClimberSim.getCurrentDrawAmps()};
     inputs.leftTempCelcius = new double[] {};
 
     inputs.rightPositionMeters = rightClimberSim.getPositionMeters();
     inputs.rightVelocityMetersPerSec = rightClimberSim.getVelocityMetersPerSecond();
     inputs.rightAppliedVolts = rightAppliedVolts;
-    inputs.rightCurrentAmps = new double[] { rightClimberSim.getCurrentDrawAmps() };
+    inputs.rightCurrentAmps = new double[] {rightClimberSim.getCurrentDrawAmps()};
     inputs.rightTempCelcius = new double[] {};
   }
 

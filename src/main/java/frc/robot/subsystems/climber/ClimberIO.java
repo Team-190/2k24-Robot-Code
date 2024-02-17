@@ -20,14 +20,11 @@ public interface ClimberIO {
     public boolean rightLocked = false;
   }
 
-  public default void updateInputs(ClimberIOInputs inputs) {
-  }
-  
-  public default void setLeftVoltage(double volts) {
-  }
-  
-  public default void setRightVoltage(double volts) {
-  }
-  
+  public default void updateInputs(ClimberIOInputs inputs) {}
+
+  public default void setLeftVoltage(double volts) {}
+
+  public default void setRightVoltage(double volts) {}
+
   public default void setLock(boolean isLocked) {}
 }

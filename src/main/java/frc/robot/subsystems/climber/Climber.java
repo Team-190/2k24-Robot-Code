@@ -1,13 +1,12 @@
 package frc.robot.subsystems.climber;
 
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
+import org.littletonrobotics.junction.Logger;
 
 public class Climber extends SubsystemBase {
   private static final LoggedTunableNumber KP = new LoggedTunableNumber("Climber/Kp");
@@ -54,7 +53,7 @@ public class Climber extends SubsystemBase {
         break;
     }
   }
-  
+
   public Climber(ClimberIO io) {
     this.io = io;
     leftProfiledFeedback =
@@ -63,8 +62,7 @@ public class Climber extends SubsystemBase {
     rightProfiledFeedback =
         new ProfiledPIDController(
             KP.get(), 0.0, KD.get(), new Constraints(MAX_VELOCITY.get(), MAX_ACCELERATION.get()));
-    setDefaultCommand(
-        run(() -> stop()));
+    setDefaultCommand(run(() -> stop()));
   }
 
   public void periodic() {
@@ -73,23 +71,22 @@ public class Climber extends SubsystemBase {
 
     if (KP.hasChanged(hashCode())) {
       leftProfiledFeedback.setP(KP.get());
-            rightProfiledFeedback.setP(KP.get());
-
+      rightProfiledFeedback.setP(KP.get());
     }
     if (KD.hasChanged(hashCode())) {
       leftProfiledFeedback.setP(KD.get());
-            rightProfiledFeedback.setP(KD.get());
+      rightProfiledFeedback.setP(KD.get());
     }
     if (MAX_VELOCITY.hasChanged(hashCode()) || MAX_ACCELERATION.hasChanged(hashCode())) {
-      leftProfiledFeedback.setConstraints(new Constraints(MAX_VELOCITY.get(), MAX_ACCELERATION.get()));
-            rightProfiledFeedback.setConstraints(new Constraints(MAX_VELOCITY.get(), MAX_ACCELERATION.get()));
-
+      leftProfiledFeedback.setConstraints(
+          new Constraints(MAX_VELOCITY.get(), MAX_ACCELERATION.get()));
+      rightProfiledFeedback.setConstraints(
+          new Constraints(MAX_VELOCITY.get(), MAX_ACCELERATION.get()));
     }
 
     if (DriverStation.isEnabled()) {
       io.setLeftVoltage((leftProfiledFeedback.calculate(inputs.leftPositionMeters)));
-            io.setRightVoltage((rightProfiledFeedback.calculate(inputs.rightPositionMeters)));
-
+      io.setRightVoltage((rightProfiledFeedback.calculate(inputs.rightPositionMeters)));
     }
 
     if (DriverStation.isDisabled()) {

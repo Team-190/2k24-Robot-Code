@@ -5,7 +5,6 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
-
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -34,9 +33,10 @@ public class ClimberIOTalonFX implements ClimberIO {
   private final double GEAR_RATIO = 1.0;
   private final double DRUM_CIRCUMFERENCE = Units.inchesToMeters(1.0) * Math.PI;
 
-  private final Alert leftDisconnectedAlert = new Alert("Left climber Talon is disconnected, check CAN bus.", AlertType.ERROR);
-  private final Alert rightDisconnectedAlert = new Alert("Right climber Talon is disconnected, check CAN bus.",
-      AlertType.ERROR);
+  private final Alert leftDisconnectedAlert =
+      new Alert("Left climber Talon is disconnected, check CAN bus.", AlertType.ERROR);
+  private final Alert rightDisconnectedAlert =
+      new Alert("Right climber Talon is disconnected, check CAN bus.", AlertType.ERROR);
 
   public ClimberIOTalonFX() {
     switch (Constants.ROBOT) {
@@ -84,39 +84,52 @@ public class ClimberIOTalonFX implements ClimberIO {
     rightTempCelcius = rightTalon.getDeviceTemp();
 
     BaseStatusSignal.setUpdateFrequencyForAll(
-        50.0, leftPosition, leftVelocity, leftAppliedVolts, leftCurrentAmps, leftTempCelcius, rightPosition,
-        rightVelocity, rightAppliedVolts, rightCurrentAmps, rightTempCelcius);
+        50.0,
+        leftPosition,
+        leftVelocity,
+        leftAppliedVolts,
+        leftCurrentAmps,
+        leftTempCelcius,
+        rightPosition,
+        rightVelocity,
+        rightAppliedVolts,
+        rightCurrentAmps,
+        rightTempCelcius);
     leftTalon.optimizeBusUtilization();
     rightTalon.optimizeBusUtilization();
   }
-    
+
   @Override
   public void updateInputs(ClimberIOInputs inputs) {
-    boolean leftConnected = BaseStatusSignal
-        .refreshAll(leftPosition, leftVelocity, leftAppliedVolts, leftCurrentAmps, leftTempCelcius)
-        .isOK();
+    boolean leftConnected =
+        BaseStatusSignal.refreshAll(
+                leftPosition, leftVelocity, leftAppliedVolts, leftCurrentAmps, leftTempCelcius)
+            .isOK();
     leftDisconnectedAlert.set(!leftConnected);
 
-    boolean rightConnected = BaseStatusSignal
-        .refreshAll(rightPosition, rightVelocity, rightAppliedVolts, rightCurrentAmps, rightTempCelcius)
-        .isOK();
+    boolean rightConnected =
+        BaseStatusSignal.refreshAll(
+                rightPosition, rightVelocity, rightAppliedVolts, rightCurrentAmps, rightTempCelcius)
+            .isOK();
     rightDisconnectedAlert.set(!rightConnected);
 
     inputs.leftPositionMeters = leftPosition.getValueAsDouble() / GEAR_RATIO / DRUM_CIRCUMFERENCE;
-    inputs.leftVelocityMetersPerSec = Units.rotationsToRadians(leftVelocity.getValueAsDouble()) / GEAR_RATIO
-        / DRUM_CIRCUMFERENCE;
+    inputs.leftVelocityMetersPerSec =
+        Units.rotationsToRadians(leftVelocity.getValueAsDouble()) / GEAR_RATIO / DRUM_CIRCUMFERENCE;
     inputs.leftAppliedVolts = leftAppliedVolts.getValueAsDouble();
-    inputs.leftCurrentAmps = new double[] { leftCurrentAmps.getValueAsDouble() };
-    inputs.leftTempCelcius = new double[] { leftTempCelcius.getValueAsDouble() };
+    inputs.leftCurrentAmps = new double[] {leftCurrentAmps.getValueAsDouble()};
+    inputs.leftTempCelcius = new double[] {leftTempCelcius.getValueAsDouble()};
 
     inputs.rightPositionMeters = rightPosition.getValueAsDouble() / GEAR_RATIO / DRUM_CIRCUMFERENCE;
-    inputs.rightVelocityMetersPerSec = Units.rotationsToRadians(rightVelocity.getValueAsDouble()) / GEAR_RATIO
-        / DRUM_CIRCUMFERENCE;
+    inputs.rightVelocityMetersPerSec =
+        Units.rotationsToRadians(rightVelocity.getValueAsDouble())
+            / GEAR_RATIO
+            / DRUM_CIRCUMFERENCE;
     inputs.rightAppliedVolts = rightAppliedVolts.getValueAsDouble();
-    inputs.rightCurrentAmps = new double[] { rightCurrentAmps.getValueAsDouble() };
-    inputs.rightTempCelcius = new double[] { rightTempCelcius.getValueAsDouble() };
+    inputs.rightCurrentAmps = new double[] {rightCurrentAmps.getValueAsDouble()};
+    inputs.rightTempCelcius = new double[] {rightTempCelcius.getValueAsDouble()};
   }
-  
+
   @Override
   public void setLeftVoltage(double volts) {
     leftTalon.setControl(new VoltageOut(volts));
