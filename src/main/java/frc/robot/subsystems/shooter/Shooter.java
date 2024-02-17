@@ -34,8 +34,7 @@ public class Shooter extends SubsystemBase {
   private static final LoggedTunableNumber DEFAULT_SPEED =
       new LoggedTunableNumber("Shooter/Default Speed");
 
-  private static final LoggedTunableNumber AMP_SPEED =
-      new LoggedTunableNumber("Shooter/Amp Speed");
+  private static final LoggedTunableNumber AMP_SPEED = new LoggedTunableNumber("Shooter/Amp Speed");
 
   private final ShooterIO io;
   private final ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
@@ -175,7 +174,8 @@ public class Shooter extends SubsystemBase {
   }
 
   public Command runAmp() {
-    return runEnd(() -> {
+    return runEnd(
+        () -> {
           setVelocity(AMP_SPEED.get());
           isShooting = true;
         },

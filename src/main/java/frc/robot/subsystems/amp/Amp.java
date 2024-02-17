@@ -1,7 +1,5 @@
 package frc.robot.subsystems.amp;
 
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -9,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
+import org.littletonrobotics.junction.Logger;
 
 public class Amp extends SubsystemBase {
   private static final LoggedTunableNumber KP = new LoggedTunableNumber("Hood/Kp");
@@ -60,15 +59,16 @@ public class Amp extends SubsystemBase {
 
   public Amp(AmpIO io) {
     this.io = io;
-    profiledFeedback = new ProfiledPIDController(
-        KP.get(), 0.0, KD.get(), new Constraints(MAX_VELOCITY.get(), MAX_ACCELERATION.get()));
+    profiledFeedback =
+        new ProfiledPIDController(
+            KP.get(), 0.0, KD.get(), new Constraints(MAX_VELOCITY.get(), MAX_ACCELERATION.get()));
     setDefaultCommand(
         run(
             () -> {
               setPosition(STOWED_POSITION.get());
             }));
   }
-  
+
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Amp", inputs);
@@ -100,6 +100,6 @@ public class Amp extends SubsystemBase {
   }
 
   public Command setAmp() {
-      return runEnd(() -> setPosition(AMP_POSITION.get()), () -> setPosition(STOWED_POSITION.get()));
+    return runEnd(() -> setPosition(AMP_POSITION.get()), () -> setPosition(STOWED_POSITION.get()));
   }
 }

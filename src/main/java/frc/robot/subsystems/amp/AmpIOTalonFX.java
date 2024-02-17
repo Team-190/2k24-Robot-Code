@@ -5,7 +5,6 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
@@ -23,18 +22,19 @@ public class AmpIOTalonFX implements AmpIO {
 
   private final double GEAR_RATIO = 1.0;
 
-  private final Alert disconnecctedAlert = new Alert("Amp Talon is disconnected, check CAN bus.", AlertType.ERROR);
+  private final Alert disconnecctedAlert =
+      new Alert("Amp Talon is disconnected, check CAN bus.", AlertType.ERROR);
 
   public AmpIOTalonFX() {
     switch (Constants.ROBOT) {
       case ROBOT_2K24_C:
-        ampTalon = new TalonFX(41);
+        ampTalon = new TalonFX(47);
         break;
       case ROBOT_2K24_P:
-        ampTalon = new TalonFX(41);
+        ampTalon = new TalonFX(47);
         break;
       case ROBOT_2K24_TEST:
-        ampTalon = new TalonFX(41);
+        ampTalon = new TalonFX(47);
         break;
       default:
         throw new RuntimeException("Invalid robot");

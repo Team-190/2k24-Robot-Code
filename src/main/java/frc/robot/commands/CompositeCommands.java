@@ -60,11 +60,14 @@ public class CompositeCommands {
                 drive::getFieldRelativeVelocity));
   }
 
-  public static final Command getShootCommand(Feeder feeder) { // this will change to be automatic once the shooter is up to speed and will be along with any command that needs to shoot a note
+  public static final Command getShootCommand(
+      Feeder
+          feeder) { // this will change to be automatic once the shooter is up to speed and will be
+    // along with any command that needs to shoot a note
     return feeder.shoot();
   }
 
-  public static final Command getAmpCommand(Shooter shooter, Amp amp) {
-    return shooter.runAmp().alongWith(amp.setAmp());
+  public static final Command getAmpCommand(Shooter shooter, Hood hood, Amp amp) {
+    return shooter.runAmp().alongWith(hood.setAmp()).alongWith(amp.setAmp());
   }
 }

@@ -22,6 +22,9 @@ import frc.robot.Constants.Mode;
 import frc.robot.commands.CompositeCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.amp.Amp;
+import frc.robot.subsystems.amp.AmpIO;
+import frc.robot.subsystems.amp.AmpIOSim;
+import frc.robot.subsystems.amp.AmpIOTalonFX;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -85,8 +88,9 @@ public class RobotContainer {
                   new ModuleIOTalonFX(3));
           shooter = new Shooter(new ShooterIOTalonFX());
           hood = new Hood(new HoodIOTalonFX());
-          intake = new Intake(new IntakeIOTalonFX());
           feeder = new Feeder(new FeederIOTalonFX());
+          intake = new Intake(new IntakeIOTalonFX());
+          amp = new Amp(new AmpIOTalonFX());
           aprilTagVision =
               new Vision("AprilTagVision", new VisionIOLimelight(VisionMode.AprilTags));
           noteVision = new Vision("NoteVision", new VisionIOLimelight(VisionMode.Notes));
@@ -103,8 +107,9 @@ public class RobotContainer {
                   new ModuleIOSim());
           shooter = new Shooter(new ShooterIOSim());
           hood = new Hood(new HoodIOSim());
-          intake = new Intake(new IntakeIOSim());
           feeder = new Feeder(new FeederIOSim());
+          intake = new Intake(new IntakeIOSim());
+          amp = new Amp(new AmpIOSim());
           aprilTagVision =
               new Vision("AprilTagVision", new VisionIOSim(VisionMode.AprilTags, drive::getPose));
           noteVision = new Vision("NoteVision", new VisionIOSim(VisionMode.Notes, drive::getPose));
@@ -128,11 +133,14 @@ public class RobotContainer {
     if (hood == null) {
       hood = new Hood(new HoodIO() {});
     }
+    if (feeder == null) {
+      feeder = new Feeder(new FeederIO() {});
+    }
     if (intake == null) {
       intake = new Intake(new IntakeIO() {});
     }
-    if (feeder == null) {
-      feeder = new Feeder(new FeederIO() {});
+    if (amp == null) {
+      amp = new Amp(new AmpIO() {});
     }
     if (aprilTagVision == null) {
       aprilTagVision = new Vision("AprilTagVision", new VisionIO() {});
@@ -197,7 +205,7 @@ public class RobotContainer {
             controller.rightBumper()));
     controller.x().onTrue(DriveCommands.XLock(drive));
     controller.b().onTrue(DriveCommands.resetHeading(drive));
-    controller.y().whileTrue(CompositeCommands.getAmpCommand(shooter, amp));
+    controller.y().whileTrue(CompositeCommands.getAmpCommand(shooter, hood, amp));
     controller.leftTrigger().whileTrue(CompositeCommands.getCollectCommand(intake, feeder));
     controller.leftBumper().onTrue(CompositeCommands.getToggleIntakeCommand(intake));
     controller

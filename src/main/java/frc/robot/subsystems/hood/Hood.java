@@ -25,6 +25,9 @@ public class Hood extends SubsystemBase {
   private static final LoggedTunableNumber STOWED_POSITION =
       new LoggedTunableNumber("Hood/StowedPosition");
 
+  private static final LoggedTunableNumber AMP_POSITION =
+      new LoggedTunableNumber("Amp/AmpPosition");
+
   private final HoodIO io;
   private final HoodIOInputsAutoLogged inputs = new HoodIOInputsAutoLogged();
 
@@ -99,6 +102,10 @@ public class Hood extends SubsystemBase {
 
   private void setPosition(double positionRad) {
     profiledFeedback.setGoal(positionRad);
+  }
+
+  public Command setAmp() {
+    return runEnd(() -> setPosition(AMP_POSITION.get()), () -> setPosition(STOWED_POSITION.get()));
   }
 
   public Command setPosition(

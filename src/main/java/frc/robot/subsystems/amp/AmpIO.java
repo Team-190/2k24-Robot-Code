@@ -1,8 +1,7 @@
 package frc.robot.subsystems.amp;
 
-import org.littletonrobotics.junction.AutoLog;
-
 import edu.wpi.first.math.geometry.Rotation2d;
+import org.littletonrobotics.junction.AutoLog;
 
 public interface AmpIO {
   @AutoLog
@@ -14,8 +13,7 @@ public interface AmpIO {
     public double[] tempCelcius = new double[] {};
   }
 
-  public default void updateInputs(AmpIOInputs inputs) {
-  }
-  
+  public default void updateInputs(AmpIOInputs inputs) {}
+
   public default void setVoltage(double volts) {}
 }
