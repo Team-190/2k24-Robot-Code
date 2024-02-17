@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.Mode;
 import frc.robot.commands.CompositeCommands;
 import frc.robot.commands.DriveCommands;
+import frc.robot.subsystems.amp.Amp;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -57,6 +58,7 @@ public class RobotContainer {
   private Hood hood;
   private Feeder feeder;
   private Intake intake;
+  private Amp amp;
   private Vision aprilTagVision;
   private Vision noteVision;
 
@@ -195,6 +197,7 @@ public class RobotContainer {
             controller.rightBumper()));
     controller.x().onTrue(DriveCommands.XLock(drive));
     controller.b().onTrue(DriveCommands.resetHeading(drive));
+    controller.y().whileTrue(CompositeCommands.getAmpCommand(shooter, amp));
     controller.leftTrigger().whileTrue(CompositeCommands.getCollectCommand(intake, feeder));
     controller.leftBumper().onTrue(CompositeCommands.getToggleIntakeCommand(intake));
     controller

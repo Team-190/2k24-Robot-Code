@@ -3,6 +3,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.FieldConstants;
+import frc.robot.subsystems.amp.Amp;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.hood.Hood;
@@ -59,7 +60,11 @@ public class CompositeCommands {
                 drive::getFieldRelativeVelocity));
   }
 
-  public static final Command getShootCommand(Feeder feeder) {
+  public static final Command getShootCommand(Feeder feeder) { // this will change to be automatic once the shooter is up to speed and will be along with any command that needs to shoot a note
     return feeder.shoot();
+  }
+
+  public static final Command getAmpCommand(Shooter shooter, Amp amp) {
+    return shooter.runAmp().alongWith(amp.setAmp());
   }
 }
