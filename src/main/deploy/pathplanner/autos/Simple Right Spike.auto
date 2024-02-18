@@ -1,0 +1,55 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.56734614062348,
+      "y": 4.469830434322791
+    },
+    "rotation": 119.42745640318972
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Simple Right Spike #1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Track Note Spike"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Simple Right Spike #2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Track Speaker Close"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
