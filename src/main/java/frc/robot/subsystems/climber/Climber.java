@@ -3,6 +3,8 @@ package frc.robot.subsystems.climber;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
@@ -18,6 +20,12 @@ public class Climber extends SubsystemBase {
 
   private static final LoggedTunableNumber STOWED_POSITION =
       new LoggedTunableNumber("Climber/Stowed Position");
+
+  private static final LoggedTunableNumber HIGH_POSITION =
+      new LoggedTunableNumber("Climber/High Position");
+
+  private static final LoggedTunableNumber LOW_POSITION =
+      new LoggedTunableNumber("Climber/Low Position");
 
   private final ClimberIO io;
   private final ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
@@ -67,15 +75,15 @@ public class Climber extends SubsystemBase {
 
   public void periodic() {
     io.updateInputs(inputs);
-    Logger.processInputs("Hood", inputs);
+    Logger.processInputs("Climber", inputs);
 
     if (KP.hasChanged(hashCode())) {
       leftProfiledFeedback.setP(KP.get());
       rightProfiledFeedback.setP(KP.get());
     }
     if (KD.hasChanged(hashCode())) {
-      leftProfiledFeedback.setP(KD.get());
-      rightProfiledFeedback.setP(KD.get());
+      leftProfiledFeedback.setD(KD.get());
+      rightProfiledFeedback.setD(KD.get());
     }
     if (MAX_VELOCITY.hasChanged(hashCode()) || MAX_ACCELERATION.hasChanged(hashCode())) {
       leftProfiledFeedback.setConstraints(
@@ -100,12 +108,36 @@ public class Climber extends SubsystemBase {
     Logger.recordOutput("Climber/Right/setpoint", rightProfiledFeedback.getSetpoint().position);
   }
 
-  public void setLeftPosition(double leftPositionMeters) {
+  private void setLeftPosition(double leftPositionMeters) {
     leftProfiledFeedback.setGoal(leftPositionMeters);
   }
 
-  public void setRightPosition(double rightPositionMeters) {
+  private void setRightPosition(double rightPositionMeters) {
     rightProfiledFeedback.setGoal(rightPositionMeters);
+  }
+
+  public Command preClimbCenter() {
+    return Commands.runOnce(
+        () -> {
+          setLeftPosition(LOW_POSITION.get());
+          setRightPosition(LOW_POSITION.get());
+        });
+  }
+
+  public Command preClimbSide() {
+    return Commands.runOnce(
+        () -> {
+          setLeftPosition(HIGH_POSITION.get());
+          setRightPosition(HIGH_POSITION.get());
+        });
+  }
+
+  public Command climb() {
+    return Commands.runOnce(
+        () -> {
+          setLeftPosition(STOWED_POSITION.get());
+          setRightPosition(STOWED_POSITION.get());
+        });
   }
 
   private void stop() {

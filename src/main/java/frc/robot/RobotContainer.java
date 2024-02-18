@@ -25,6 +25,10 @@ import frc.robot.subsystems.amp.Amp;
 import frc.robot.subsystems.amp.AmpIO;
 import frc.robot.subsystems.amp.AmpIOSim;
 import frc.robot.subsystems.amp.AmpIOTalonFX;
+import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.climber.ClimberIO;
+import frc.robot.subsystems.climber.ClimberIOSim;
+import frc.robot.subsystems.climber.ClimberIOTalonFX;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -62,6 +66,7 @@ public class RobotContainer {
   private Feeder feeder;
   private Intake intake;
   private Amp amp;
+  private Climber climber;
   private Vision aprilTagVision;
   private Vision noteVision;
 
@@ -91,6 +96,7 @@ public class RobotContainer {
           feeder = new Feeder(new FeederIOTalonFX());
           intake = new Intake(new IntakeIOTalonFX());
           amp = new Amp(new AmpIOTalonFX());
+          climber = new Climber(new ClimberIOTalonFX());
           aprilTagVision =
               new Vision("AprilTagVision", new VisionIOLimelight(VisionMode.AprilTags));
           noteVision = new Vision("NoteVision", new VisionIOLimelight(VisionMode.Notes));
@@ -110,6 +116,7 @@ public class RobotContainer {
           feeder = new Feeder(new FeederIOSim());
           intake = new Intake(new IntakeIOSim());
           amp = new Amp(new AmpIOSim());
+          climber = new Climber(new ClimberIOSim());
           aprilTagVision =
               new Vision("AprilTagVision", new VisionIOSim(VisionMode.AprilTags, drive::getPose));
           noteVision = new Vision("NoteVision", new VisionIOSim(VisionMode.Notes, drive::getPose));
@@ -141,6 +148,9 @@ public class RobotContainer {
     }
     if (amp == null) {
       amp = new Amp(new AmpIO() {});
+    }
+    if (climber == null) {
+      climber = new Climber(new ClimberIO() {});
     }
     if (aprilTagVision == null) {
       aprilTagVision = new Vision("AprilTagVision", new VisionIO() {});
@@ -216,6 +226,9 @@ public class RobotContainer {
         .rightTrigger()
         .and(shooter::isShooting)
         .whileTrue(CompositeCommands.getShootCommand(feeder));
+    controller.back().onTrue(climber.preClimbCenter());
+    controller.start().onTrue(climber.preClimbSide());
+    controller.povUp().onTrue(climber.climb());
   }
 
   public Command getAutonomousCommand() {
