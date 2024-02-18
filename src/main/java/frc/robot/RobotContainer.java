@@ -23,8 +23,9 @@ import frc.robot.commands.CompositeCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.amp.Amp;
 import frc.robot.subsystems.amp.AmpIO;
-import frc.robot.subsystems.amp.AmpIOSim;
-import frc.robot.subsystems.amp.AmpIOTalonFX;
+import frc.robot.subsystems.amp.AmpIOPneumatics;
+// import frc.robot.subsystems.amp.AmpIOSim;
+// import frc.robot.subsystems.amp.AmpIOTalonFX;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
 import frc.robot.subsystems.climber.ClimberIOSim;
@@ -95,7 +96,7 @@ public class RobotContainer {
           hood = new Hood(new HoodIOTalonFX());
           feeder = new Feeder(new FeederIOTalonFX());
           intake = new Intake(new IntakeIOTalonFX());
-          amp = new Amp(new AmpIOTalonFX());
+          amp = new Amp(new AmpIOPneumatics());
           climber = new Climber(new ClimberIOTalonFX());
           aprilTagVision =
               new Vision("AprilTagVision", new VisionIOLimelight(VisionMode.AprilTags));
@@ -115,7 +116,7 @@ public class RobotContainer {
           hood = new Hood(new HoodIOSim());
           feeder = new Feeder(new FeederIOSim());
           intake = new Intake(new IntakeIOSim());
-          amp = new Amp(new AmpIOSim());
+          // amp = new Amp(new AmpIOSim());
           climber = new Climber(new ClimberIOSim());
           aprilTagVision =
               new Vision("AprilTagVision", new VisionIOSim(VisionMode.AprilTags, drive::getPose));
