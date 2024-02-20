@@ -23,9 +23,7 @@ import frc.robot.commands.CompositeCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.amp.Amp;
 import frc.robot.subsystems.amp.AmpIO;
-import frc.robot.subsystems.amp.AmpIOPneumatics;
-// import frc.robot.subsystems.amp.AmpIOSim;
-// import frc.robot.subsystems.amp.AmpIOTalonFX;
+import frc.robot.subsystems.amp.AmpIOTalonFX;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
 import frc.robot.subsystems.climber.ClimberIOSim;
@@ -96,7 +94,7 @@ public class RobotContainer {
           hood = new Hood(new HoodIOTalonFX());
           feeder = new Feeder(new FeederIOTalonFX());
           intake = new Intake(new IntakeIOTalonFX());
-          amp = new Amp(new AmpIOPneumatics());
+          amp = new Amp(new AmpIOTalonFX());
           climber = new Climber(new ClimberIOTalonFX());
           aprilTagVision =
               new Vision("AprilTagVision", new VisionIOLimelight(VisionMode.AprilTags));
