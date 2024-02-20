@@ -1,0 +1,109 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.6282936430447592,
+      "y": 4.521234211750008
+    },
+    "rotation": 118.73979529168801
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center Slide #1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Track Note Center"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center Slide #2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Track Note Center"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center Slide #3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Track Note Center"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center Slide #4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Track Note Center"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center Slide #5"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Track Note Center"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

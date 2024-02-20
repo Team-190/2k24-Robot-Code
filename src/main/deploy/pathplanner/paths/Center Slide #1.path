@@ -1,0 +1,55 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 0.6282936430447592,
+        "y": 4.521234211750008
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 0.3824396088098534,
+        "y": 0.6148867789065051
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.569766137058396,
+        "y": 0.7378137960273717
+      },
+      "prevControl": {
+        "x": 5.142446882753606,
+        "y": 0.6695210087433112
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0,
+      "rotationDegrees": 119.63838368815131,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 4.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 3.0,
+    "rotation": -178.5121324711722,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Center Slide",
+  "previewStartingState": null,
+  "useDefaultConstraints": false
+}
