@@ -4,12 +4,14 @@
   "holonomicMode": true,
   "pathFolders": [
     "6 Piece",
+    "Center Slide",
     "Center Sweep",
     "Left Auto",
+    "Left Spike",
     "Middle Auto",
-    "Center Slide",
+    "Middle Spike",
     "Right Auto",
-    "Simple Autos",
+    "Right Spike",
     "Spike Auto",
     "Spike+Center Sweep"
   ],
