@@ -65,8 +65,7 @@ public class AmpIOTalonFX implements AmpIO {
     disconnecctedAlert.set(!isConnected);
 
     inputs.position = Rotation2d.fromRotations(position.getValueAsDouble() / GEAR_RATIO);
-    inputs.velocityRadPerSec = Units.rotationsToRadians(velocity.getValueAsDouble() /
-GEAR_RATIO);
+    inputs.velocityRadPerSec = Units.rotationsToRadians(velocity.getValueAsDouble() / GEAR_RATIO);
     inputs.appliedVolts = appliedVolts.getValueAsDouble();
     inputs.currentAmps = new double[] {currentAmps.getValueAsDouble()};
     inputs.tempCelcius = new double[] {tempCelcius.getValueAsDouble()};
