@@ -23,7 +23,7 @@ public class KickerIOTalonFX implements KickerIO {
   private final double GEAR_RATIO = 2.0;
 
   private final Alert disconnectedAlert =
-      new Alert("Serializer Talon is disconnected, check CAN bus.", AlertType.ERROR);
+      new Alert("Kicker Talon is disconnected, check CAN bus.", AlertType.ERROR);
 
   public KickerIOTalonFX() {
     switch (Constants.ROBOT) {
