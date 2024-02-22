@@ -18,21 +18,32 @@ import frc.robot.subsystems.vision.VisionMode;
 import java.util.Optional;
 
 public class CompositeCommands {
-  public static final Command shootOnTheMove(
-      Drive drive, Serializer serializer, Kicker kicker, Vision vision) {
-    return Commands.run(
-            () -> {
-              if (vision.getRobotPose().isPresent()) {
-                PPHolonomicDriveController.setRotationTargetOverride(
-                    () ->
-                        Optional.of(
-                            ShotCalculator.calculate(
-                                    vision.getRobotPose().get().getTranslation(),
-                                    drive.getFieldRelativeVelocity())
-                                .robotAngle()));
-              }
-            })
-        .alongWith(getShootCommand(serializer, kicker));
+  public static final Command getCollectCommand(Intake intake, Serializer serializer) {
+    return Commands.sequence(
+        intake.deployIntake(), Commands.parallel(intake.runVoltage(), serializer.intake()));
+  }
+
+  public static final Command getToggleIntakeCommand(Intake intake) {
+    return intake.toggleIntake();
+  }
+
+  public static final Command getAccelerateShooterCommand(
+      Drive drive, Hood hood, Shooter shooter, Accelerator accelerator, Vision aprilTagVision) {
+    return shooter
+        .runVelocity()
+        .alongWith(
+            hood.setPosition(
+                () -> Optional.of(aprilTagVision.getRobotPose().get().getTranslation()),
+                drive::getFieldRelativeVelocity))
+        .alongWith(accelerator.runAccelerator());
+  }
+
+  public static final Command getShootCommand(Serializer serializer, Kicker kicker) {
+    return serializer.shoot().alongWith(kicker.shoot());
+  }
+
+  public static final Command getAmpCommand(Shooter shooter, Hood hood, Amp amp) {
+    return shooter.runAmp().alongWith(hood.setAmp()).alongWith(amp.setAmp());
   }
 
   public static final Command getTrackNoteCenterCommand(
@@ -62,31 +73,20 @@ public class CompositeCommands {
         drive, aprilTagVision, FieldConstants.startingLineX - 0.25, VisionMode.AprilTags);
   }
 
-  public static final Command getCollectCommand(Intake intake, Serializer serializer) {
-    return Commands.sequence(
-        intake.deployIntake(), Commands.parallel(intake.runVoltage(), serializer.intake()));
-  }
-
-  public static final Command getToggleIntakeCommand(Intake intake) {
-    return intake.toggleIntake();
-  }
-
-  public static final Command getAccelerateShooterCommand(
-      Drive drive, Hood hood, Shooter shooter, Accelerator accelerator, Vision aprilTagVision) {
-    return shooter
-        .runVelocity()
-        .alongWith(
-            hood.setPosition(
-                () -> Optional.of(aprilTagVision.getRobotPose().get().getTranslation()),
-                drive::getFieldRelativeVelocity))
-        .alongWith(accelerator.runAccelerator());
-  }
-
-  public static final Command getShootCommand(Serializer serializer, Kicker kicker) {
-    return serializer.shoot().alongWith(kicker.shoot());
-  }
-
-  public static final Command getAmpCommand(Shooter shooter, Hood hood, Amp amp) {
-    return shooter.runAmp().alongWith(hood.setAmp()).alongWith(amp.setAmp());
+  public static final Command shootOnTheMove(
+      Drive drive, Serializer serializer, Kicker kicker, Vision vision) {
+    return Commands.run(
+            () -> {
+              if (vision.getRobotPose().isPresent()) {
+                PPHolonomicDriveController.setRotationTargetOverride(
+                    () ->
+                        Optional.of(
+                            ShotCalculator.calculate(
+                                    vision.getRobotPose().get().getTranslation(),
+                                    drive.getFieldRelativeVelocity())
+                                .robotAngle()));
+              }
+            })
+        .alongWith(getShootCommand(serializer, kicker));
   }
 }
