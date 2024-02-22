@@ -54,7 +54,7 @@ public class Shooter extends SubsystemBase {
               Volts.of(0.2).per(Seconds.of(1.0)),
               Volts.of(3.5),
               Seconds.of(180.0),
-              (state) -> Logger.recordOutput("Shooter/sysIDState", state.toString())),
+              (state) -> Logger.recordOutput("Shooter/sysID State", state.toString())),
           new SysIdRoutine.Mechanism((volts) -> setVoltage(volts.in(Volts)), null, this));
 
   private static enum SpinDirection {
@@ -109,7 +109,6 @@ public class Shooter extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Shooter", inputs);
 
-    // Adjust models based on tunable numbers
     if (KP.hasChanged(hashCode())) {
       leftFeedback.setP(KP.get());
       rightFeedback.setP(KP.get());
@@ -119,7 +118,6 @@ public class Shooter extends SubsystemBase {
       rightFeedback.setD(KD.get());
     }
 
-    // Run control
     if (!isOpenLoop) {
       io.setLeftVoltage(
           leftFeedforward.calculate(leftFeedback.getSetpoint())

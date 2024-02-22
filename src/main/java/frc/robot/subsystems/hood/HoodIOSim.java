@@ -9,7 +9,7 @@ import frc.robot.Constants;
 
 public class HoodIOSim implements HoodIO {
   private static final double GEAR_RATIO = 88.0 / 14.0;
-  private SingleJointedArmSim hoodSim =
+  private SingleJointedArmSim armSim =
       new SingleJointedArmSim(
           DCMotor.getKrakenX60(1),
           GEAR_RATIO,
@@ -23,18 +23,18 @@ public class HoodIOSim implements HoodIO {
 
   @Override
   public void updateInputs(HoodIOInputs inputs) {
-    hoodSim.update(Constants.LOOP_PERIOD_SECS);
+    armSim.update(Constants.LOOP_PERIOD_SECS);
 
-    inputs.position = Rotation2d.fromRadians(hoodSim.getAngleRads());
-    inputs.velocityRadPerSec = hoodSim.getVelocityRadPerSec();
+    inputs.position = Rotation2d.fromRadians(armSim.getAngleRads());
+    inputs.velocityRadPerSec = armSim.getVelocityRadPerSec();
     inputs.appliedVolts = appliedVolts;
-    inputs.currentAmps = new double[] {Math.abs(hoodSim.getCurrentDrawAmps())};
+    inputs.currentAmps = new double[] {Math.abs(armSim.getCurrentDrawAmps())};
     inputs.tempCelcius = new double[] {};
   }
 
   @Override
   public void setVoltage(double volts) {
     appliedVolts = MathUtil.clamp(volts, -12.0, 12.0);
-    hoodSim.setInputVoltage(appliedVolts);
+    armSim.setInputVoltage(appliedVolts);
   }
 }

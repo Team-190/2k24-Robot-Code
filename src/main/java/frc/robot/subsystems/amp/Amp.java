@@ -10,18 +10,18 @@ import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
 public class Amp extends SubsystemBase {
-  private static final LoggedTunableNumber KP = new LoggedTunableNumber("Hood/Kp");
-  private static final LoggedTunableNumber KD = new LoggedTunableNumber("Hood/Kd");
+  private static final LoggedTunableNumber KP = new LoggedTunableNumber("Amp/Kp");
+  private static final LoggedTunableNumber KD = new LoggedTunableNumber("Amp/Kd");
   private static final LoggedTunableNumber MAX_VELOCITY =
-      new LoggedTunableNumber("Amp/MaxVelocity");
+      new LoggedTunableNumber("Amp/Max Velocity");
   private static final LoggedTunableNumber MAX_ACCELERATION =
-      new LoggedTunableNumber("Amp/MaxAcceleration");
+      new LoggedTunableNumber("Amp/Max Acceleration");
 
   private static final LoggedTunableNumber STOWED_POSITION =
-      new LoggedTunableNumber("Amp/StowedPosition");
+      new LoggedTunableNumber("Amp/Stowed Position");
 
   private static final LoggedTunableNumber AMP_POSITION =
-      new LoggedTunableNumber("Amp/AmpPosition");
+      new LoggedTunableNumber("Amp/Amp Position");
 
   private final AmpIO io;
   private final AmpIOInputsAutoLogged inputs = new AmpIOInputsAutoLogged();
@@ -91,8 +91,8 @@ public class Amp extends SubsystemBase {
       profiledFeedback.reset(inputs.position.getRadians(), 0);
     }
 
-    Logger.recordOutput("Amp/goal", profiledFeedback.getGoal().position);
-    Logger.recordOutput("Amp/setpoint", profiledFeedback.getSetpoint().position);
+    Logger.recordOutput("Amp/Goal", profiledFeedback.getGoal().position);
+    Logger.recordOutput("Amp/Setpoint", profiledFeedback.getSetpoint().position);
   }
 
   private void setPosition(double positionRad) {

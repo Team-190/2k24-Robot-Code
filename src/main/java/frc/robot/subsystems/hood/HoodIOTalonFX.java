@@ -28,13 +28,13 @@ public class HoodIOTalonFX implements HoodIO {
   public HoodIOTalonFX() {
     switch (Constants.ROBOT) {
       case ROBOT_2K24_C:
-        hoodTalon = new TalonFX(41);
+        hoodTalon = new TalonFX(45);
         break;
       case ROBOT_2K24_P:
-        hoodTalon = new TalonFX(41);
+        hoodTalon = new TalonFX(45);
         break;
       case ROBOT_2K24_TEST:
-        hoodTalon = new TalonFX(41);
+        hoodTalon = new TalonFX(45);
         break;
       default:
         throw new RuntimeException("Invalid robot");

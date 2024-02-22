@@ -9,7 +9,7 @@ import frc.robot.Constants;
 
 public class AmpIOSim implements AmpIO {
   private static final double GEAR_RATIO = 1.0;
-  private SingleJointedArmSim ampSim =
+  private SingleJointedArmSim armSim =
       new SingleJointedArmSim(
           DCMotor.getKrakenX60(1),
           GEAR_RATIO,
@@ -23,18 +23,18 @@ public class AmpIOSim implements AmpIO {
 
   @Override
   public void updateInputs(AmpIOInputs inputs) {
-    ampSim.update(Constants.LOOP_PERIOD_SECS);
+    armSim.update(Constants.LOOP_PERIOD_SECS);
 
-    inputs.position = Rotation2d.fromRadians(ampSim.getAngleRads());
-    inputs.velocityRadPerSec = ampSim.getVelocityRadPerSec();
+    inputs.position = Rotation2d.fromRadians(armSim.getAngleRads());
+    inputs.velocityRadPerSec = armSim.getVelocityRadPerSec();
     inputs.appliedVolts = appliedVolts;
-    inputs.currentAmps = new double[] {Math.abs(ampSim.getCurrentDrawAmps())};
+    inputs.currentAmps = new double[] {Math.abs(armSim.getCurrentDrawAmps())};
     inputs.tempCelcius = new double[] {};
   }
 
   @Override
   public void setVoltage(double volts) {
     appliedVolts = MathUtil.clamp(volts, -12.0, 12.0);
-    ampSim.setInputVoltage(appliedVolts);
+    armSim.setInputVoltage(appliedVolts);
   }
 }

@@ -16,15 +16,11 @@ public interface IntakeIO {
     public Value rightPosition = Value.kReverse;
   }
 
-  /** Updates the set of loggable inputs. */
   public default void updateInputs(IntakeIOInputs inputs) {}
 
-  /** Run the rollers motor at the specified voltage. */
   public default void setRollersVoltage(double volts) {}
 
-  /** set the intake to the specified position. */
   public default void setIntakePosition(Value position) {}
 
-  /** toggle the intake to the position it currently is not in */
   public default void toggleIntakePosition() {}
 }

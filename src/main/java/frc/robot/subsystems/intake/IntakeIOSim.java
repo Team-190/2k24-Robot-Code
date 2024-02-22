@@ -6,24 +6,24 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.Constants;
 
 public class IntakeIOSim implements IntakeIO {
-  private DCMotorSim rollersSim = new DCMotorSim(DCMotor.getKrakenX60(1), 2.0, 0.004);
+  private DCMotorSim motorSim = new DCMotorSim(DCMotor.getKrakenX60(1), 2.0, 0.004);
 
   private double rollersAppliedVolts = 0.0;
 
   @Override
   public void updateInputs(IntakeIOInputs inputs) {
-    rollersSim.update(Constants.LOOP_PERIOD_SECS);
+    motorSim.update(Constants.LOOP_PERIOD_SECS);
 
-    inputs.rollersPositionRad = rollersSim.getAngularPositionRad();
-    inputs.rollersVelocityRadPerSec = rollersSim.getAngularVelocityRadPerSec();
+    inputs.rollersPositionRad = motorSim.getAngularPositionRad();
+    inputs.rollersVelocityRadPerSec = motorSim.getAngularVelocityRadPerSec();
     inputs.rollersAppliedVolts = rollersAppliedVolts;
-    inputs.rollersCurrentAmps = new double[] {Math.abs(rollersSim.getCurrentDrawAmps())};
+    inputs.rollersCurrentAmps = new double[] {Math.abs(motorSim.getCurrentDrawAmps())};
     inputs.rollersTempCelcius = new double[] {};
   }
 
   @Override
   public void setRollersVoltage(double volts) {
     rollersAppliedVolts = MathUtil.clamp(volts, -12.0, 12.0);
-    rollersSim.setInputVoltage(rollersAppliedVolts);
+    motorSim.setInputVoltage(rollersAppliedVolts);
   }
 }

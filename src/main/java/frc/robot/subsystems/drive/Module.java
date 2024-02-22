@@ -28,13 +28,13 @@ import org.littletonrobotics.junction.Logger;
 public class Module {
   static final double ODOMETRY_FREQUENCY = 250.0;
   private static final LoggedTunableNumber WHEEL_RADIUS =
-      new LoggedTunableNumber("Drive/WheelRadius");
-  private static final LoggedTunableNumber DRIVE_KS = new LoggedTunableNumber("Drive/DriveKs");
-  private static final LoggedTunableNumber DRIVE_KV = new LoggedTunableNumber("Drive/DriveKv");
-  private static final LoggedTunableNumber DRIVE_KP = new LoggedTunableNumber("Drive/DriveKp");
-  private static final LoggedTunableNumber DRIVE_KD = new LoggedTunableNumber("Drive/DriveKd");
-  private static final LoggedTunableNumber TURN_KP = new LoggedTunableNumber("Drive/TurnKp");
-  private static final LoggedTunableNumber TURN_KD = new LoggedTunableNumber("Drive/TurnKd");
+      new LoggedTunableNumber("Drive/Wheel Radius");
+  private static final LoggedTunableNumber DRIVE_KS = new LoggedTunableNumber("Drive/Drive Ks");
+  private static final LoggedTunableNumber DRIVE_KV = new LoggedTunableNumber("Drive/Drive Kv");
+  private static final LoggedTunableNumber DRIVE_KP = new LoggedTunableNumber("Drive/Drive Kp");
+  private static final LoggedTunableNumber DRIVE_KD = new LoggedTunableNumber("Drive/Drive Kd");
+  private static final LoggedTunableNumber TURN_KP = new LoggedTunableNumber("Drive/Turn Kp");
+  private static final LoggedTunableNumber TURN_KD = new LoggedTunableNumber("Drive/Turn Kd");
   private static final double OUT_OF_SYNC_THRESHOLD = Units.degreesToRadians(30.0);
 
   private final ModuleIO io;

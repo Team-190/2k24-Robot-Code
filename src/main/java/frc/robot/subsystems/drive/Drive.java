@@ -124,7 +124,7 @@ public class Drive extends SubsystemBase {
         });
     PathPlannerLogging.setLogTargetPoseCallback(
         (targetPose) -> {
-          Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
+          Logger.recordOutput("Odometry/Trajectory Setpoint", targetPose);
         });
   }
 
@@ -149,7 +149,7 @@ public class Drive extends SubsystemBase {
     // Log empty setpoint states when disabled
     if (DriverStation.isDisabled()) {
       Logger.recordOutput("SwerveStates/Setpoints", new SwerveModuleState[] {});
-      Logger.recordOutput("SwerveStates/SetpointsOptimized", new SwerveModuleState[] {});
+      Logger.recordOutput("SwerveStates/Setpoints Optimized", new SwerveModuleState[] {});
     }
 
     // Update odometry
@@ -193,7 +193,7 @@ public class Drive extends SubsystemBase {
     }
 
     // Log CANivore utilization
-    Logger.recordOutput("Drive/CANivoreUtilization", CANBus.getStatus("drive").BusUtilization);
+    Logger.recordOutput("Drive/CANivore Utilization", CANBus.getStatus("drive").BusUtilization);
   }
 
   /**
@@ -216,7 +216,7 @@ public class Drive extends SubsystemBase {
 
     // Log setpoint states
     Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
-    Logger.recordOutput("SwerveStates/SetpointsOptimized", optimizedSetpointStates);
+    Logger.recordOutput("SwerveStates/Setpoints Optimized", optimizedSetpointStates);
     Logger.recordOutput("SwerveStates/X Component", getFieldRelativeVelocity().getX());
   }
 

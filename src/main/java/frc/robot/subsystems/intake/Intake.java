@@ -9,7 +9,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class Intake extends SubsystemBase {
   private static final LoggedTunableNumber rollersVoltage =
-      new LoggedTunableNumber("Rollers/voltage");
+      new LoggedTunableNumber("Intake/Voltage");
 
   private final IntakeIO io;
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();

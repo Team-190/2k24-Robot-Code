@@ -41,20 +41,20 @@ public class ClimberIOTalonFX implements ClimberIO {
   public ClimberIOTalonFX() {
     switch (Constants.ROBOT) {
       case ROBOT_2K24_C:
-        leftTalon = new TalonFX(48);
-        rightTalon = new TalonFX(49);
+        leftTalon = new TalonFX(43);
+        rightTalon = new TalonFX(44);
         leftLock = new Solenoid(PneumaticsModuleType.REVPH, 4);
         rightLock = new Solenoid(PneumaticsModuleType.REVPH, 5);
         break;
       case ROBOT_2K24_P:
-        leftTalon = new TalonFX(48);
-        rightTalon = new TalonFX(49);
+        leftTalon = new TalonFX(43);
+        rightTalon = new TalonFX(44);
         leftLock = new Solenoid(PneumaticsModuleType.REVPH, 4);
         rightLock = new Solenoid(PneumaticsModuleType.REVPH, 5);
         break;
       case ROBOT_2K24_TEST:
-        leftTalon = new TalonFX(48);
-        rightTalon = new TalonFX(49);
+        leftTalon = new TalonFX(43);
+        rightTalon = new TalonFX(44);
         leftLock = new Solenoid(PneumaticsModuleType.REVPH, 4);
         rightLock = new Solenoid(PneumaticsModuleType.REVPH, 5);
         break;

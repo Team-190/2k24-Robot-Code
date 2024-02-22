@@ -63,7 +63,6 @@ public class VisionIOSim implements VisionIO {
     }
   }
 
-  /** Updates the set of loggable inputs. */
   public void updateInputs(VisionIOInputs inputs) {
     Pose3d cameraPose = new Pose3d(poseSupplier.get()).transformBy(cameraTransform);
     Double closestNorm = null;

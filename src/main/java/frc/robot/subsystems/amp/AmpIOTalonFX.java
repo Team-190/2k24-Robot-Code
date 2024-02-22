@@ -28,13 +28,13 @@ public class AmpIOTalonFX implements AmpIO {
   public AmpIOTalonFX() {
     switch (Constants.ROBOT) {
       case ROBOT_2K24_C:
-        ampTalon = new TalonFX(47);
+        ampTalon = new TalonFX(42);
         break;
       case ROBOT_2K24_P:
-        ampTalon = new TalonFX(47);
+        ampTalon = new TalonFX(42);
         break;
       case ROBOT_2K24_TEST:
-        ampTalon = new TalonFX(47);
+        ampTalon = new TalonFX(42);
         break;
       default:
         throw new RuntimeException("Invalid robot");

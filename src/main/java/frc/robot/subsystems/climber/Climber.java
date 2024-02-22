@@ -14,9 +14,9 @@ public class Climber extends SubsystemBase {
   private static final LoggedTunableNumber KP = new LoggedTunableNumber("Climber/Kp");
   private static final LoggedTunableNumber KD = new LoggedTunableNumber("Climber/Kd");
   private static final LoggedTunableNumber MAX_VELOCITY =
-      new LoggedTunableNumber("Climber/MaxVelocity");
+      new LoggedTunableNumber("Climber/Max Velocity");
   private static final LoggedTunableNumber MAX_ACCELERATION =
-      new LoggedTunableNumber("Climber/MaxAcceleration");
+      new LoggedTunableNumber("Climber/Max Acceleration");
 
   private static final LoggedTunableNumber STOWED_POSITION =
       new LoggedTunableNumber("Climber/Stowed Position");
@@ -102,10 +102,10 @@ public class Climber extends SubsystemBase {
       rightProfiledFeedback.reset(inputs.rightPositionMeters, 0.0);
     }
 
-    Logger.recordOutput("Climber/Left/goal", leftProfiledFeedback.getGoal().position);
-    Logger.recordOutput("Climber/Left/setpoint", leftProfiledFeedback.getSetpoint().position);
-    Logger.recordOutput("Climber/Right/goal", rightProfiledFeedback.getGoal().position);
-    Logger.recordOutput("Climber/Right/setpoint", rightProfiledFeedback.getSetpoint().position);
+    Logger.recordOutput("Climber/Left/Goal", leftProfiledFeedback.getGoal().position);
+    Logger.recordOutput("Climber/Left/Setpoint", leftProfiledFeedback.getSetpoint().position);
+    Logger.recordOutput("Climber/Right/Goal", rightProfiledFeedback.getGoal().position);
+    Logger.recordOutput("Climber/Right/Setpoint", rightProfiledFeedback.getSetpoint().position);
   }
 
   private void setLeftPosition(double leftPositionMeters) {

@@ -18,7 +18,7 @@ public class Vision extends VirtualSubsystem {
   private final double CAMERA_OFFSET = Units.inchesToMeters(14);
   private final double SPEAKER_TAG_HEIGHT = Units.inchesToMeters(57.13);
   private final double CAMERA_HEIGHT = Units.inchesToMeters(13.375);
-  private final LoggedTunableNumber CAMERA_ANGLE = new LoggedTunableNumber("Vision/CameraAngle");
+  private final LoggedTunableNumber CAMERA_ANGLE = new LoggedTunableNumber("Vision/Camera Angle");
   private double lastValidTimeStamp = Double.NEGATIVE_INFINITY;
   private Pose2d lastValidRobotPose = new Pose2d();
   private static final double BUFFER_SECONDS = 3;
@@ -49,13 +49,13 @@ public class Vision extends VirtualSubsystem {
     Optional<Double> distance = getSpeakerDistance();
     Optional<Pose2d> calculatedRobotPose = getRobotPose();
     if (targetAngle.isPresent()) {
-      Logger.recordOutput(name + "/TargetAngle", targetAngle.get());
+      Logger.recordOutput(name + "/Target Angle", targetAngle.get());
     }
     if (distance.isPresent()) {
-      Logger.recordOutput(name + "/SpeakerDistance", distance.get());
+      Logger.recordOutput(name + "/Speaker Distance", distance.get());
     }
     if (calculatedRobotPose.isPresent()) {
-      Logger.recordOutput(name + "/CalculatedRobotPose", calculatedRobotPose.get());
+      Logger.recordOutput(name + "/Calculated Robot Pose", calculatedRobotPose.get());
     }
   }
 

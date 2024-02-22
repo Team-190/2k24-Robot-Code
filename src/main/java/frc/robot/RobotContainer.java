@@ -21,8 +21,13 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.Mode;
 import frc.robot.commands.CompositeCommands;
 import frc.robot.commands.DriveCommands;
+import frc.robot.subsystems.accelerator.Accelerator;
+import frc.robot.subsystems.accelerator.AcceleratorIO;
+import frc.robot.subsystems.accelerator.AcceleratorIOSim;
+import frc.robot.subsystems.accelerator.AcceleratorIOTalonFX;
 import frc.robot.subsystems.amp.Amp;
 import frc.robot.subsystems.amp.AmpIO;
+import frc.robot.subsystems.amp.AmpIOSim;
 import frc.robot.subsystems.amp.AmpIOTalonFX;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
@@ -34,10 +39,6 @@ import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
-import frc.robot.subsystems.feeder.Feeder;
-import frc.robot.subsystems.feeder.FeederIO;
-import frc.robot.subsystems.feeder.FeederIOSim;
-import frc.robot.subsystems.feeder.FeederIOTalonFX;
 import frc.robot.subsystems.hood.Hood;
 import frc.robot.subsystems.hood.HoodIO;
 import frc.robot.subsystems.hood.HoodIOSim;
@@ -46,6 +47,14 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.intake.IntakeIOTalonFX;
+import frc.robot.subsystems.kicker.Kicker;
+import frc.robot.subsystems.kicker.KickerIO;
+import frc.robot.subsystems.kicker.KickerIOSim;
+import frc.robot.subsystems.kicker.KickerIOTalonFX;
+import frc.robot.subsystems.serializer.Serializer;
+import frc.robot.subsystems.serializer.SerializerIO;
+import frc.robot.subsystems.serializer.SerializerIOSim;
+import frc.robot.subsystems.serializer.SerializerIOTalonFX;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.ShooterIOSim;
@@ -62,8 +71,10 @@ public class RobotContainer {
   private Drive drive;
   private Shooter shooter;
   private Hood hood;
-  private Feeder feeder;
   private Intake intake;
+  private Serializer serializer;
+  private Kicker kicker;
+  private Accelerator accelerator;
   private Amp amp;
   private Climber climber;
   private Vision aprilTagVision;
@@ -92,8 +103,10 @@ public class RobotContainer {
                   new ModuleIOTalonFX(3));
           shooter = new Shooter(new ShooterIOTalonFX());
           hood = new Hood(new HoodIOTalonFX());
-          feeder = new Feeder(new FeederIOTalonFX());
           intake = new Intake(new IntakeIOTalonFX());
+          serializer = new Serializer(new SerializerIOTalonFX());
+          kicker = new Kicker(new KickerIOTalonFX());
+          accelerator = new Accelerator(new AcceleratorIOTalonFX());
           amp = new Amp(new AmpIOTalonFX());
           climber = new Climber(new ClimberIOTalonFX());
           aprilTagVision =
@@ -112,9 +125,11 @@ public class RobotContainer {
                   new ModuleIOSim());
           shooter = new Shooter(new ShooterIOSim());
           hood = new Hood(new HoodIOSim());
-          feeder = new Feeder(new FeederIOSim());
           intake = new Intake(new IntakeIOSim());
-          // amp = new Amp(new AmpIOSim());
+          serializer = new Serializer(new SerializerIOSim());
+          kicker = new Kicker(new KickerIOSim());
+          accelerator = new Accelerator(new AcceleratorIOSim());
+          amp = new Amp(new AmpIOSim());
           climber = new Climber(new ClimberIOSim());
           aprilTagVision =
               new Vision("AprilTagVision", new VisionIOSim(VisionMode.AprilTags, drive::getPose));
@@ -139,11 +154,17 @@ public class RobotContainer {
     if (hood == null) {
       hood = new Hood(new HoodIO() {});
     }
-    if (feeder == null) {
-      feeder = new Feeder(new FeederIO() {});
-    }
     if (intake == null) {
       intake = new Intake(new IntakeIO() {});
+    }
+    if (serializer == null) {
+      serializer = new Serializer(new SerializerIO() {});
+    }
+    if (kicker == null) {
+      kicker = new Kicker(new KickerIO() {});
+    }
+    if (accelerator == null) {
+      accelerator = new Accelerator(new AcceleratorIO() {});
     }
     if (amp == null) {
       amp = new Amp(new AmpIO() {});
@@ -165,10 +186,10 @@ public class RobotContainer {
     // Pathplanner commands
     NamedCommands.registerCommand(
         "Track Note Center",
-        CompositeCommands.getTrackNoteCenterCommand(drive, intake, feeder, noteVision));
+        CompositeCommands.getTrackNoteCenterCommand(drive, intake, serializer, noteVision));
     NamedCommands.registerCommand(
         "Track Note Spike",
-        CompositeCommands.getTrackNoteSpikeCommand(drive, intake, feeder, noteVision));
+        CompositeCommands.getTrackNoteSpikeCommand(drive, intake, serializer, noteVision));
     NamedCommands.registerCommand(
         "Track Speaker Far",
         CompositeCommands.getTrackSpeakerFarCommand(drive, hood, shooter, aprilTagVision));
@@ -176,7 +197,10 @@ public class RobotContainer {
         "Track Speaker Close",
         CompositeCommands.getTrackSpeakerCloseCommand(drive, hood, shooter, aprilTagVision));
     NamedCommands.registerCommand(
-        "Shoot", CompositeCommands.getShootCommand(feeder).withTimeout(0.5));
+        "Shoot", CompositeCommands.getShootCommand(serializer, kicker).withTimeout(0.5));
+    NamedCommands.registerCommand(
+        "Shoot On The Move",
+        CompositeCommands.shootOnTheMove(drive, serializer, kicker, aprilTagVision));
 
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
@@ -215,16 +239,17 @@ public class RobotContainer {
     controller.x().onTrue(DriveCommands.XLock(drive));
     controller.b().onTrue(DriveCommands.resetHeading(drive));
     controller.y().whileTrue(CompositeCommands.getAmpCommand(shooter, hood, amp));
-    controller.leftTrigger().whileTrue(CompositeCommands.getCollectCommand(intake, feeder));
+    controller.leftTrigger().whileTrue(CompositeCommands.getCollectCommand(intake, serializer));
     controller.leftBumper().onTrue(CompositeCommands.getToggleIntakeCommand(intake));
     controller
         .a()
         .toggleOnTrue(
-            CompositeCommands.getAccelerateShooterCommand(drive, hood, shooter, aprilTagVision));
+            CompositeCommands.getAccelerateShooterCommand(
+                drive, hood, shooter, accelerator, aprilTagVision));
     controller
         .rightTrigger()
         .and(shooter::isShooting)
-        .whileTrue(CompositeCommands.getShootCommand(feeder));
+        .whileTrue(CompositeCommands.getShootCommand(serializer, kicker));
     controller.back().onTrue(climber.preClimbCenter());
     controller.start().onTrue(climber.preClimbSide());
     controller.povUp().onTrue(climber.climb());
@@ -237,6 +262,6 @@ public class RobotContainer {
             .get()
             .alongWith(
                 CompositeCommands.getAccelerateShooterCommand(
-                    drive, hood, shooter, aprilTagVision));
+                    drive, hood, shooter, accelerator, aprilTagVision));
   }
 }

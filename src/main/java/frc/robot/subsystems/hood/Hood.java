@@ -18,15 +18,15 @@ public class Hood extends SubsystemBase {
   private static final LoggedTunableNumber KP = new LoggedTunableNumber("Hood/Kp");
   private static final LoggedTunableNumber KD = new LoggedTunableNumber("Hood/Kd");
   private static final LoggedTunableNumber MAX_VELOCITY =
-      new LoggedTunableNumber("Hood/MaxVelocity");
+      new LoggedTunableNumber("Hood/Max Velocity");
   private static final LoggedTunableNumber MAX_ACCELERATION =
-      new LoggedTunableNumber("Hood/MaxAcceleration");
+      new LoggedTunableNumber("Hood/Max Acceleration");
 
   private static final LoggedTunableNumber STOWED_POSITION =
-      new LoggedTunableNumber("Hood/StowedPosition");
+      new LoggedTunableNumber("Hood/Stowed Position");
 
   private static final LoggedTunableNumber AMP_POSITION =
-      new LoggedTunableNumber("Amp/AmpPosition");
+      new LoggedTunableNumber("Hood/Amp Position");
 
   private final HoodIO io;
   private final HoodIOInputsAutoLogged inputs = new HoodIOInputsAutoLogged();

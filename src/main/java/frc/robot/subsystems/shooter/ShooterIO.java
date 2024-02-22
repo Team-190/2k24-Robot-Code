@@ -18,12 +18,9 @@ public interface ShooterIO {
     public double[] rightTempCelcius = new double[] {};
   }
 
-  /** Updates the set of loggable inputs. */
   public default void updateInputs(ShooterIOInputs inputs) {}
 
-  /** Run the left shooter motor at the specified voltage. */
   public default void setLeftVoltage(double volts) {}
 
-  /** Run the right shooter motor at the specified voltage. */
   public default void setRightVoltage(double volts) {}
 }
