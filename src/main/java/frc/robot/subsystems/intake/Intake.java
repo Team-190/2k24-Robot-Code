@@ -1,6 +1,5 @@
 package frc.robot.subsystems.intake;
 
-import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -44,7 +43,7 @@ public class Intake extends SubsystemBase {
     io.setRollersVoltage(0.0);
   }
 
-  private void setIntakePosition(Value position) {
+  private void setIntakePosition(boolean position) {
     io.setIntakePosition(position);
   }
 
@@ -57,11 +56,11 @@ public class Intake extends SubsystemBase {
   }
 
   public Command deployIntake() {
-    return runOnce(() -> setIntakePosition(Value.kForward));
+    return runOnce(() -> setIntakePosition(true));
   }
 
   public Command retractIntake() {
-    return runOnce(() -> setIntakePosition(Value.kReverse));
+    return runOnce(() -> setIntakePosition(false));
   }
 
   public Command toggleIntake() {

@@ -23,6 +23,10 @@ public class CompositeCommands {
         intake.deployIntake(), Commands.parallel(intake.runVoltage(), serializer.intake()));
   }
 
+  public static final Command getRetractCommand(Intake intake) {
+    return intake.retractIntake();
+  }
+
   public static final Command getToggleIntakeCommand(Intake intake) {
     return intake.toggleIntake();
   }

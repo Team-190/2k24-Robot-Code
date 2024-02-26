@@ -6,17 +6,16 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.Solenoid;
 import frc.robot.Constants;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
 
 public class IntakeIOTalonFX implements IntakeIO {
   private final TalonFX rollersTalon;
-  private final DoubleSolenoid leftSolenoid;
-  private final DoubleSolenoid rightSolenoid;
+  private final Solenoid leftSolenoid;
+  private final Solenoid rightSolenoid;
 
   private final StatusSignal<Double> rollersPosition;
   private final StatusSignal<Double> rollersVelocity;
@@ -33,18 +32,18 @@ public class IntakeIOTalonFX implements IntakeIO {
     switch (Constants.ROBOT) {
       case ROBOT_2K24_C:
         rollersTalon = new TalonFX(46);
-        leftSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 0, 1);
-        rightSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 2, 3);
+        leftSolenoid = new Solenoid(PneumaticsModuleType.REVPH, 0);
+        rightSolenoid = new Solenoid(PneumaticsModuleType.REVPH, 1);
         break;
       case ROBOT_2K24_P:
         rollersTalon = new TalonFX(46);
-        leftSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 0, 1);
-        rightSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 2, 3);
+        leftSolenoid = new Solenoid(PneumaticsModuleType.REVPH, 0);
+        rightSolenoid = new Solenoid(PneumaticsModuleType.REVPH, 1);
         break;
       case ROBOT_2K24_TEST:
         rollersTalon = new TalonFX(46);
-        leftSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 0, 1);
-        rightSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 2, 3);
+        leftSolenoid = new Solenoid(PneumaticsModuleType.REVPH, 0);
+        rightSolenoid = new Solenoid(PneumaticsModuleType.REVPH, 1);
         break;
       default:
         throw new RuntimeException("Invalid robot");
@@ -97,7 +96,7 @@ public class IntakeIOTalonFX implements IntakeIO {
   }
 
   @Override
-  public void setIntakePosition(Value position) {
+  public void setIntakePosition(boolean position) {
     leftSolenoid.set(position);
     rightSolenoid.set(position);
   }
