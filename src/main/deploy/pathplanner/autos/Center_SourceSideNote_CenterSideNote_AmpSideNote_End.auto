@@ -46,6 +46,54 @@
           "data": {
             "name": "Shoot"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center to Center Side Note"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Track Note Spike"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Track Speaker Close"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center to Amp Side Note"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Track Note Spike"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Track Speaker Close"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
         }
       ]
     }
