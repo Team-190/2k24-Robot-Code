@@ -1,0 +1,49 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.306369297923781,
+      "y": 5.561643924213775
+    },
+    "rotation": 180.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "Delay"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center to Source Side Note"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Track Note Spike"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Track Speaker Close"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
