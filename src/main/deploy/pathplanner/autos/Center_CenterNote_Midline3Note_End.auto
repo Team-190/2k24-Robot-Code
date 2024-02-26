@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.306369297923781,
-      "y": 5.561643924213775
+      "x": 1.2490196273393739,
+      "y": 5.57998439840296
     },
-    "rotation": 180.0
+    "rotation": -177.51044707800085
   },
   "command": {
     "type": "sequential",
@@ -26,7 +26,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Center to Source Side Note"
+            "pathName": "Center to Center Note"
           }
         },
         {
@@ -50,43 +50,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Center to Center Side Note"
+            "pathName": "Center Note to Midline3 Note"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "Track Note Spike"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Track Speaker Close"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Center to Amp Side Note"
+            "pathName": "Midline3 Note to End"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Track Note Spike"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Track Speaker Close"
+            "name": "Track Speaker Far"
           }
         },
         {

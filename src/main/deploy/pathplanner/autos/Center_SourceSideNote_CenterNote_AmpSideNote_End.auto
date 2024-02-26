@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.2490196273393739,
-      "y": 5.57998439840296
+      "x": 1.306369297923781,
+      "y": 5.561643924213775
     },
-    "rotation": -177.51044707800085
+    "rotation": 180.0
   },
   "command": {
     "type": "sequential",
@@ -15,6 +15,30 @@
           "type": "named",
           "data": {
             "name": "Delay"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center to Source Side Note"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Track Note Spike"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Track Speaker Close"
           }
         },
         {
@@ -50,7 +74,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Center Note to Center3 Note"
+            "pathName": "Center to Amp Side Note"
           }
         },
         {
@@ -60,15 +84,9 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "Center3 Note to End"
-          }
-        },
-        {
           "type": "named",
           "data": {
-            "name": "Track Speaker Far"
+            "name": "Track Speaker Close"
           }
         },
         {
