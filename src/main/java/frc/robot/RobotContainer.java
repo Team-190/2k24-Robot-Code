@@ -13,7 +13,6 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -21,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.Mode;
+import frc.robot.commands.AutoCommands;
 import frc.robot.commands.CompositeCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.accelerator.Accelerator;
@@ -67,6 +67,8 @@ import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.subsystems.vision.VisionIOSim;
 import frc.robot.subsystems.vision.VisionMode;
 import frc.robot.util.AutoSelector;
+import frc.robot.util.AutoSelector.AutoQuestion;
+import frc.robot.util.AutoSelector.AutoQuestionResponse;
 import java.util.List;
 
 public class RobotContainer {
@@ -187,14 +189,36 @@ public class RobotContainer {
     noteVision.setDrivePoseSupplier(drive::getPose);
 
     System.out.println("[Init] Instantiating auto routines");
-    autoSelector.addRoutine(
-        "Start: Subwoofer Amp Side", List.of(), AutoBuilder.buildAuto("")); // FIXME
+
+    AutoCommands autoCommands = new AutoCommands(autoSelector::getResponses);
 
     autoSelector.addRoutine(
-        "Start: Subwoofer Center", List.of(), AutoBuilder.buildAuto("")); // FIXME
+        "One Piece (Midline Sweep)",
+        List.of(
+            new AutoQuestion(
+                "Which Side?",
+                List.of(
+                    AutoQuestionResponse.AMP_SIDE,
+                    AutoQuestionResponse.CENTER,
+                    AutoQuestionResponse.SOURCE_SIDE))),
+        autoCommands.onePiece());
 
     autoSelector.addRoutine(
-        "Start: Subwoofer Source Side", List.of(), AutoBuilder.buildAuto("")); // FIXME
+        "Two Piece",
+        List.of(
+            new AutoQuestion(
+                "Which Side?",
+                List.of(
+                    AutoQuestionResponse.AMP_SIDE,
+                    AutoQuestionResponse.CENTER,
+                    AutoQuestionResponse.SOURCE_SIDE)),
+            new AutoQuestion(
+                "Which Piece?",
+                List.of(
+                    AutoQuestionResponse.AMP_SIDE,
+                    AutoQuestionResponse.CENTER,
+                    AutoQuestionResponse.SOURCE_SIDE))),
+        autoCommands.twoPiece());
 
     // Pathplanner commands
     NamedCommands.registerCommand(
