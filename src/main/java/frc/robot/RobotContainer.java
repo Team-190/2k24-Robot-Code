@@ -220,6 +220,14 @@ public class RobotContainer {
                     AutoQuestionResponse.SOURCE_SIDE))),
         autoCommands.twoPiece());
 
+    autoSelector.addRoutine(
+        "Three Piece",
+        List.of(
+            new AutoQuestion(
+                "Which Side?",
+                List.of(AutoQuestionResponse.CENTER, AutoQuestionResponse.SOURCE_SIDE))),
+        autoCommands.threePiece());
+
     // Pathplanner commands
     NamedCommands.registerCommand(
         "Delay", Commands.waitSeconds(SmartDashboard.getNumber("Auto Start Shooting Delay", 0.0)));

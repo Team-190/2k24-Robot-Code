@@ -44,4 +44,14 @@ public class AutoCommands {
             AutoBuilder.buildAuto("SourceSide_SourceSideNote_End")),
         () -> responses.get().get(0));
   }
+
+  public Command threePiece() {
+    return Commands.select(
+        Map.of(
+            AutoQuestionResponse.CENTER,
+            AutoBuilder.buildAuto("Center_CenterNote_Midline3Note_End"),
+            AutoQuestionResponse.SOURCE_SIDE,
+            AutoBuilder.buildAuto("SourceSide_SourceSideNote_Mideline5_End")),
+        () -> responses.get().get(0));
+  }
 }
