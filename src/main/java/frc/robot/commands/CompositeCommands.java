@@ -46,6 +46,12 @@ public class CompositeCommands {
     return serializer.shoot().alongWith(kicker.shoot());
   }
 
+  public static final Command getFeedCommand(Intake intake, Serializer serializer, Kicker kicker) {
+    return Commands.sequence(
+        intake.deployIntake(),
+        Commands.parallel(intake.runVoltage(), serializer.intake(), kicker.shoot()));
+  }
+
   public static final Command getAmpCommand(Shooter shooter, Hood hood, Amp amp) {
     return shooter.runAmp().alongWith(hood.setAmp()).alongWith(amp.setAmp());
   }

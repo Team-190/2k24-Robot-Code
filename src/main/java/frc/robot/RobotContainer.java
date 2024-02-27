@@ -187,6 +187,12 @@ public class RobotContainer {
 
     // Pathplanner commands
     NamedCommands.registerCommand(
+        "Delay", Commands.waitSeconds(SmartDashboard.getNumber("Auto Start Shooting Delay", 0.0)));
+    NamedCommands.registerCommand(
+        "Shoot", CompositeCommands.getShootCommand(serializer, kicker).withTimeout(0.5));
+    NamedCommands.registerCommand(
+        "Feed", CompositeCommands.getFeedCommand(intake, serializer, kicker));
+    NamedCommands.registerCommand(
         "Track Note Center",
         CompositeCommands.getTrackNoteCenterCommand(drive, intake, serializer, noteVision));
     NamedCommands.registerCommand(
@@ -199,12 +205,8 @@ public class RobotContainer {
         "Track Speaker Close",
         CompositeCommands.getTrackSpeakerCloseCommand(drive, hood, shooter, aprilTagVision));
     NamedCommands.registerCommand(
-        "Shoot", CompositeCommands.getShootCommand(serializer, kicker).withTimeout(0.5));
-    NamedCommands.registerCommand(
         "Shoot On The Move",
         CompositeCommands.shootOnTheMove(drive, serializer, kicker, aprilTagVision));
-    NamedCommands.registerCommand(
-        "Delay", Commands.waitSeconds(SmartDashboard.getNumber("Auto Start Shooting Delay", 0.0)));
 
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 

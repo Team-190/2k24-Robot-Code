@@ -36,13 +36,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Shoot"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Collect"
+                  "name": "Feed"
                 }
               }
             ]
