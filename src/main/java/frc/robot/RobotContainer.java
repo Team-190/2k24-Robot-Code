@@ -66,7 +66,8 @@ import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.subsystems.vision.VisionIOSim;
 import frc.robot.subsystems.vision.VisionMode;
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+import frc.robot.util.AutoSelector;
+import java.util.List;
 
 public class RobotContainer {
   // Subsystems
@@ -86,7 +87,7 @@ public class RobotContainer {
   private final CommandXboxController controller = new CommandXboxController(0);
 
   // Dashboard inputs
-  private final LoggedDashboardChooser<Command> autoChooser;
+  private final AutoSelector autoSelector = new AutoSelector("Auto");
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -185,6 +186,16 @@ public class RobotContainer {
     aprilTagVision.setDrivePoseSupplier(drive::getPose);
     noteVision.setDrivePoseSupplier(drive::getPose);
 
+    System.out.println("[Init] Instantiating auto routines");
+    autoSelector.addRoutine(
+        "Start: Subwoofer Amp Side", List.of(), AutoBuilder.buildAuto("")); // FIXME
+
+    autoSelector.addRoutine(
+        "Start: Subwoofer Center", List.of(), AutoBuilder.buildAuto("")); // FIXME
+
+    autoSelector.addRoutine(
+        "Start: Subwoofer Source Side", List.of(), AutoBuilder.buildAuto("")); // FIXME
+
     // Pathplanner commands
     NamedCommands.registerCommand(
         "Delay", Commands.waitSeconds(SmartDashboard.getNumber("Auto Start Shooting Delay", 0.0)));
@@ -208,23 +219,25 @@ public class RobotContainer {
         "Shoot On The Move",
         CompositeCommands.shootOnTheMove(drive, serializer, kicker, aprilTagVision));
 
-    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
-
     // Set up SysId
     if (Constants.TUNING_MODE) {
-      autoChooser.addOption(
+      autoSelector.addRoutine(
           "Drive SysId (Quasistatic Forward)",
+          List.of(),
           DriveCommands.runSysIdQuasistatic(drive, Direction.kForward));
-      autoChooser.addOption(
+      autoSelector.addRoutine(
           "Drive SysId (Quasistatic Reverse)",
+          List.of(),
           DriveCommands.runSysIdQuasistatic(drive, Direction.kReverse));
-      autoChooser.addOption(
+      autoSelector.addRoutine(
           "Drive SysId (Dynamic Forward)",
+          List.of(),
           DriveCommands.runSysIdDynamic(drive, Direction.kForward));
-      autoChooser.addOption(
+      autoSelector.addRoutine(
           "Drive SysId (Dynamic Reverse)",
+          List.of(),
           DriveCommands.runSysIdDynamic(drive, Direction.kReverse));
-      autoChooser.addOption("Shooter SysId", shooter.runSysId());
+      autoSelector.addRoutine("Shooter SysId", List.of(), shooter.runSysId());
     }
 
     // Configure the button bindings
@@ -263,9 +276,9 @@ public class RobotContainer {
 
   public Command getAutonomousCommand() {
     return Constants.TUNING_MODE
-        ? autoChooser.get()
-        : autoChooser
-            .get()
+        ? autoSelector.getCommand()
+        : autoSelector
+            .getCommand()
             .alongWith(
                 CompositeCommands.getAccelerateShooterCommand(
                     drive, hood, shooter, accelerator, aprilTagVision));
