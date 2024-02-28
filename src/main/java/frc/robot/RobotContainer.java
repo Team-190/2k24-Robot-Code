@@ -13,6 +13,7 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -20,7 +21,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.Mode;
-import frc.robot.commands.AutoCommands;
 import frc.robot.commands.CompositeCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.accelerator.Accelerator;
@@ -66,10 +66,7 @@ import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.subsystems.vision.VisionIOSim;
 import frc.robot.subsystems.vision.VisionMode;
-import frc.robot.util.AutoSelector;
-import frc.robot.util.AutoSelector.AutoQuestion;
-import frc.robot.util.AutoSelector.AutoQuestionResponse;
-import java.util.List;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {
   // Subsystems
@@ -89,7 +86,7 @@ public class RobotContainer {
   private final CommandXboxController controller = new CommandXboxController(0);
 
   // Dashboard inputs
-  private final AutoSelector autoSelector = new AutoSelector("Auto");
+  private final LoggedDashboardChooser<Command> autoChooser;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -188,46 +185,6 @@ public class RobotContainer {
     aprilTagVision.setDrivePoseSupplier(drive::getPose);
     noteVision.setDrivePoseSupplier(drive::getPose);
 
-    System.out.println("[Init] Instantiating auto routines");
-
-    AutoCommands autoCommands = new AutoCommands(autoSelector::getResponses);
-
-    autoSelector.addRoutine(
-        "One Piece (Midline Sweep)",
-        List.of(
-            new AutoQuestion(
-                "Which Side?",
-                List.of(
-                    AutoQuestionResponse.AMP_SIDE,
-                    AutoQuestionResponse.CENTER,
-                    AutoQuestionResponse.SOURCE_SIDE))),
-        autoCommands.onePiece());
-
-    autoSelector.addRoutine(
-        "Two Piece",
-        List.of(
-            new AutoQuestion(
-                "Which Side?",
-                List.of(
-                    AutoQuestionResponse.AMP_SIDE,
-                    AutoQuestionResponse.CENTER,
-                    AutoQuestionResponse.SOURCE_SIDE)),
-            new AutoQuestion(
-                "Which Piece?",
-                List.of(
-                    AutoQuestionResponse.AMP_SIDE,
-                    AutoQuestionResponse.CENTER,
-                    AutoQuestionResponse.SOURCE_SIDE))),
-        autoCommands.twoPiece());
-
-    autoSelector.addRoutine(
-        "Three Piece",
-        List.of(
-            new AutoQuestion(
-                "Which Side?",
-                List.of(AutoQuestionResponse.CENTER, AutoQuestionResponse.SOURCE_SIDE))),
-        autoCommands.threePiece());
-
     // Pathplanner commands
     NamedCommands.registerCommand(
         "Delay", Commands.waitSeconds(SmartDashboard.getNumber("Auto Start Shooting Delay", 0.0)));
@@ -251,25 +208,23 @@ public class RobotContainer {
         "Shoot On The Move",
         CompositeCommands.shootOnTheMove(drive, serializer, kicker, aprilTagVision));
 
+    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+
     // Set up SysId
     if (Constants.TUNING_MODE) {
-      autoSelector.addRoutine(
+      autoChooser.addOption(
           "Drive SysId (Quasistatic Forward)",
-          List.of(),
           DriveCommands.runSysIdQuasistatic(drive, Direction.kForward));
-      autoSelector.addRoutine(
+      autoChooser.addOption(
           "Drive SysId (Quasistatic Reverse)",
-          List.of(),
           DriveCommands.runSysIdQuasistatic(drive, Direction.kReverse));
-      autoSelector.addRoutine(
+      autoChooser.addOption(
           "Drive SysId (Dynamic Forward)",
-          List.of(),
           DriveCommands.runSysIdDynamic(drive, Direction.kForward));
-      autoSelector.addRoutine(
+      autoChooser.addOption(
           "Drive SysId (Dynamic Reverse)",
-          List.of(),
           DriveCommands.runSysIdDynamic(drive, Direction.kReverse));
-      autoSelector.addRoutine("Shooter SysId", List.of(), shooter.runSysId());
+      autoChooser.addOption("Shooter SysId", shooter.runSysId());
     }
 
     // Configure the button bindings
@@ -308,9 +263,9 @@ public class RobotContainer {
 
   public Command getAutonomousCommand() {
     return Constants.TUNING_MODE
-        ? autoSelector.getCommand()
-        : autoSelector
-            .getCommand()
+        ? autoChooser.get()
+        : autoChooser
+            .get()
             .alongWith(
                 CompositeCommands.getAccelerateShooterCommand(
                     drive, hood, shooter, accelerator, aprilTagVision));
