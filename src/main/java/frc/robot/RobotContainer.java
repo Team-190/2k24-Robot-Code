@@ -13,7 +13,6 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -208,7 +207,10 @@ public class RobotContainer {
         "Shoot On The Move",
         CompositeCommands.shootOnTheMove(drive, serializer, kicker, aprilTagVision));
 
-    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+    // autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+    autoChooser =
+        new LoggedDashboardChooser<>(
+            "Auto Choices", AutoBuilderNameChanger.buildNameChangedAutoChooser());
 
     // Set up SysId
     if (Constants.TUNING_MODE) {
