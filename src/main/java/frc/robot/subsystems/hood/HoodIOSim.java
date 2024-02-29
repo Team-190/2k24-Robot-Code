@@ -18,7 +18,7 @@ public class HoodIOSim implements HoodIO {
           Units.degreesToRadians(20),
           Math.PI,
           true,
-          0);
+          Units.degreesToRadians(38.0));
   private double appliedVolts = 0.0;
 
   @Override
