@@ -15,8 +15,8 @@ public class HoodIOSim implements HoodIO {
           GEAR_RATIO,
           0.004,
           0.25,
-          Units.degreesToRadians(20),
-          Math.PI,
+          Units.degreesToRadians(15.0),
+          Units.degreesToRadians(45.0),
           true,
           Units.degreesToRadians(38.0));
   private double appliedVolts = 0.0;

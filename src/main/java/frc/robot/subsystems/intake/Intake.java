@@ -39,6 +39,10 @@ public class Intake extends SubsystemBase {
     Logger.processInputs("Intake", inputs);
   }
 
+  public boolean isDeployed() {
+    return inputs.leftPosition && inputs.rightPosition;
+  }
+
   private void stopRollers() {
     io.setRollersVoltage(0.0);
   }

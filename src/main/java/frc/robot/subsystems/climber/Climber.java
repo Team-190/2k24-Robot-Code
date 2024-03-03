@@ -116,6 +116,14 @@ public class Climber extends SubsystemBase {
     rightProfiledFeedback.setGoal(rightPositionMeters);
   }
 
+  public double getLeftPositionMeters() {
+    return inputs.leftPositionMeters;
+  }
+
+  public double getRightPositionMeters() {
+    return inputs.rightPositionMeters;
+  }
+
   public Command preClimbCenter() {
     return Commands.runOnce(
         () -> {

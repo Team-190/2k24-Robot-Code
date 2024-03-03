@@ -64,6 +64,8 @@ import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.subsystems.vision.VisionIOSim;
 import frc.robot.subsystems.vision.VisionMode;
+import frc.robot.util.SnapbackMechanism3d;
+import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {
@@ -219,6 +221,9 @@ public class RobotContainer {
           "Drive SysId (Dynamic Reverse)",
           DriveCommands.runSysIdDynamic(drive, Direction.kReverse));
       autoChooser.addOption("Shooter SysId", shooter.runSysId());
+
+      autoChooser.addOption("Hood Test", hood.setAmp());
+      autoChooser.addOption("Amp Test", amp.setAmp());
     }
 
     // Configure the button bindings
@@ -253,6 +258,17 @@ public class RobotContainer {
     controller.back().onTrue(climber.preClimbCenter());
     controller.start().onTrue(climber.preClimbSide());
     controller.povUp().onTrue(climber.climb());
+  }
+
+  public void updateSnapbackMechanism3d() {
+    Logger.recordOutput(
+        "Mechanism3d",
+        SnapbackMechanism3d.getPoses(
+            intake.isDeployed(),
+            hood.getPosition(),
+            amp.getPosition(),
+            climber.getLeftPositionMeters(),
+            climber.getRightPositionMeters()));
   }
 
   public Command getAutonomousCommand() {

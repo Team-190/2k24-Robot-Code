@@ -8,17 +8,17 @@ import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.robot.Constants;
 
 public class AmpIOSim implements AmpIO {
-  private static final double GEAR_RATIO = 1.0;
+  private static final double GEAR_RATIO = 3.0;
   private SingleJointedArmSim armSim =
       new SingleJointedArmSim(
           DCMotor.getKrakenX60(1),
           GEAR_RATIO,
           0.0042,
           0.25,
-          Units.degreesToRadians(0.0),
-          Units.degreesToRadians(0.0),
+          Units.degreesToRadians(20.0),
+          Units.degreesToRadians(180.0),
           true,
-          Units.degreesToRadians(0.0));
+          Units.degreesToRadians(20.0));
   private double appliedVolts = 0.0;
 
   @Override
