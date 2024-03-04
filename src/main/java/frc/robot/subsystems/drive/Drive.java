@@ -53,8 +53,7 @@ public class Drive extends SubsystemBase {
 
   static {
     switch (Constants.ROBOT) {
-      case ROBOT_2K24_C:
-      case ROBOT_2K24_P:
+      case SNAPBACK:
       case ROBOT_SIM:
         MAX_LINEAR_SPEED = Units.feetToMeters(17.5);
         TRACK_WIDTH_X = Units.inchesToMeters(25.0);

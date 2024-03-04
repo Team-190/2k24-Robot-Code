@@ -67,8 +67,7 @@ public class Shooter extends SubsystemBase {
 
   static {
     switch (Constants.ROBOT) {
-      case ROBOT_2K24_C:
-      case ROBOT_2K24_P:
+      case SNAPBACK:
         KP.initDefault(0.035);
         KD.initDefault(0.0);
         DIFFERENCE.initDefault(2.0 / 3.0);

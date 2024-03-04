@@ -32,8 +32,7 @@ public class Amp extends SubsystemBase {
 
   static {
     switch (Constants.ROBOT) {
-      case ROBOT_2K24_C:
-      case ROBOT_2K24_P:
+      case SNAPBACK:
         KP.initDefault(0.0);
         KD.initDefault(0.0);
         MAX_VELOCITY.initDefault(0.0);

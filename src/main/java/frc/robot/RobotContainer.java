@@ -92,10 +92,8 @@ public class RobotContainer {
   public RobotContainer() {
     if (Constants.getMode() != Mode.REPLAY) {
       switch (Constants.ROBOT) {
-        case ROBOT_2K24_C:
-        case ROBOT_2K24_P:
-        case ROBOT_2K24_TEST:
-          // Real robot, instantiate hardware IO implementations
+        case SNAPBACK:
+        // Snapback, instantiate hardware IO implementations
           drive =
               new Drive(
                   new GyroIOPigeon2(),
@@ -114,6 +112,19 @@ public class RobotContainer {
           aprilTagVision =
               new Vision("AprilTagVision", new VisionIOLimelight(VisionMode.AprilTags));
           noteVision = new Vision("NoteVision", new VisionIOLimelight(VisionMode.Notes));
+          break;
+        case ROBOT_2K24_TEST:
+          // Test robot, instantiate hardware IO implementations
+          drive =
+              new Drive(
+                  new GyroIOPigeon2(),
+                  new ModuleIOTalonFX(0),
+                  new ModuleIOTalonFX(1),
+                  new ModuleIOTalonFX(2),
+                  new ModuleIOTalonFX(3));
+          shooter = new Shooter(new ShooterIOTalonFX());
+          serializer = new Serializer(new SerializerIOTalonFX());
+          accelerator = new Accelerator(new AcceleratorIOTalonFX());
           break;
 
         case ROBOT_SIM:

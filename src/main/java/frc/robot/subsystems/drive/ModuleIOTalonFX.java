@@ -77,7 +77,7 @@ public class ModuleIOTalonFX implements ModuleIO {
 
   public ModuleIOTalonFX(int index) {
     switch (Constants.ROBOT) {
-      case ROBOT_2K24_C:
+      case SNAPBACK:
         switch (index) {
           case 0:
             driveTalon = new TalonFX(10);
@@ -101,36 +101,6 @@ public class ModuleIOTalonFX implements ModuleIO {
             driveTalon = new TalonFX(0);
             turnTalon = new TalonFX(1);
             cancoder = new CANcoder(23);
-            absoluteEncoderOffset = Rotation2d.fromRadians(0.0); // TODO: Calibrate
-            break;
-          default:
-            throw new RuntimeException("Invalid module index");
-        }
-        break;
-      case ROBOT_2K24_P:
-        switch (index) {
-          case 0:
-            driveTalon = new TalonFX(10);
-            turnTalon = new TalonFX(11);
-            cancoder = new CANcoder(12);
-            absoluteEncoderOffset = Rotation2d.fromRadians(0.0); // TODO: Calibrate
-            break;
-          case 1:
-            driveTalon = new TalonFX(20);
-            turnTalon = new TalonFX(21);
-            cancoder = new CANcoder(22);
-            absoluteEncoderOffset = Rotation2d.fromRadians(0.0); // TODO: Calibrate
-            break;
-          case 2:
-            driveTalon = new TalonFX(30);
-            turnTalon = new TalonFX(31);
-            cancoder = new CANcoder(32);
-            absoluteEncoderOffset = Rotation2d.fromRadians(0.0); // TODO: Calibrate
-            break;
-          case 3:
-            driveTalon = new TalonFX(40);
-            turnTalon = new TalonFX(41);
-            cancoder = new CANcoder(42);
             absoluteEncoderOffset = Rotation2d.fromRadians(0.0); // TODO: Calibrate
             break;
           default:

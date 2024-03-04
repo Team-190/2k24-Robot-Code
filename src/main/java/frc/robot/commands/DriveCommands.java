@@ -56,8 +56,7 @@ public class DriveCommands {
 
   static {
     switch (Constants.ROBOT) {
-      case ROBOT_2K24_C:
-      case ROBOT_2K24_P:
+      case SNAPBACK:
         autoAimKP.initDefault(0);
         autoAimKD.initDefault(0);
         break;

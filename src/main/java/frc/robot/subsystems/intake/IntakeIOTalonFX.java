@@ -30,12 +30,7 @@ public class IntakeIOTalonFX implements IntakeIO {
 
   public IntakeIOTalonFX() {
     switch (Constants.ROBOT) {
-      case ROBOT_2K24_C:
-        rollersTalon = new TalonFX(46);
-        leftSolenoid = new Solenoid(PneumaticsModuleType.REVPH, 0);
-        rightSolenoid = new Solenoid(PneumaticsModuleType.REVPH, 1);
-        break;
-      case ROBOT_2K24_P:
+      case SNAPBACK:
         rollersTalon = new TalonFX(46);
         leftSolenoid = new Solenoid(PneumaticsModuleType.REVPH, 0);
         rightSolenoid = new Solenoid(PneumaticsModuleType.REVPH, 1);

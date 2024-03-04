@@ -27,10 +27,7 @@ public class KickerIOTalonFX implements KickerIO {
 
   public KickerIOTalonFX() {
     switch (Constants.ROBOT) {
-      case ROBOT_2K24_C:
-        kickerTalon = new TalonFX(47);
-        break;
-      case ROBOT_2K24_P:
+      case SNAPBACK:
         kickerTalon = new TalonFX(47);
         break;
       case ROBOT_2K24_TEST:

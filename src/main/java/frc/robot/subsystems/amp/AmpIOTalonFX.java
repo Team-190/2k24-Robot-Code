@@ -27,10 +27,7 @@ public class AmpIOTalonFX implements AmpIO {
 
   public AmpIOTalonFX() {
     switch (Constants.ROBOT) {
-      case ROBOT_2K24_C:
-        ampTalon = new TalonFX(42);
-        break;
-      case ROBOT_2K24_P:
+      case SNAPBACK:
         ampTalon = new TalonFX(42);
         break;
       case ROBOT_2K24_TEST:

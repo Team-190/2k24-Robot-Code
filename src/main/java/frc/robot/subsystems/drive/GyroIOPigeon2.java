@@ -37,8 +37,7 @@ public class GyroIOPigeon2 implements GyroIO {
 
   public GyroIOPigeon2() {
     switch (Constants.ROBOT) {
-      case ROBOT_2K24_C:
-      case ROBOT_2K24_P:
+      case SNAPBACK:
       case ROBOT_2K24_TEST:
         pigeon = new Pigeon2(1, "drive");
         break;

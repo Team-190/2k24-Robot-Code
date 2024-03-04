@@ -35,11 +35,7 @@ public class ShooterIOTalonFX implements ShooterIO {
 
   public ShooterIOTalonFX() {
     switch (Constants.ROBOT) {
-      case ROBOT_2K24_C:
-        leftShooterTalon = new TalonFX(45);
-        rightShooterTalon = new TalonFX(44);
-        break;
-      case ROBOT_2K24_P:
+      case SNAPBACK:
         leftShooterTalon = new TalonFX(45);
         rightShooterTalon = new TalonFX(44);
         break;
