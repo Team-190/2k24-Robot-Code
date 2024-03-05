@@ -8,11 +8,11 @@ import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 public class ClimberIOSim implements ClimberIO {
   private ElevatorSim leftClimberSim =
       new ElevatorSim(
-          DCMotor.getKrakenX60(1), 10.0, 7.0, Units.inchesToMeters(0.25), 0.0, 0.0, false, 0.0);
+          DCMotor.getKrakenX60(1), 10.0, 7.0, Units.inchesToMeters(0.25), 0.0, 1.0, false, 0.0);
 
   private ElevatorSim rightClimberSim =
       new ElevatorSim(
-          DCMotor.getKrakenX60(1), 10.0, 7.0, Units.inchesToMeters(0.25), 0.0, 0.0, false, 0.0);
+          DCMotor.getKrakenX60(1), 10.0, 7.0, Units.inchesToMeters(0.25), 0.0, 1.0, false, 0.0);
 
   private double leftAppliedVolts;
   private double rightAppliedVolts;

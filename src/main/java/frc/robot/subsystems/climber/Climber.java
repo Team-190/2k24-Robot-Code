@@ -34,12 +34,14 @@ public class Climber extends SubsystemBase {
   private final ProfiledPIDController rightProfiledFeedback;
 
   static {
+    LOW_POSITION.initDefault(0.5);
+    HIGH_POSITION.initDefault(0.75);
     switch (Constants.ROBOT) {
       case SNAPBACK:
-        KP.initDefault(0.0);
+        KP.initDefault(0.1);
         KD.initDefault(0.0);
-        MAX_VELOCITY.initDefault(0.0);
-        MAX_ACCELERATION.initDefault(0.0);
+        MAX_VELOCITY.initDefault(0.1);
+        MAX_ACCELERATION.initDefault(0.1);
         STOWED_POSITION.initDefault(0.0);
         break;
       case ROBOT_2K24_TEST:
