@@ -261,7 +261,7 @@ public class RobotContainer {
     controller
         .a()
         .toggleOnTrue(
-            CompositeCommands.getAccelerateShooterCommand(
+            CompositeCommands.getPosePrepShooterCommand(
                 drive, hood, shooter, accelerator, aprilTagVision));
     controller
         .rightTrigger()
@@ -289,7 +289,7 @@ public class RobotContainer {
         : autoChooser
             .get()
             .alongWith(
-                CompositeCommands.getAccelerateShooterCommand(
+                CompositeCommands.getPosePrepShooterCommand(
                     drive, hood, shooter, accelerator, aprilTagVision));
   }
 }

@@ -31,14 +31,23 @@ public class CompositeCommands {
     return intake.toggleIntake();
   }
 
-  public static final Command getAccelerateShooterCommand(
+  public static final Command getPosePrepShooterCommand(
       Drive drive, Hood hood, Shooter shooter, Accelerator accelerator, Vision aprilTagVision) {
     return shooter
-        .runVelocity()
+        .runPoseDistance(() -> Optional.of(aprilTagVision.getRobotPose().get().getTranslation()),
+                drive::getFieldRelativeVelocity)
         .alongWith(
-            hood.setPosition(
+            hood.setPosePosition(
                 () -> Optional.of(aprilTagVision.getRobotPose().get().getTranslation()),
                 drive::getFieldRelativeVelocity))
+        .alongWith(accelerator.runAccelerator());
+  }
+
+  public static final Command getAnglePrepShooterCommand(
+      Drive drive, Hood hood, Shooter shooter, Accelerator accelerator, Vision aprilTagVision) {
+    return shooter
+        .runAngleDistance()
+        .alongWith(hood.setAnglePosition())
         .alongWith(accelerator.runAccelerator());
   }
 
@@ -85,7 +94,7 @@ public class CompositeCommands {
                 PPHolonomicDriveController.setRotationTargetOverride(
                     () ->
                         Optional.of(
-                            ShotCalculator.calculate(
+                            ShotCalculator.poseCalculation(
                                     vision.getRobotPose().get().getTranslation(),
                                     drive.getFieldRelativeVelocity())
                                 .robotAngle()));

@@ -117,16 +117,26 @@ public class Hood extends SubsystemBase {
     return runEnd(() -> setPosition(AMP_POSITION.get()), () -> setPosition(STOWED_POSITION.get()));
   }
 
-  public Command setPosition(
+  public Command setPosePosition(
       Supplier<Optional<Translation2d>> robotPoseSupplier,
       Supplier<Translation2d> velocitySupplier) {
     return runEnd(
         () -> {
           if (robotPoseSupplier.get().isPresent()) {
             AimingParameters aimingParameters =
-                ShotCalculator.calculate(robotPoseSupplier.get().get(), velocitySupplier.get());
+                ShotCalculator.poseCalculation(
+                    robotPoseSupplier.get().get(), velocitySupplier.get());
             setPosition(aimingParameters.shooterAngle().getRadians());
           }
+        },
+        () -> setPosition(STOWED_POSITION.get()));
+  }
+
+  public Command setAnglePosition() {
+    return runEnd(
+        () -> {
+          AimingParameters aimingParameters = ShotCalculator.angleCalculation();
+          setPosition(aimingParameters.shooterAngle().getRadians());
         },
         () -> setPosition(STOWED_POSITION.get()));
   }

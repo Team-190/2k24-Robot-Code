@@ -141,7 +141,7 @@ public class DriveCommands {
                     ? new Translation2d(0, 0)
                     : drive.getFieldRelativeVelocity();
             AimingParameters calculatedAim =
-                ShotCalculator.calculate(
+                ShotCalculator.poseCalculation(
                     visionPose.getTranslation(), deadbandFieldRelativeVelocity);
             targetGyroAngle = Optional.of(calculatedAim.robotAngle());
             feedForwardRadialVelocity = calculatedAim.radialVelocity();
