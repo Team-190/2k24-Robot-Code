@@ -55,13 +55,12 @@ public class Hood extends SubsystemBase {
 
         break;
       case ROBOT_SIM:
-        KP.initDefault(1.0);
-        KD.initDefault(0.0);
-        MAX_VELOCITY.initDefault(1.0);
-        MAX_ACCELERATION.initDefault(1.0);
+        KP.initDefault(90.0);
+        KD.initDefault(0.01);
+        MAX_VELOCITY.initDefault(1000.0);
+        MAX_ACCELERATION.initDefault(1000.0);
         STOWED_POSITION.initDefault(Units.degreesToRadians(38.0));
         AMP_POSITION.initDefault(Units.degreesToRadians(15.0));
-
         break;
       default:
         break;

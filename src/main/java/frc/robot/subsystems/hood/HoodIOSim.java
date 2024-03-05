@@ -8,14 +8,14 @@ import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.robot.Constants;
 
 public class HoodIOSim implements HoodIO {
-  private static final double GEAR_RATIO = 88.0 / 14.0;
+  private static final double GEAR_RATIO = 85.0;
   private SingleJointedArmSim armSim =
       new SingleJointedArmSim(
           DCMotor.getKrakenX60(1),
           GEAR_RATIO,
           0.004,
           0.25,
-          Units.degreesToRadians(15.0),
+          Units.degreesToRadians(0.0),
           Units.degreesToRadians(45.0),
           true,
           Units.degreesToRadians(38.0));

@@ -93,7 +93,7 @@ public class RobotContainer {
     if (Constants.getMode() != Mode.REPLAY) {
       switch (Constants.ROBOT) {
         case SNAPBACK:
-        // Snapback, instantiate hardware IO implementations
+          // Snapback, instantiate hardware IO implementations
           drive =
               new Drive(
                   new GyroIOPigeon2(),
@@ -235,6 +235,7 @@ public class RobotContainer {
 
       autoChooser.addOption("Hood Test", hood.setAmp());
       autoChooser.addOption("Amp Test", amp.setAmp());
+      autoChooser.addOption("Intake Test", intake.deployIntake());
     }
 
     // Configure the button bindings
