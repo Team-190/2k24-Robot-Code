@@ -40,19 +40,19 @@ public class SnapbackMechanism3d {
 
     if (!intakeDeployed) {
       intakeTopBarPose =
-          new Pose3d(0.1025, 0.0, 0.26, new Rotation3d(0.0, -Units.degreesToRadians(65.0), 0.0));
+          new Pose3d(0.11, 0.0, 0.2635, new Rotation3d(0.0, -Units.degreesToRadians(65.0), 0.0));
       intakeBottomBarPose =
           new Pose3d(0.123, 0.0, 0.114, new Rotation3d(0.0, -Units.degreesToRadians(65.0), 0.0));
       intakeRollersPose =
           new Pose3d(
-              0.375 - intakeTopBarPose.getX(),
+              -0.005 - intakeTopBarPose.getX(),
               0.0,
-              0.2 + intakeTopBarPose.getZ(),
+              0.375 + intakeTopBarPose.getZ(),
               new Rotation3d(0.0, Units.degreesToRadians(50.0), 0.0));
     } else {
-      intakeTopBarPose = new Pose3d(0.1025, 0.0, 0.26, new Rotation3d());
+      intakeTopBarPose = new Pose3d(0.11, 0.0, 0.2635, new Rotation3d());
       intakeBottomBarPose = new Pose3d(0.123, 0.0, 0.114, new Rotation3d());
-      intakeRollersPose = new Pose3d(0.375, 0.0, 0.2, new Rotation3d(0.0, 0.0, 0.0));
+      intakeRollersPose = new Pose3d(0.0, 0.0, 0.0, new Rotation3d(0.0, 0.0, 0.0));
     }
 
     leftExtensionMeters = MathUtil.clamp(leftExtensionMeters, MIN_EXTENSION, MAX_EXTENSION);
