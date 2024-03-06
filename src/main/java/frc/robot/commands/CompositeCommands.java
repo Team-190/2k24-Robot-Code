@@ -64,7 +64,7 @@ public class CompositeCommands {
       Drive drive, Intake intake, Serializer serializer, Vision noteVision) {
     return (DriveCommands.moveTowardsTarget(
                 drive, noteVision, FieldConstants.fieldLength / 2.0, VisionMode.Notes)
-            .alongWith(getCollectCommand(intake, serializer)))
+            .raceWith(getCollectCommand(intake, serializer)))
         .andThen(getToggleIntakeCommand(intake));
   }
 
@@ -72,7 +72,7 @@ public class CompositeCommands {
       Drive drive, Intake intake, Serializer serializer, Vision noteVision) {
     return (DriveCommands.moveTowardsTarget(
                 drive, noteVision, FieldConstants.startingLineX + 0.5, VisionMode.Notes)
-            .alongWith(getCollectCommand(intake, serializer)))
+            .raceWith(getCollectCommand(intake, serializer)))
         .andThen(getToggleIntakeCommand(intake));
   }
 
