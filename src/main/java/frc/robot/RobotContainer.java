@@ -236,6 +236,9 @@ public class RobotContainer {
       autoChooser.addOption("Hood Test", hood.setAmp());
       autoChooser.addOption("Amp Test", amp.setAmp());
       autoChooser.addOption("Intake Test", intake.deployIntake());
+      autoChooser.addOption("Climber Side Test", climber.preClimbSide());
+      autoChooser.addOption("Climber Center Test", climber.preClimbCenter());
+      autoChooser.addOption("Climber Climb Test", climber.climb());
     }
 
     // Configure the button bindings

@@ -9,12 +9,11 @@ import edu.wpi.first.math.util.Units;
 
 public class SnapbackMechanism3d {
   public static final double EXTENSION_0_HEIGHT = 0.099;
-  public static final double EXTENSION_1_MAX = 0.0;
-  public static final double EXTENSION_2_MAX = 0.0;
+  public static final double EXTENSION_1_MAX = 0.4;
+  public static final double EXTENSION_2_MAX = 0.4;
 
   public static final double MIN_EXTENSION = 0.0;
   public static final double MAX_EXTENSION = MIN_EXTENSION + EXTENSION_1_MAX + EXTENSION_2_MAX;
-  public static final double CTOC = 10.73155;
 
   private SnapbackMechanism3d() {}
 
