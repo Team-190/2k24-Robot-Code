@@ -93,11 +93,14 @@ public class Climber extends SubsystemBase {
     }
 
     if (DriverStation.isEnabled()) {
-      io.setLeftVoltage((leftProfiledFeedback.calculate(inputs.leftPositionMeters)));
-      io.setRightVoltage((rightProfiledFeedback.calculate(inputs.rightPositionMeters)));
+      if (!inputs.leftLocked && !inputs.rightLocked) {
+        io.setLeftVoltage((leftProfiledFeedback.calculate(inputs.leftPositionMeters)));
+        io.setRightVoltage((rightProfiledFeedback.calculate(inputs.rightPositionMeters)));
+      }
     }
 
     if (DriverStation.isDisabled()) {
+      io.setLock(true);
       leftProfiledFeedback.reset(inputs.leftPositionMeters, 0.0);
       rightProfiledFeedback.reset(inputs.rightPositionMeters, 0.0);
     }
