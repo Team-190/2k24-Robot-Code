@@ -13,9 +13,10 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.Mode;
@@ -64,6 +65,7 @@ import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.subsystems.vision.VisionIOSim;
 import frc.robot.subsystems.vision.VisionMode;
+import frc.robot.util.AutoBuilderNameChanger;
 import frc.robot.util.SnapbackMechanism3d;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -198,6 +200,12 @@ public class RobotContainer {
 
     // Pathplanner commands
     NamedCommands.registerCommand(
+        "Delay", Commands.waitSeconds(SmartDashboard.getNumber("Auto Start Shooting Delay", 0.0)));
+    NamedCommands.registerCommand(
+        "Shoot", CompositeCommands.getShootCommand(serializer, kicker).withTimeout(0.5));
+    NamedCommands.registerCommand(
+        "Feed", CompositeCommands.getFeedCommand(intake, serializer, kicker));
+    NamedCommands.registerCommand(
         "Track Note Center",
         CompositeCommands.getTrackNoteCenterCommand(drive, intake, serializer, noteVision));
     NamedCommands.registerCommand(
@@ -210,12 +218,13 @@ public class RobotContainer {
         "Track Speaker Close",
         CompositeCommands.getTrackSpeakerCloseCommand(drive, hood, shooter, aprilTagVision));
     NamedCommands.registerCommand(
-        "Shoot", CompositeCommands.getShootCommand(serializer, kicker).withTimeout(0.5));
-    NamedCommands.registerCommand(
         "Shoot On The Move",
         CompositeCommands.shootOnTheMove(drive, serializer, kicker, aprilTagVision));
 
-    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+    // autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+    autoChooser =
+        new LoggedDashboardChooser<>(
+            "Auto Choices", AutoBuilderNameChanger.buildNameChangedAutoChooser());
 
     // Set up SysId
     if (Constants.TUNING_MODE) {
