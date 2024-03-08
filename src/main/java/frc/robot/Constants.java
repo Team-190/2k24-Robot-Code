@@ -30,8 +30,7 @@ public final class Constants {
 
   public static Mode getMode() {
     switch (ROBOT) {
-      case ROBOT_2K24_C:
-      case ROBOT_2K24_P:
+      case SNAPBACK:
         return RobotBase.isReal() ? Mode.REAL : Mode.REPLAY;
 
       case ROBOT_SIM:
@@ -49,8 +48,7 @@ public final class Constants {
   }
 
   public static enum RobotType {
-    ROBOT_2K24_C,
-    ROBOT_2K24_P,
+    SNAPBACK,
     ROBOT_2K24_TEST,
     ROBOT_SIM
   }

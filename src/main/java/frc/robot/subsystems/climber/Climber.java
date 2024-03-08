@@ -34,13 +34,14 @@ public class Climber extends SubsystemBase {
   private final ProfiledPIDController rightProfiledFeedback;
 
   static {
+    LOW_POSITION.initDefault(0.5);
+    HIGH_POSITION.initDefault(0.75);
     switch (Constants.ROBOT) {
-      case ROBOT_2K24_C:
-      case ROBOT_2K24_P:
-        KP.initDefault(0.0);
+      case SNAPBACK:
+        KP.initDefault(0.1);
         KD.initDefault(0.0);
-        MAX_VELOCITY.initDefault(0.0);
-        MAX_ACCELERATION.initDefault(0.0);
+        MAX_VELOCITY.initDefault(0.1);
+        MAX_ACCELERATION.initDefault(0.1);
         STOWED_POSITION.initDefault(0.0);
         break;
       case ROBOT_2K24_TEST:
@@ -51,10 +52,10 @@ public class Climber extends SubsystemBase {
         STOWED_POSITION.initDefault(0.0);
         break;
       case ROBOT_SIM:
-        KP.initDefault(0.0);
+        KP.initDefault(1.0);
         KD.initDefault(0.0);
-        MAX_VELOCITY.initDefault(0.0);
-        MAX_ACCELERATION.initDefault(0.0);
+        MAX_VELOCITY.initDefault(1.0);
+        MAX_ACCELERATION.initDefault(1.0);
         STOWED_POSITION.initDefault(0.0);
         break;
       default:
@@ -70,7 +71,6 @@ public class Climber extends SubsystemBase {
     rightProfiledFeedback =
         new ProfiledPIDController(
             KP.get(), 0.0, KD.get(), new Constraints(MAX_VELOCITY.get(), MAX_ACCELERATION.get()));
-    setDefaultCommand(run(() -> stop()));
   }
 
   public void periodic() {
@@ -119,6 +119,14 @@ public class Climber extends SubsystemBase {
     rightProfiledFeedback.setGoal(rightPositionMeters);
   }
 
+  public double getLeftPositionMeters() {
+    return inputs.leftPositionMeters;
+  }
+
+  public double getRightPositionMeters() {
+    return inputs.rightPositionMeters;
+  }
+
   public Command preClimbCenter() {
     return Commands.runOnce(
         () -> {
@@ -141,10 +149,5 @@ public class Climber extends SubsystemBase {
           setLeftPosition(STOWED_POSITION.get());
           setRightPosition(STOWED_POSITION.get());
         });
-  }
-
-  private void stop() {
-    io.setLeftVoltage(0.0);
-    io.setRightVoltage(0.0);
   }
 }

@@ -67,8 +67,7 @@ public class Shooter extends SubsystemBase {
 
   static {
     switch (Constants.ROBOT) {
-      case ROBOT_2K24_C:
-      case ROBOT_2K24_P:
+      case SNAPBACK:
         KP.initDefault(0.035);
         KD.initDefault(0.0);
         DIFFERENCE.initDefault(2.0 / 3.0);
@@ -183,14 +182,15 @@ public class Shooter extends SubsystemBase {
         });
   }
 
-  public Command runDistance(
+  public Command runPoseDistance(
       Supplier<Optional<Translation2d>> robotPoseSupplier,
       Supplier<Translation2d> velocitySupplier) {
     return runEnd(
         () -> {
           if (robotPoseSupplier.get().isPresent()) {
             AimingParameters aimingParameters =
-                ShotCalculator.calculate(robotPoseSupplier.get().get(), velocitySupplier.get());
+                ShotCalculator.poseCalculation(
+                    robotPoseSupplier.get().get(), velocitySupplier.get());
             if (spinDirection.equals(SpinDirection.YEET)) {
               spinDirection = SpinDirection.CLOCKWISE;
             }
@@ -214,13 +214,24 @@ public class Shooter extends SubsystemBase {
             }
 
             setVelocity(
-                ShotCalculator.calculate(robotPoseSupplier.get().get(), velocitySupplier.get())
+                ShotCalculator.poseCalculation(
+                        robotPoseSupplier.get().get(), velocitySupplier.get())
                     .shooterSpeed());
           } else {
             if (DriverStation.isAutonomous()) {
               setVelocity(DEFAULT_SPEED.get());
             }
           }
+        },
+        () -> {
+          stop();
+        });
+  }
+
+  public Command runAngleDistance() {
+    return runEnd(
+        () -> {
+          setVelocity(ShotCalculator.angleCalculation().shooterSpeed());
         },
         () -> {
           stop();

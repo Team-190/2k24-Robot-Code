@@ -27,10 +27,7 @@ public class HoodIOTalonFX implements HoodIO {
 
   public HoodIOTalonFX() {
     switch (Constants.ROBOT) {
-      case ROBOT_2K24_C:
-        hoodTalon = new TalonFX(45);
-        break;
-      case ROBOT_2K24_P:
+      case SNAPBACK:
         hoodTalon = new TalonFX(45);
         break;
       case ROBOT_2K24_TEST:

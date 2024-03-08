@@ -56,8 +56,7 @@ public class DriveCommands {
 
   static {
     switch (Constants.ROBOT) {
-      case ROBOT_2K24_C:
-      case ROBOT_2K24_P:
+      case SNAPBACK:
         autoAimKP.initDefault(0);
         autoAimKD.initDefault(0);
         break;
@@ -142,7 +141,7 @@ public class DriveCommands {
                     ? new Translation2d(0, 0)
                     : drive.getFieldRelativeVelocity();
             AimingParameters calculatedAim =
-                ShotCalculator.calculate(
+                ShotCalculator.poseCalculation(
                     visionPose.getTranslation(), deadbandFieldRelativeVelocity);
             targetGyroAngle = Optional.of(calculatedAim.robotAngle());
             feedForwardRadialVelocity = calculatedAim.radialVelocity();

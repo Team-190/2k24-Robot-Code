@@ -1,8 +1,10 @@
 package frc.robot.subsystems.hood;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -35,13 +37,13 @@ public class Hood extends SubsystemBase {
 
   static {
     switch (Constants.ROBOT) {
-      case ROBOT_2K24_C:
-      case ROBOT_2K24_P:
+      case SNAPBACK:
         KP.initDefault(0.0);
         KD.initDefault(0.0);
         MAX_VELOCITY.initDefault(0.0);
         MAX_ACCELERATION.initDefault(0.0);
         STOWED_POSITION.initDefault(20.0);
+        AMP_POSITION.initDefault(0.0);
         break;
       case ROBOT_2K24_TEST:
         KP.initDefault(0.0);
@@ -49,13 +51,16 @@ public class Hood extends SubsystemBase {
         MAX_VELOCITY.initDefault(0.0);
         MAX_ACCELERATION.initDefault(0.0);
         STOWED_POSITION.initDefault(20.0);
+        AMP_POSITION.initDefault(0.0);
+
         break;
       case ROBOT_SIM:
-        KP.initDefault(0.0);
-        KD.initDefault(0.0);
-        MAX_VELOCITY.initDefault(0.0);
-        MAX_ACCELERATION.initDefault(0.0);
-        STOWED_POSITION.initDefault(20.0);
+        KP.initDefault(90.0);
+        KD.initDefault(0.01);
+        MAX_VELOCITY.initDefault(1000.0);
+        MAX_ACCELERATION.initDefault(1000.0);
+        STOWED_POSITION.initDefault(Units.degreesToRadians(38.0));
+        AMP_POSITION.initDefault(Units.degreesToRadians(15.0));
         break;
       default:
         break;
@@ -104,20 +109,34 @@ public class Hood extends SubsystemBase {
     profiledFeedback.setGoal(positionRad);
   }
 
+  public Rotation2d getPosition() {
+    return inputs.position;
+  }
+
   public Command setAmp() {
     return runEnd(() -> setPosition(AMP_POSITION.get()), () -> setPosition(STOWED_POSITION.get()));
   }
 
-  public Command setPosition(
+  public Command setPosePosition(
       Supplier<Optional<Translation2d>> robotPoseSupplier,
       Supplier<Translation2d> velocitySupplier) {
     return runEnd(
         () -> {
           if (robotPoseSupplier.get().isPresent()) {
             AimingParameters aimingParameters =
-                ShotCalculator.calculate(robotPoseSupplier.get().get(), velocitySupplier.get());
+                ShotCalculator.poseCalculation(
+                    robotPoseSupplier.get().get(), velocitySupplier.get());
             setPosition(aimingParameters.shooterAngle().getRadians());
           }
+        },
+        () -> setPosition(STOWED_POSITION.get()));
+  }
+
+  public Command setAnglePosition() {
+    return runEnd(
+        () -> {
+          AimingParameters aimingParameters = ShotCalculator.angleCalculation();
+          setPosition(aimingParameters.shooterAngle().getRadians());
         },
         () -> setPosition(STOWED_POSITION.get()));
   }

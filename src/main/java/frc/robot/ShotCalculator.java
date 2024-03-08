@@ -39,7 +39,7 @@ public class ShotCalculator {
     flightTimeMap.put(Units.inchesToMeters(150), 0.8);
   }
 
-  public static AimingParameters calculate(
+  public static AimingParameters poseCalculation(
       Translation2d fieldRelativePose, Translation2d fieldRelativeVelocity) {
     Translation2d speakerPose =
         AllianceFlipUtil.apply(FieldConstants.Speaker.centerSpeakerOpening.getTranslation());
@@ -60,6 +60,10 @@ public class ShotCalculator {
         radialVelocity,
         shooterSpeedMap.get(effectiveDistanceToSpeaker),
         new Rotation2d(shooterAngleMap.get(effectiveDistanceToSpeaker)));
+  }
+
+  public static AimingParameters angleCalculation() {
+    return null;
   }
 
   public static record AimingParameters(

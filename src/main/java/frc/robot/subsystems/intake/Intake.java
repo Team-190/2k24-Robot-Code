@@ -15,8 +15,7 @@ public class Intake extends SubsystemBase {
 
   static {
     switch (Constants.ROBOT) {
-      case ROBOT_2K24_C:
-      case ROBOT_2K24_P:
+      case SNAPBACK:
         rollersVoltage.initDefault(7);
         break;
       case ROBOT_2K24_TEST:
@@ -39,12 +38,16 @@ public class Intake extends SubsystemBase {
     Logger.processInputs("Intake", inputs);
   }
 
+  public boolean isDeployed() {
+    return inputs.leftPosition && inputs.rightPosition;
+  }
+
   private void stopRollers() {
     io.setRollersVoltage(0.0);
   }
 
   private void setIntakePosition(boolean position) {
-    io.setIntakePosition(position);
+    io.setIntakePosition(!position);
   }
 
   private void toggleIntakePosition() {

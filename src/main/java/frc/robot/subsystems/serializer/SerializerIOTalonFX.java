@@ -27,11 +27,8 @@ public class SerializerIOTalonFX implements SerializerIO {
 
   public SerializerIOTalonFX() {
     switch (Constants.ROBOT) {
-      case ROBOT_2K24_C:
-        serializerTalon = new TalonFX(48);
-        break;
-      case ROBOT_2K24_P:
-        serializerTalon = new TalonFX(48);
+      case SNAPBACK:
+        serializerTalon = new TalonFX(3);
         break;
       case ROBOT_2K24_TEST:
         serializerTalon = new TalonFX(48);

@@ -66,6 +66,8 @@ import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.subsystems.vision.VisionIOSim;
 import frc.robot.subsystems.vision.VisionMode;
 import frc.robot.util.AutoBuilderNameChanger;
+import frc.robot.util.SnapbackMechanism3d;
+import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {
@@ -92,10 +94,8 @@ public class RobotContainer {
   public RobotContainer() {
     if (Constants.getMode() != Mode.REPLAY) {
       switch (Constants.ROBOT) {
-        case ROBOT_2K24_C:
-        case ROBOT_2K24_P:
-        case ROBOT_2K24_TEST:
-          // Real robot, instantiate hardware IO implementations
+        case SNAPBACK:
+          // Snapback, instantiate hardware IO implementations
           drive =
               new Drive(
                   new GyroIOPigeon2(),
@@ -114,6 +114,19 @@ public class RobotContainer {
           aprilTagVision =
               new Vision("AprilTagVision", new VisionIOLimelight(VisionMode.AprilTags));
           noteVision = new Vision("NoteVision", new VisionIOLimelight(VisionMode.Notes));
+          break;
+        case ROBOT_2K24_TEST:
+          // Test robot, instantiate hardware IO implementations
+          drive =
+              new Drive(
+                  new GyroIOPigeon2(),
+                  new ModuleIOTalonFX(0),
+                  new ModuleIOTalonFX(1),
+                  new ModuleIOTalonFX(2),
+                  new ModuleIOTalonFX(3));
+          shooter = new Shooter(new ShooterIOTalonFX());
+          serializer = new Serializer(new SerializerIOTalonFX());
+          accelerator = new Accelerator(new AcceleratorIOTalonFX());
           break;
 
         case ROBOT_SIM:
@@ -228,6 +241,13 @@ public class RobotContainer {
           "Drive SysId (Dynamic Reverse)",
           DriveCommands.runSysIdDynamic(drive, Direction.kReverse));
       autoChooser.addOption("Shooter SysId", shooter.runSysId());
+
+      autoChooser.addOption("Hood Test", hood.setAmp());
+      autoChooser.addOption("Amp Test", amp.setAmp());
+      autoChooser.addOption("Intake Test", intake.deployIntake());
+      autoChooser.addOption("Climber Side Test", climber.preClimbSide());
+      autoChooser.addOption("Climber Center Test", climber.preClimbCenter());
+      autoChooser.addOption("Climber Climb Test", climber.climb());
     }
 
     // Configure the button bindings
@@ -253,7 +273,7 @@ public class RobotContainer {
     controller
         .a()
         .toggleOnTrue(
-            CompositeCommands.getAccelerateShooterCommand(
+            CompositeCommands.getPosePrepShooterCommand(
                 drive, hood, shooter, accelerator, aprilTagVision));
     controller
         .rightTrigger()
@@ -264,13 +284,24 @@ public class RobotContainer {
     controller.povUp().onTrue(climber.climb());
   }
 
+  public void updateSnapbackMechanism3d() {
+    Logger.recordOutput(
+        "Mechanism3d",
+        SnapbackMechanism3d.getPoses(
+            intake.isDeployed(),
+            hood.getPosition(),
+            amp.getPosition(),
+            climber.getLeftPositionMeters(),
+            climber.getRightPositionMeters()));
+  }
+
   public Command getAutonomousCommand() {
     return Constants.TUNING_MODE
         ? autoChooser.get()
         : autoChooser
             .get()
             .alongWith(
-                CompositeCommands.getAccelerateShooterCommand(
+                CompositeCommands.getPosePrepShooterCommand(
                     drive, hood, shooter, accelerator, aprilTagVision));
   }
 }

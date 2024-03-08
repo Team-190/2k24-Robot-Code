@@ -55,8 +55,7 @@ public class Module {
 
   static {
     switch (Constants.ROBOT) {
-      case ROBOT_2K24_C:
-      case ROBOT_2K24_P:
+      case SNAPBACK:
         WHEEL_RADIUS.initDefault(Units.inchesToMeters(2.0));
         DRIVE_KS.initDefault(0.0);
         DRIVE_KV.initDefault(0.0);

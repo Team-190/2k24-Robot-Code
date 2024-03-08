@@ -27,10 +27,7 @@ public class AcceleratorIOTalonFX implements AcceleratorIO {
 
   public AcceleratorIOTalonFX() {
     switch (Constants.ROBOT) {
-      case ROBOT_2K24_C:
-        acceleratorTalon = new TalonFX(41);
-        break;
-      case ROBOT_2K24_P:
+      case SNAPBACK:
         acceleratorTalon = new TalonFX(41);
         break;
       case ROBOT_2K24_TEST:

@@ -9,6 +9,8 @@ public class IntakeIOSim implements IntakeIO {
   private DCMotorSim motorSim = new DCMotorSim(DCMotor.getKrakenX60(1), 2.0, 0.004);
 
   private double rollersAppliedVolts = 0.0;
+  private boolean leftPosition = false;
+  private boolean rightPosition = false;
 
   @Override
   public void updateInputs(IntakeIOInputs inputs) {
@@ -19,11 +21,20 @@ public class IntakeIOSim implements IntakeIO {
     inputs.rollersAppliedVolts = rollersAppliedVolts;
     inputs.rollersCurrentAmps = new double[] {Math.abs(motorSim.getCurrentDrawAmps())};
     inputs.rollersTempCelcius = new double[] {};
+
+    inputs.leftPosition = leftPosition;
+    inputs.rightPosition = rightPosition;
   }
 
   @Override
   public void setRollersVoltage(double volts) {
     rollersAppliedVolts = MathUtil.clamp(volts, -12.0, 12.0);
     motorSim.setInputVoltage(rollersAppliedVolts);
+  }
+
+  @Override
+  public void setIntakePosition(boolean position) {
+    leftPosition = !position;
+    rightPosition = !position;
   }
 }

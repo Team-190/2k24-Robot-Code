@@ -1,7 +1,9 @@
 package frc.robot.subsystems.amp;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -30,13 +32,13 @@ public class Amp extends SubsystemBase {
 
   static {
     switch (Constants.ROBOT) {
-      case ROBOT_2K24_C:
-      case ROBOT_2K24_P:
+      case SNAPBACK:
         KP.initDefault(0.0);
         KD.initDefault(0.0);
         MAX_VELOCITY.initDefault(0.0);
         MAX_ACCELERATION.initDefault(0.0);
         STOWED_POSITION.initDefault(0.0);
+        AMP_POSITION.initDefault(0.0);
         break;
       case ROBOT_2K24_TEST:
         KP.initDefault(0.0);
@@ -44,13 +46,17 @@ public class Amp extends SubsystemBase {
         MAX_VELOCITY.initDefault(0.0);
         MAX_ACCELERATION.initDefault(0.0);
         STOWED_POSITION.initDefault(0.0);
+        AMP_POSITION.initDefault(0.0);
+
         break;
       case ROBOT_SIM:
-        KP.initDefault(0.0);
-        KD.initDefault(0.0);
-        MAX_VELOCITY.initDefault(0.0);
-        MAX_ACCELERATION.initDefault(0.0);
+        KP.initDefault(1.0);
+        KD.initDefault(0.05);
+        MAX_VELOCITY.initDefault(500);
+        MAX_ACCELERATION.initDefault(500);
         STOWED_POSITION.initDefault(0.0);
+        AMP_POSITION.initDefault(Units.degreesToRadians(135.0));
+
         break;
       default:
         break;
@@ -97,6 +103,10 @@ public class Amp extends SubsystemBase {
 
   private void setPosition(double positionRad) {
     profiledFeedback.setGoal(positionRad);
+  }
+
+  public Rotation2d getPosition() {
+    return inputs.position;
   }
 
   public Command setAmp() {
