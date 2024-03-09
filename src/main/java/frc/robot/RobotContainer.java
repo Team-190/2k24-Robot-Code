@@ -85,8 +85,8 @@ public class RobotContainer {
   private Vision noteVision;
 
   // Controller
-  private final CommandXboxController controller = new CommandXboxController(0);
-
+  private final CommandXboxController driver = new CommandXboxController(0);
+  private final CommandXboxController operator = new CommandXboxController(1);
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
 
@@ -260,28 +260,26 @@ public class RobotContainer {
             drive,
             aprilTagVision,
             noteVision,
-            () -> -controller.getLeftY(),
-            () -> -controller.getLeftX(),
-            () -> -controller.getRightX(),
-            controller.leftBumper(),
-            controller.rightBumper()));
-    controller.x().onTrue(DriveCommands.XLock(drive));
-    controller.b().onTrue(DriveCommands.resetHeading(drive));
-    controller.y().whileTrue(CompositeCommands.getAmpCommand(shooter, hood, amp));
-    controller.leftTrigger().whileTrue(CompositeCommands.getCollectCommand(intake, serializer));
-    controller.leftBumper().onTrue(CompositeCommands.getToggleIntakeCommand(intake));
-    controller
-        .a()
+            () -> -driver.getLeftY(),
+            () -> -driver.getLeftX(),
+            () -> -driver.getRightX(),
+            driver.leftTrigger(),
+            driver.rightTrigger()));
+    driver.y().onTrue(DriveCommands.resetHeading(drive));
+    driver.rightBumper().whileTrue(CompositeCommands.getAmpCommand(shooter, hood, amp));
+    driver.leftTrigger().whileTrue(CompositeCommands.getCollectCommand(intake, serializer)).onFalse(CompositeCommands.getRetractCommand(intake));
+    driver
+        .rightTrigger()
         .toggleOnTrue(
             CompositeCommands.getPosePrepShooterCommand(
                 drive, hood, shooter, accelerator, aprilTagVision));
-    controller
+    driver
         .rightTrigger()
         .and(shooter::isShooting)
         .whileTrue(CompositeCommands.getShootCommand(serializer, kicker));
-    controller.back().onTrue(climber.preClimbCenter());
-    controller.start().onTrue(climber.preClimbSide());
-    controller.povUp().onTrue(climber.climb());
+    driver.back().onTrue(climber.preClimbCenter());
+    driver.start().onTrue(climber.preClimbSide());
+    driver.povUp().onTrue(climber.climb());
   }
 
   public void updateSnapbackMechanism3d() {
