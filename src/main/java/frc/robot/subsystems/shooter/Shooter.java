@@ -158,6 +158,10 @@ public class Shooter extends SubsystemBase {
     return isShooting;
   }
 
+  public double getSpeed() {
+    return inputs.leftVelocityRadPerSec;
+  } 
+
   public Command runVelocity() {
     return runEnd(
         () -> {

@@ -5,6 +5,10 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.util.Units;
+import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.hood.Hood;
+import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.AllianceFlipUtil;
 import org.littletonrobotics.junction.Logger;
 
@@ -64,6 +68,12 @@ public class ShotCalculator {
 
   public static AimingParameters angleCalculation() {
     return null;
+  }
+
+  public static boolean shooterReady(Drive drive, Hood hood, Shooter shooter, Vision aprilTagVision) {
+    AimingParameters setpoints = poseCalculation(aprilTagVision.getRobotPose().get().getTranslation(),
+        drive.getFieldRelativeVelocity());
+    return (drive.getRotation().equals(setpoints.robotAngle)) && (hood.getPosition().equals(setpoints.shooterAngle)) && shooter.getSpeed() == setpoints.shooterSpeed;
   }
 
   public static record AimingParameters(

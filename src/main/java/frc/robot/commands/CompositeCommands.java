@@ -31,6 +31,7 @@ public class CompositeCommands {
     return intake.toggleIntake();
   }
 
+
   public static final Command getPosePrepShooterCommand(
       Drive drive, Hood hood, Shooter shooter, Accelerator accelerator, Vision aprilTagVision) {
     return shooter
