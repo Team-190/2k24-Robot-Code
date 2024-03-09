@@ -70,10 +70,14 @@ public class ShotCalculator {
     return null;
   }
 
-  public static boolean shooterReady(Drive drive, Hood hood, Shooter shooter, Vision aprilTagVision) {
-    AimingParameters setpoints = poseCalculation(aprilTagVision.getRobotPose().get().getTranslation(),
-        drive.getFieldRelativeVelocity());
-    return (drive.getRotation().equals(setpoints.robotAngle)) && (hood.getPosition().equals(setpoints.shooterAngle)) && shooter.getSpeed() == setpoints.shooterSpeed;
+  public static boolean shooterReady(
+      Drive drive, Hood hood, Shooter shooter, Vision aprilTagVision) {
+    AimingParameters setpoints =
+        poseCalculation(
+            aprilTagVision.getRobotPose().get().getTranslation(), drive.getFieldRelativeVelocity());
+    return (drive.getRotation().equals(setpoints.robotAngle))
+        && (hood.getPosition().equals(setpoints.shooterAngle))
+        && shooter.getSpeed() == setpoints.shooterSpeed;
   }
 
   public static record AimingParameters(

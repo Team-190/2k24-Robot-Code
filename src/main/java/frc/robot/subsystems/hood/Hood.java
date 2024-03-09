@@ -143,10 +143,12 @@ public class Hood extends SubsystemBase {
   }
 
   public Command increaseAngle() {
-    return Commands.runOnce(() -> profiledFeedback.setGoal(profiledFeedback.getSetpoint().position + 1));
+    return Commands.runOnce(
+        () -> profiledFeedback.setGoal(profiledFeedback.getSetpoint().position + 1));
   }
-  
+
   public Command decreaseAngle() {
-    return Commands.runOnce(() -> profiledFeedback.setGoal(profiledFeedback.getSetpoint().position - 1));
+    return Commands.runOnce(
+        () -> profiledFeedback.setGoal(profiledFeedback.getSetpoint().position - 1));
   }
 }

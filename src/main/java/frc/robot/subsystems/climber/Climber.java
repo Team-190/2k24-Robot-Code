@@ -152,9 +152,10 @@ public class Climber extends SubsystemBase {
   }
 
   public Command incrementClimber() {
-    return Commands.runOnce(() -> {
-      setLeftPosition(leftProfiledFeedback.getGoal().position + 1);
-      setRightPosition(rightProfiledFeedback.getGoal().position + 1);
-    });
+    return Commands.runOnce(
+        () -> {
+          setLeftPosition(leftProfiledFeedback.getGoal().position + 1);
+          setRightPosition(rightProfiledFeedback.getGoal().position + 1);
+        });
   }
 }
