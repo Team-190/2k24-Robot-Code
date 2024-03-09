@@ -295,6 +295,10 @@ public class RobotContainer {
             climber.getRightPositionMeters()));
   }
 
+  public LoggedDashboardChooser<Command> getAutoChooser() {
+    return autoChooser;
+  }
+
   public Command getAutonomousCommand() {
     return Constants.TUNING_MODE
         ? autoChooser.get()

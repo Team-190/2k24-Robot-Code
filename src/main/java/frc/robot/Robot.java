@@ -13,7 +13,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
@@ -142,7 +141,6 @@ public class Robot extends LoggedRobot {
     }
 
     robotContainer.updateSnapbackMechanism3d();
-    Logger.recordOutput("origin", new Pose3d());
   }
 
   /** This function is called once when the robot is disabled. */

@@ -40,23 +40,23 @@ public class AutoBuilderNameChanger {
         return "START: AMP \n -> AMP SIDE NOTE";
       case "AmpSide_MidelineSweep_End":
         return "START: AMP \n -> MIDLINE SWEEP";
-      case "AmpSide_Midline1Note_Midline2Note_AmpSideNote":
+      case "AmpSide_Midline1_Midline2_AmpSideNote_End":
         return "START: AMP \n -> MIDLINE 1 \n -> MIDLINE 2 \n -> AMP SIDE NOTE";
-      case "AmpSide_Midline1Note_Midline2Note_AmpSideNote_CenterNote":
+      case "AmpSide_Midline1_Midline2_AmpSideNote_CenterNote_End":
         return "START: AMP \n -> MIDLINE 1 \n -> MIDLINE 2 \n -> AMP SIDE NOTE \n -> CENTER NOTE";
-      case "AmpSide_Midline1Note_Midline2Note_AmpSideNote_CenterNote_SourceSideNote":
+      case "AmpSide_Midline1_Midline2_AmpSideNote_CenterNote_SourceSideNote_End":
         return "START: AMP \n -> MIDLINE 1 \n -> MIDLINE 2 \n -> AMP SIDE NOTE \n -> CENTER NOTE \n -> SOURCE SIDE NOTE";
-      case "AmpSide_Midline1Note_Midline2Note_Midline3Note_AmpSideNote":
+      case "AmpSide_Midline1_Midline2_Midline3_AmpSideNote_End":
         return "START: AMP \n -> MIDLINE 1 \n -> MIDLINE 2 \n -> MIDLINE 3 \n -> AMP SIDE NOTE";
-      case "AmpSide_Midline1Note_Midline2Note_Midline3Note_AmpSideNote_CenterNote":
+      case "AmpSide_Midline1_Midline2_Midline3_AmpSideNote_CenterNote_End":
         return "START: AMP \n -> MIDLINE 1 \n -> MIDLINE 2 \n -> MIDLINE 3 \n -> AMP SIDE NOTE \n -> CENTER NOTE";
-      case "AmpSide_Midline1Note_Midline2Note_Midline3Note_AmpSideNote_CenterNote_SourceSideNote":
+      case "AmpSide_Midline1_Midline2_Midline3_AmpSideNote_CenterNote_SourceSideNote_End":
         return "START: AMP \n -> MIDLINE 1 \n -> MIDLINE 2 \n -> MIDLINE 3 \n -> AMP SIDE NOTE \n -> CENTER NOTE \n -> SOURCE SIDE NOTE";
       case "Center_AmpSideNote_End":
         return "START: CENTER \n -> AMP SIDE NOTE";
       case "Center_CenterNote_End":
         return "START: CENTER \n -> CENTER NOTE";
-      case "Center_CenterNote_Midline3Note_End":
+      case "Center_CenterNote_Midline3_End":
         return "START: CENTER \n -> CENTER NOTE \n -> MIDLINE 3";
       case "Center_SourceSideNote_CenterNote_AmpSideNote_End":
         return "START: CENTER \n -> FULL WING AUTO";
@@ -64,7 +64,7 @@ public class AutoBuilderNameChanger {
         return "START: CENTER \n -> SOURCE SIDE SPIKE";
       case "SourceSide_MidlineSweep_End":
         return "START: SOURCE \n -> MIDLINE SWEEP";
-      case "SourceSide_SourceSideNote_CenterSideNote_AmpSideNote_End":
+      case "SourceSide_SourceSideNote_CenterNote_AmpSideNote_End":
         return "START: SOURCE \n -> FULL WING AUTO";
       case "SourceSide_SourceSideNote_End":
         return "START: SOURCE \n -> SOURCE SIDE SPIKE";
