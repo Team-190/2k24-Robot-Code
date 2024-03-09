@@ -7,6 +7,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.ShotCalculator;
@@ -139,5 +140,13 @@ public class Hood extends SubsystemBase {
           setPosition(aimingParameters.shooterAngle().getRadians());
         },
         () -> setPosition(STOWED_POSITION.get()));
+  }
+
+  public Command increaseAngle() {
+    return Commands.runOnce(() -> profiledFeedback.setGoal(profiledFeedback.getSetpoint().position + 1));
+  }
+  
+  public Command decreaseAngle() {
+    return Commands.runOnce(() -> profiledFeedback.setGoal(profiledFeedback.getSetpoint().position - 1));
   }
 }

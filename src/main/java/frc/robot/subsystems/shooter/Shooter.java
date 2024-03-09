@@ -25,7 +25,7 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Shooter extends SubsystemBase {
-  private static final LoggedTunableNumber DIFFERENCE =
+  private static LoggedTunableNumber DIFFERENCE =
       new LoggedTunableNumber("Shooter/Difference");
 
   private static final LoggedTunableNumber KP = new LoggedTunableNumber("Shooter/Kp");
@@ -247,5 +247,21 @@ public class Shooter extends SubsystemBase {
         sysIdRoutine.dynamic(Direction.kForward),
         Commands.waitSeconds(4),
         sysIdRoutine.dynamic(Direction.kReverse));
+  }
+
+  public Command increaseVelocity() {
+    return Commands.runOnce(() -> setVelocity(Math.max(leftFeedback.getSetpoint(), rightFeedback.getSetpoint()) + 1));
+  }
+  
+  public Command decreaseVelocity() {
+    return Commands.runOnce(() -> setVelocity(Math.max(leftFeedback.getSetpoint(), rightFeedback.getSetpoint()) - 1));
+  }
+
+  public Command increaseSpin() {
+    return Commands.runOnce(() -> DIFFERENCE.initDefault(DIFFERENCE.get() + 1));
+  }
+
+  public Command decreaseSpin() {
+    return Commands.runOnce(() -> DIFFERENCE.initDefault(DIFFERENCE.get() - 1));
   }
 }

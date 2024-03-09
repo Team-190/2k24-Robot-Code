@@ -267,7 +267,10 @@ public class RobotContainer {
             driver.rightTrigger()));
     driver.y().onTrue(DriveCommands.resetHeading(drive));
     driver.rightBumper().whileTrue(CompositeCommands.getAmpCommand(shooter, hood, amp));
-    driver.leftTrigger().whileTrue(CompositeCommands.getCollectCommand(intake, serializer)).onFalse(CompositeCommands.getRetractCommand(intake));
+    driver
+        .leftTrigger()
+        .whileTrue(CompositeCommands.getCollectCommand(intake, serializer))
+        .onFalse(CompositeCommands.getRetractCommand(intake));
     driver
         .rightTrigger()
         .toggleOnTrue(
@@ -280,6 +283,17 @@ public class RobotContainer {
     driver.back().onTrue(climber.preClimbCenter());
     driver.start().onTrue(climber.preClimbSide());
     driver.povUp().onTrue(climber.climb());
+
+    operator.leftBumper().whileTrue(hood.increaseAngle());
+    operator.leftTrigger().whileTrue(hood.decreaseAngle());
+    operator.rightBumper().whileTrue(shooter.increaseVelocity());
+    operator.rightTrigger().whileTrue(shooter.decreaseVelocity());
+    operator.y().whileTrue(shooter.increaseSpin());
+    operator.a().whileTrue(shooter.decreaseSpin());
+    operator.povDown().onTrue(climber.climb());
+    operator.povLeft().onTrue(climber.preClimbSide());
+    operator.povRight().onTrue(climber.preClimbCenter());
+    operator.povRight().onTrue(climber.incrementClimber());
   }
 
   public void updateSnapbackMechanism3d() {
