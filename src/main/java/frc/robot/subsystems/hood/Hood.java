@@ -111,7 +111,7 @@ public class Hood extends SubsystemBase {
   }
 
   private void setPosition(double positionRad) {
-    profiledFeedback.setGoal(positionRad + Units.degreesToRadians(angleOffset));
+    profiledFeedback.setGoal(positionRad + angleOffset);
   }
 
   public Rotation2d getPosition() {
@@ -147,10 +147,10 @@ public class Hood extends SubsystemBase {
   }
 
   public Command increaseAngle() {
-    return Commands.runOnce(() -> angleOffset += 0.25);
+    return Commands.runOnce(() -> angleOffset += Units.degreesToRadians(0.25));
   }
 
   public Command decreaseAngle() {
-    return Commands.runOnce(() -> angleOffset -= 0.25);
+    return Commands.runOnce(() -> angleOffset -= Units.degreesToRadians(0.25));
   }
 }

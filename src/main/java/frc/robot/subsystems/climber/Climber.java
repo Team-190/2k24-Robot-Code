@@ -121,11 +121,11 @@ public class Climber extends SubsystemBase {
   }
 
   private void setLeftPosition(double leftPositionMeters) {
-    leftProfiledFeedback.setGoal(leftPositionMeters + Units.inchesToMeters(climberOffset));
+    leftProfiledFeedback.setGoal(leftPositionMeters + climberOffset);
   }
 
   private void setRightPosition(double rightPositionMeters) {
-    rightProfiledFeedback.setGoal(rightPositionMeters + Units.inchesToMeters(climberOffset));
+    rightProfiledFeedback.setGoal(rightPositionMeters +climberOffset);
   }
 
   public double getLeftPositionMeters() {
@@ -161,6 +161,6 @@ public class Climber extends SubsystemBase {
   }
 
   public Command incrementClimber() {
-    return Commands.runOnce(() -> climberOffset++);
+    return Commands.runOnce(() -> climberOffset += Units.inchesToMeters(1));
   }
 }
