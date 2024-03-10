@@ -6,6 +6,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -258,11 +259,11 @@ public class Shooter extends SubsystemBase {
   }
 
   public Command increaseVelocity() {
-    return Commands.runOnce(() -> speedOffset++);
+    return Commands.runOnce(() -> speedOffset += Units.rotationsPerMinuteToRadiansPerSecond(10));
   }
 
   public Command decreaseVelocity() {
-    return Commands.runOnce(() -> speedOffset--);
+    return Commands.runOnce(() -> speedOffset -= Units.rotationsPerMinuteToRadiansPerSecond(10));
   }
 
   public Command increaseSpin() {

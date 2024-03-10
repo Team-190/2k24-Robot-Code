@@ -99,7 +99,7 @@ public class Hood extends SubsystemBase {
     if (DriverStation.isEnabled()) {
       io.setVoltage(
           profiledFeedback.calculate(
-              inputs.position.getRadians() + Units.degreesToRadians(angleOffset)));
+              inputs.position.getRadians()));
     }
 
     if (DriverStation.isDisabled()) {
@@ -111,7 +111,7 @@ public class Hood extends SubsystemBase {
   }
 
   private void setPosition(double positionRad) {
-    profiledFeedback.setGoal(positionRad);
+    profiledFeedback.setGoal(positionRad + Units.degreesToRadians(angleOffset));
   }
 
   public Rotation2d getPosition() {
@@ -147,10 +147,10 @@ public class Hood extends SubsystemBase {
   }
 
   public Command increaseAngle() {
-    return Commands.runOnce(() -> angleOffset++);
+    return Commands.runOnce(() -> angleOffset += 0.25);
   }
 
   public Command decreaseAngle() {
-    return Commands.runOnce(() -> angleOffset--);
+    return Commands.runOnce(() -> angleOffset -= 0.25);
   }
 }
