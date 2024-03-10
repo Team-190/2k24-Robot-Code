@@ -97,9 +97,7 @@ public class Hood extends SubsystemBase {
     }
 
     if (DriverStation.isEnabled()) {
-      io.setVoltage(
-          profiledFeedback.calculate(
-              inputs.position.getRadians()));
+      io.setVoltage(profiledFeedback.calculate(inputs.position.getRadians()));
     }
 
     if (DriverStation.isDisabled()) {

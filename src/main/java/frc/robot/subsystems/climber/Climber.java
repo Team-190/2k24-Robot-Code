@@ -125,7 +125,7 @@ public class Climber extends SubsystemBase {
   }
 
   private void setRightPosition(double rightPositionMeters) {
-    rightProfiledFeedback.setGoal(rightPositionMeters +climberOffset);
+    rightProfiledFeedback.setGoal(rightPositionMeters + climberOffset);
   }
 
   public double getLeftPositionMeters() {
