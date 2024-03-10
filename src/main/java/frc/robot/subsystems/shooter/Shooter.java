@@ -62,9 +62,8 @@ public class Shooter extends SubsystemBase {
     YEET
   }
 
-  @AutoLogOutput
-  private SpinDirection spinDirection = SpinDirection.CLOCKWISE;
-  
+  @AutoLogOutput private SpinDirection spinDirection = SpinDirection.CLOCKWISE;
+
   private double speedOffset = 0;
   private double differenceOffset = 0;
 
@@ -136,11 +135,13 @@ public class Shooter extends SubsystemBase {
   private void setVelocity(double velocityRadPerSec) {
     isOpenLoop = false;
     if (spinDirection.equals(SpinDirection.COUNTERCLOCKWISE)) {
-      leftFeedback.setSetpoint(velocityRadPerSec + speedOffset - (DIFFERENCE.get() + differenceOffset));
+      leftFeedback.setSetpoint(
+          velocityRadPerSec + speedOffset - (DIFFERENCE.get() + differenceOffset));
       rightFeedback.setSetpoint(velocityRadPerSec + speedOffset);
     } else if (spinDirection.equals(SpinDirection.CLOCKWISE)) {
       leftFeedback.setSetpoint(velocityRadPerSec + speedOffset);
-      rightFeedback.setSetpoint(velocityRadPerSec + speedOffset - (DIFFERENCE.get() + differenceOffset));
+      rightFeedback.setSetpoint(
+          velocityRadPerSec + speedOffset - (DIFFERENCE.get() + differenceOffset));
     } else {
       leftFeedback.setSetpoint(velocityRadPerSec + speedOffset);
       rightFeedback.setSetpoint(velocityRadPerSec + speedOffset);

@@ -2,6 +2,7 @@ package frc.robot.subsystems.climber;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -33,6 +34,8 @@ public class Climber extends SubsystemBase {
   private final ProfiledPIDController leftProfiledFeedback;
   private final ProfiledPIDController rightProfiledFeedback;
 
+  private double climberOffset = 0;
+
   static {
     LOW_POSITION.initDefault(0.5);
     HIGH_POSITION.initDefault(0.75);
@@ -43,6 +46,8 @@ public class Climber extends SubsystemBase {
         MAX_VELOCITY.initDefault(0.1);
         MAX_ACCELERATION.initDefault(0.1);
         STOWED_POSITION.initDefault(0.0);
+        HIGH_POSITION.initDefault(0.0);
+        LOW_POSITION.initDefault(0.0);
         break;
       case ROBOT_2K24_TEST:
         KP.initDefault(0.0);
@@ -50,6 +55,8 @@ public class Climber extends SubsystemBase {
         MAX_VELOCITY.initDefault(0.0);
         MAX_ACCELERATION.initDefault(0.0);
         STOWED_POSITION.initDefault(0.0);
+        HIGH_POSITION.initDefault(0.0);
+        LOW_POSITION.initDefault(0.0);
         break;
       case ROBOT_SIM:
         KP.initDefault(1.0);
@@ -57,6 +64,8 @@ public class Climber extends SubsystemBase {
         MAX_VELOCITY.initDefault(1.0);
         MAX_ACCELERATION.initDefault(1.0);
         STOWED_POSITION.initDefault(0.0);
+        HIGH_POSITION.initDefault(0.0);
+        LOW_POSITION.initDefault(0.0);
         break;
       default:
         break;
@@ -112,11 +121,11 @@ public class Climber extends SubsystemBase {
   }
 
   private void setLeftPosition(double leftPositionMeters) {
-    leftProfiledFeedback.setGoal(leftPositionMeters);
+    leftProfiledFeedback.setGoal(leftPositionMeters + Units.inchesToMeters(climberOffset));
   }
 
   private void setRightPosition(double rightPositionMeters) {
-    rightProfiledFeedback.setGoal(rightPositionMeters);
+    rightProfiledFeedback.setGoal(rightPositionMeters + Units.inchesToMeters(climberOffset));
   }
 
   public double getLeftPositionMeters() {
@@ -152,10 +161,6 @@ public class Climber extends SubsystemBase {
   }
 
   public Command incrementClimber() {
-    return Commands.runOnce(
-        () -> {
-          setLeftPosition(leftProfiledFeedback.getGoal().position + 1);
-          setRightPosition(rightProfiledFeedback.getGoal().position + 1);
-        });
+    return Commands.runOnce(() -> climberOffset++);
   }
 }

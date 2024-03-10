@@ -97,7 +97,9 @@ public class Hood extends SubsystemBase {
     }
 
     if (DriverStation.isEnabled()) {
-      io.setVoltage(profiledFeedback.calculate(inputs.position.getRadians() + Units.degreesToRadians(angleOffset)));
+      io.setVoltage(
+          profiledFeedback.calculate(
+              inputs.position.getRadians() + Units.degreesToRadians(angleOffset)));
     }
 
     if (DriverStation.isDisabled()) {
@@ -149,6 +151,6 @@ public class Hood extends SubsystemBase {
   }
 
   public Command decreaseAngle() {
-        return Commands.runOnce(() -> angleOffset--);
+    return Commands.runOnce(() -> angleOffset--);
   }
 }

@@ -14,7 +14,6 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.NamedCommands;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -69,6 +68,7 @@ import frc.robot.util.AutoBuilderNameChanger;
 import frc.robot.util.SnapbackMechanism3d;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 public class RobotContainer {
   // Subsystems
@@ -90,6 +90,9 @@ public class RobotContainer {
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
+
+  // Tunable Numbers
+  private final LoggedDashboardNumber autoDelay = new LoggedDashboardNumber("Auto Delay");
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -201,7 +204,7 @@ public class RobotContainer {
 
     // Pathplanner commands
     NamedCommands.registerCommand(
-        "Delay", Commands.waitSeconds(SmartDashboard.getNumber("Auto Start Shooting Delay", 0.0)));
+        "Delay", Commands.waitSeconds(autoDelay.get()));
     NamedCommands.registerCommand(
         "Shoot", CompositeCommands.getShootCommand(serializer, kicker).withTimeout(0.5));
     NamedCommands.registerCommand(
@@ -293,7 +296,7 @@ public class RobotContainer {
     operator.povDown().onTrue(climber.climb());
     operator.povLeft().onTrue(climber.preClimbSide());
     operator.povRight().onTrue(climber.preClimbCenter());
-    operator.povRight().onTrue(climber.incrementClimber());
+    operator.povUp().onTrue(climber.incrementClimber());
   }
 
   public void updateSnapbackMechanism3d() {
