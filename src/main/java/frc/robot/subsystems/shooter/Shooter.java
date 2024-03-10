@@ -62,7 +62,11 @@ public class Shooter extends SubsystemBase {
     YEET
   }
 
-  @AutoLogOutput private SpinDirection spinDirection = SpinDirection.CLOCKWISE;
+  @AutoLogOutput
+  private SpinDirection spinDirection = SpinDirection.CLOCKWISE;
+  
+  private double speedOffset = 0;
+  private double differenceOffset = 0;
 
   static {
     switch (Constants.ROBOT) {
@@ -132,14 +136,14 @@ public class Shooter extends SubsystemBase {
   private void setVelocity(double velocityRadPerSec) {
     isOpenLoop = false;
     if (spinDirection.equals(SpinDirection.COUNTERCLOCKWISE)) {
-      leftFeedback.setSetpoint(velocityRadPerSec - DIFFERENCE.get());
-      rightFeedback.setSetpoint(velocityRadPerSec);
+      leftFeedback.setSetpoint(velocityRadPerSec + speedOffset - (DIFFERENCE.get() + differenceOffset));
+      rightFeedback.setSetpoint(velocityRadPerSec + speedOffset);
     } else if (spinDirection.equals(SpinDirection.CLOCKWISE)) {
-      leftFeedback.setSetpoint(velocityRadPerSec);
-      rightFeedback.setSetpoint(velocityRadPerSec - DIFFERENCE.get());
+      leftFeedback.setSetpoint(velocityRadPerSec + speedOffset);
+      rightFeedback.setSetpoint(velocityRadPerSec + speedOffset - (DIFFERENCE.get() + differenceOffset));
     } else {
-      leftFeedback.setSetpoint(velocityRadPerSec);
-      rightFeedback.setSetpoint(velocityRadPerSec);
+      leftFeedback.setSetpoint(velocityRadPerSec + speedOffset);
+      rightFeedback.setSetpoint(velocityRadPerSec + speedOffset);
     }
   }
 
@@ -253,20 +257,18 @@ public class Shooter extends SubsystemBase {
   }
 
   public Command increaseVelocity() {
-    return Commands.runOnce(
-        () -> setVelocity(Math.max(leftFeedback.getSetpoint(), rightFeedback.getSetpoint()) + 1));
+    return Commands.runOnce(() -> speedOffset++);
   }
 
   public Command decreaseVelocity() {
-    return Commands.runOnce(
-        () -> setVelocity(Math.max(leftFeedback.getSetpoint(), rightFeedback.getSetpoint()) - 1));
+    return Commands.runOnce(() -> speedOffset--);
   }
 
   public Command increaseSpin() {
-    return Commands.runOnce(() -> DIFFERENCE.initDefault(DIFFERENCE.get() + 1));
+    return Commands.runOnce(() -> differenceOffset++);
   }
 
   public Command decreaseSpin() {
-    return Commands.runOnce(() -> DIFFERENCE.initDefault(DIFFERENCE.get() - 1));
+    return Commands.runOnce(() -> differenceOffset--);
   }
 }

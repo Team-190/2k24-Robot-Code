@@ -36,6 +36,8 @@ public class Hood extends SubsystemBase {
 
   private final ProfiledPIDController profiledFeedback;
 
+  private double angleOffset = 0;
+
   static {
     switch (Constants.ROBOT) {
       case SNAPBACK:
@@ -95,7 +97,7 @@ public class Hood extends SubsystemBase {
     }
 
     if (DriverStation.isEnabled()) {
-      io.setVoltage(profiledFeedback.calculate(inputs.position.getRadians()));
+      io.setVoltage(profiledFeedback.calculate(inputs.position.getRadians() + Units.degreesToRadians(angleOffset)));
     }
 
     if (DriverStation.isDisabled()) {
@@ -143,12 +145,10 @@ public class Hood extends SubsystemBase {
   }
 
   public Command increaseAngle() {
-    return Commands.runOnce(
-        () -> profiledFeedback.setGoal(profiledFeedback.getSetpoint().position + 1));
+    return Commands.runOnce(() -> angleOffset++);
   }
 
   public Command decreaseAngle() {
-    return Commands.runOnce(
-        () -> profiledFeedback.setGoal(profiledFeedback.getSetpoint().position - 1));
+        return Commands.runOnce(() -> angleOffset--);
   }
 }
