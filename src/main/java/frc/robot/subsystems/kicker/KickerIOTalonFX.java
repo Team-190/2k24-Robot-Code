@@ -28,10 +28,10 @@ public class KickerIOTalonFX implements KickerIO {
   public KickerIOTalonFX() {
     switch (Constants.ROBOT) {
       case SNAPBACK:
-        kickerTalon = new TalonFX(47);
+        kickerTalon = new TalonFX(6);
         break;
       case ROBOT_2K24_TEST:
-        kickerTalon = new TalonFX(47);
+        kickerTalon = new TalonFX(6);
         break;
       default:
         throw new RuntimeException("Invalid robot");

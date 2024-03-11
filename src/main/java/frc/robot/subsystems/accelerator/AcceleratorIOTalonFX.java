@@ -28,10 +28,10 @@ public class AcceleratorIOTalonFX implements AcceleratorIO {
   public AcceleratorIOTalonFX() {
     switch (Constants.ROBOT) {
       case SNAPBACK:
-        acceleratorTalon = new TalonFX(41);
+        acceleratorTalon = new TalonFX(15);
         break;
       case ROBOT_2K24_TEST:
-        acceleratorTalon = new TalonFX(41);
+        acceleratorTalon = new TalonFX(15);
         break;
       default:
         throw new RuntimeException("Invalid robot");

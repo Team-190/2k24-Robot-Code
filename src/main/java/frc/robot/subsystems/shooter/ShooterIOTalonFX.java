@@ -36,12 +36,12 @@ public class ShooterIOTalonFX implements ShooterIO {
   public ShooterIOTalonFX() {
     switch (Constants.ROBOT) {
       case SNAPBACK:
-        leftShooterTalon = new TalonFX(45);
-        rightShooterTalon = new TalonFX(44);
+        leftShooterTalon = new TalonFX(16);
+        rightShooterTalon = new TalonFX(10);
         break;
       case ROBOT_2K24_TEST:
-        leftShooterTalon = new TalonFX(45);
-        rightShooterTalon = new TalonFX(44);
+        leftShooterTalon = new TalonFX(16);
+        rightShooterTalon = new TalonFX(10);
         break;
       default:
         throw new RuntimeException("Invalid robot");
