@@ -80,28 +80,28 @@ public class ModuleIOTalonFX implements ModuleIO {
       case SNAPBACK:
         switch (index) {
           case 0:
-            driveTalon = new TalonFX(10);
-            turnTalon = new TalonFX(11);
-            cancoder = new CANcoder(20);
-            absoluteEncoderOffset = Rotation2d.fromRadians(0.0); // TODO: Calibrate
+            driveTalon = new TalonFX(11, "drive");
+            turnTalon = new TalonFX(12, "drive");
+            cancoder = new CANcoder(20, "drive");
+            absoluteEncoderOffset = Rotation2d.fromRadians(2.2227381616462942); // TODO: Calibrate
             break;
           case 1:
-            driveTalon = new TalonFX(8);
-            turnTalon = new TalonFX(9);
-            cancoder = new CANcoder(21);
-            absoluteEncoderOffset = Rotation2d.fromRadians(0.0); // TODO: Calibrate
+            driveTalon = new TalonFX(8, "drive");
+            turnTalon = new TalonFX(9, "drive");
+            cancoder = new CANcoder(21, "drive");
+            absoluteEncoderOffset = Rotation2d.fromRadians(-1.4526798061277022); // TODO: Calibrate
             break;
           case 2:
-            driveTalon = new TalonFX(18);
-            turnTalon = new TalonFX(19);
-            cancoder = new CANcoder(22);
-            absoluteEncoderOffset = Rotation2d.fromRadians(0.0); // TODO: Calibrate
+            driveTalon = new TalonFX(18, "drive");
+            turnTalon = new TalonFX(19, "drive");
+            cancoder = new CANcoder(22, "drive");
+            absoluteEncoderOffset = Rotation2d.fromRadians(-1.9174759848570517); // TODO: Calibrate
             break;
           case 3:
-            driveTalon = new TalonFX(0);
-            turnTalon = new TalonFX(1);
-            cancoder = new CANcoder(23);
-            absoluteEncoderOffset = Rotation2d.fromRadians(0.0); // TODO: Calibrate
+            driveTalon = new TalonFX(0, "drive");
+            turnTalon = new TalonFX(1, "drive");
+            cancoder = new CANcoder(23, "drive");
+            absoluteEncoderOffset = Rotation2d.fromRadians(-1.4005244593395905); // TODO: Calibrate
             break;
           default:
             throw new RuntimeException("Invalid module index");
@@ -269,7 +269,7 @@ public class ModuleIOTalonFX implements ModuleIO {
   @Override
   public void setDriveBrakeMode(boolean enable) {
     var config = new MotorOutputConfigs();
-    config.Inverted = InvertedValue.CounterClockwise_Positive;
+    config.Inverted = InvertedValue.Clockwise_Positive;
     config.NeutralMode = enable ? NeutralModeValue.Brake : NeutralModeValue.Coast;
     driveTalon.getConfigurator().apply(config);
   }

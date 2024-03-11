@@ -43,14 +43,14 @@ public class ClimberIOTalonFX implements ClimberIO {
       case SNAPBACK:
         leftTalon = new TalonFX(4);
         rightTalon = new TalonFX(5);
-        leftLock = new Solenoid(PneumaticsModuleType.REVPH, 4);
-        rightLock = new Solenoid(PneumaticsModuleType.REVPH, 5);
+        leftLock = new Solenoid(PneumaticsModuleType.CTREPCM, 4);
+        rightLock = new Solenoid(PneumaticsModuleType.CTREPCM, 5);
         break;
       case ROBOT_2K24_TEST:
         leftTalon = new TalonFX(4);
         rightTalon = new TalonFX(5);
-        leftLock = new Solenoid(PneumaticsModuleType.REVPH, 4);
-        rightLock = new Solenoid(PneumaticsModuleType.REVPH, 5);
+        leftLock = new Solenoid(PneumaticsModuleType.CTREPCM, 4);
+        rightLock = new Solenoid(PneumaticsModuleType.CTREPCM, 5);
         break;
       default:
         throw new RuntimeException("Invalid robot");

@@ -32,13 +32,13 @@ public class IntakeIOTalonFX implements IntakeIO {
     switch (Constants.ROBOT) {
       case SNAPBACK:
         rollersTalon = new TalonFX(17);
-        leftSolenoid = new Solenoid(PneumaticsModuleType.REVPH, 0);
-        rightSolenoid = new Solenoid(PneumaticsModuleType.REVPH, 1);
+        leftSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 0);
+        rightSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 1);
         break;
       case ROBOT_2K24_TEST:
         rollersTalon = new TalonFX(17);
-        leftSolenoid = new Solenoid(PneumaticsModuleType.REVPH, 0);
-        rightSolenoid = new Solenoid(PneumaticsModuleType.REVPH, 1);
+        leftSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 0);
+        rightSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 1);
         break;
       default:
         throw new RuntimeException("Invalid robot");

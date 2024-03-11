@@ -59,9 +59,9 @@ public class Module {
         WHEEL_RADIUS.initDefault(Units.inchesToMeters(2.0));
         DRIVE_KS.initDefault(0.0);
         DRIVE_KV.initDefault(0.0);
-        DRIVE_KP.initDefault(0.0);
+        DRIVE_KP.initDefault(0.1);
         DRIVE_KD.initDefault(0.0);
-        TURN_KP.initDefault(0.0);
+        TURN_KP.initDefault(9.0);
         TURN_KD.initDefault(0.0);
         break;
       case ROBOT_2K24_TEST:

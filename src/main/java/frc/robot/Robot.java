@@ -13,24 +13,14 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.path.PathPlannerTrajectory;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.Trajectory.State;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
 import frc.robot.util.VirtualSubsystem;
-import java.util.ArrayList;
-import java.util.List;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -60,9 +50,6 @@ public class Robot extends LoggedRobot {
 
   private Command autonomousCommand;
   private RobotContainer robotContainer;
-  private String previousAuto;
-  private int currentTrajectory;
-  private Field2d field;
 
   public Robot() {
     super(Constants.LOOP_PERIOD_SECS);
@@ -128,9 +115,6 @@ public class Robot extends LoggedRobot {
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our autonomous chooser on the dashboard.
     robotContainer = new RobotContainer();
-    previousAuto = "";
-    field = new Field2d();
-    SmartDashboard.putData(field);
   }
 
   /** This function is called periodically during all modes. */
@@ -165,41 +149,7 @@ public class Robot extends LoggedRobot {
 
   /** This function is called periodically when disabled. */
   @Override
-  public void disabledPeriodic() {
-    var currentAuto = robotContainer.getAutoChooser().get().getName();
-    try {
-      ArrayList<State> wpiLibStates = new ArrayList<>();
-      if (currentAuto != previousAuto) {
-        currentTrajectory = 0;
-        SmartDashboard.updateValues();
-        List<PathPlannerPath> paths = PathPlannerAuto.getPathGroupFromAutoFile(currentAuto);
-        for (PathPlannerPath path : paths) {
-          PathPlannerTrajectory trajectory =
-              path.getTrajectory(
-                  new ChassisSpeeds(), path.getPathPoses().get(paths.size()).getRotation());
-          List<PathPlannerTrajectory.State> states = trajectory.getStates();
-          for (PathPlannerTrajectory.State state : states) {
-            wpiLibStates.add(
-                new State(
-                    state.timeSeconds,
-                    state.velocityMps,
-                    state.accelerationMpsSq,
-                    state.getDifferentialPose(),
-                    state.curvatureRadPerMeter));
-          }
-        }
-
-        field
-            .getObject("trajectory " + currentTrajectory)
-            .setTrajectory(new Trajectory(wpiLibStates));
-
-        currentTrajectory++;
-        previousAuto = currentAuto;
-      }
-    } catch (Exception e) {
-      new Alert("CANNOT RENDER AUTO", AlertType.WARNING);
-    }
-  }
+  public void disabledPeriodic() {}
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
