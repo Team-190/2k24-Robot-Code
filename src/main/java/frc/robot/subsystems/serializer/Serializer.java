@@ -42,6 +42,6 @@ public class Serializer extends SubsystemBase {
   }
 
   public Command intake() {
-    return runEnd(() -> io.setVoltage(intakeVoltage.get()), () -> stop()).until(() -> sensor.get());
+    return runEnd(() -> io.setVoltage(intakeVoltage.get()), () -> stop());
   }
 }

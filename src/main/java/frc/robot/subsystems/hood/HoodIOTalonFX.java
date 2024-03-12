@@ -5,6 +5,7 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
@@ -20,7 +21,7 @@ public class HoodIOTalonFX implements HoodIO {
   private final StatusSignal<Double> currentAmps;
   private final StatusSignal<Double> tempCelcius;
 
-  private final double GEAR_RATIO = 5.0;
+  private final double GEAR_RATIO = 85.0;
 
   private final Alert disconnecctedAlert =
       new Alert("Hood Talon is disconnected, check CAN bus.", AlertType.ERROR);
@@ -40,6 +41,7 @@ public class HoodIOTalonFX implements HoodIO {
     var config = new TalonFXConfiguration();
     config.CurrentLimits.SupplyCurrentLimit = 60.0;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
+    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     hoodTalon.getConfigurator().apply(config);
     hoodTalon.setPosition(0.0);
 

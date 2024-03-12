@@ -1,5 +1,6 @@
 package frc.robot.subsystems.hood;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -31,6 +32,11 @@ public class Hood extends SubsystemBase {
   private static final LoggedTunableNumber AMP_POSITION =
       new LoggedTunableNumber("Hood/Amp Position");
 
+  private static final LoggedTunableNumber MIN_POSITION =
+      new LoggedTunableNumber("Hood/Minimum Angle");
+  private static final LoggedTunableNumber MAX_POSITION =
+      new LoggedTunableNumber("Hood/Maximum Angle");
+
   private final HoodIO io;
   private final HoodIOInputsAutoLogged inputs = new HoodIOInputsAutoLogged();
 
@@ -41,12 +47,14 @@ public class Hood extends SubsystemBase {
   static {
     switch (Constants.ROBOT) {
       case SNAPBACK:
-        KP.initDefault(0.0);
-        KD.initDefault(0.0);
-        MAX_VELOCITY.initDefault(0.0);
-        MAX_ACCELERATION.initDefault(0.0);
-        STOWED_POSITION.initDefault(20.0);
-        AMP_POSITION.initDefault(0.0);
+        KP.initDefault(25.0);
+        KD.initDefault(0.01);
+        MAX_VELOCITY.initDefault(50.0);
+        MAX_ACCELERATION.initDefault(40.0);
+        STOWED_POSITION.initDefault(0.0);
+        AMP_POSITION.initDefault(0.4);
+        MIN_POSITION.initDefault(0.0);
+        MAX_POSITION.initDefault(0.75);
         break;
       case ROBOT_2K24_TEST:
         KP.initDefault(0.0);
@@ -55,7 +63,8 @@ public class Hood extends SubsystemBase {
         MAX_ACCELERATION.initDefault(0.0);
         STOWED_POSITION.initDefault(20.0);
         AMP_POSITION.initDefault(0.0);
-
+        MIN_POSITION.initDefault(0.0);
+        MAX_POSITION.initDefault(0.0);
         break;
       case ROBOT_SIM:
         KP.initDefault(90.0);
@@ -64,6 +73,8 @@ public class Hood extends SubsystemBase {
         MAX_ACCELERATION.initDefault(1000.0);
         STOWED_POSITION.initDefault(Units.degreesToRadians(38.0));
         AMP_POSITION.initDefault(Units.degreesToRadians(15.0));
+        MIN_POSITION.initDefault(0.0);
+        MAX_POSITION.initDefault(0.0);
         break;
       default:
         break;
@@ -109,7 +120,9 @@ public class Hood extends SubsystemBase {
   }
 
   private void setPosition(double positionRad) {
-    profiledFeedback.setGoal(positionRad + angleOffset);
+    double position =
+        MathUtil.clamp(positionRad + angleOffset, MIN_POSITION.get(), MAX_POSITION.get());
+    profiledFeedback.setGoal(position);
   }
 
   public Rotation2d getPosition() {

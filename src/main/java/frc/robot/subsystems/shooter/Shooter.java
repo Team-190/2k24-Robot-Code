@@ -26,7 +26,8 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Shooter extends SubsystemBase {
-  private static LoggedTunableNumber DIFFERENCE = new LoggedTunableNumber("Shooter/Difference");
+  private static final LoggedTunableNumber DIFFERENCE =
+      new LoggedTunableNumber("Shooter/Difference");
 
   private static final LoggedTunableNumber KP = new LoggedTunableNumber("Shooter/Kp");
   private static final LoggedTunableNumber KD = new LoggedTunableNumber("Shooter/Kd");
@@ -53,7 +54,7 @@ public class Shooter extends SubsystemBase {
           new SysIdRoutine.Config(
               Volts.of(0.2).per(Seconds.of(1.0)),
               Volts.of(3.5),
-              Seconds.of(180.0),
+              Seconds.of(10.0),
               (state) -> Logger.recordOutput("Shooter/sysID State", state.toString())),
           new SysIdRoutine.Mechanism((volts) -> setVoltage(volts.in(Volts)), null, this));
 
@@ -75,15 +76,16 @@ public class Shooter extends SubsystemBase {
         KD.initDefault(0.0);
         DIFFERENCE.initDefault(2.0 / 3.0);
         DEFAULT_SPEED.initDefault(400);
-        leftFeedforward = new SimpleMotorFeedforward(0.49147, 0.0069249);
-        rightFeedforward = new SimpleMotorFeedforward(0.72165, 0.0075142);
+        AMP_SPEED.initDefault(0.0);
+        leftFeedforward = new SimpleMotorFeedforward(0.38326, 0.007755);
+        rightFeedforward = new SimpleMotorFeedforward(0.18553, 0.0074688);
         break;
       case ROBOT_2K24_TEST:
         KP.initDefault(0.035);
         KD.initDefault(0.0);
         DIFFERENCE.initDefault(2.0 / 3.0);
         DEFAULT_SPEED.initDefault(400);
-
+        AMP_SPEED.initDefault(0.0);
         leftFeedforward = new SimpleMotorFeedforward(0.49147, 0.0069249);
         rightFeedforward = new SimpleMotorFeedforward(0.72165, 0.0075142);
         break;
@@ -92,7 +94,7 @@ public class Shooter extends SubsystemBase {
         KD.initDefault(0.0);
         DIFFERENCE.initDefault(2.0 / 3.0);
         DEFAULT_SPEED.initDefault(400);
-
+        AMP_SPEED.initDefault(0.0);
         leftFeedforward = new SimpleMotorFeedforward(0.49147, 0.0069249);
         rightFeedforward = new SimpleMotorFeedforward(0.72165, 0.0075142);
         break;
@@ -131,6 +133,8 @@ public class Shooter extends SubsystemBase {
       io.setLeftVoltage(openLoopVoltage);
       io.setRightVoltage(openLoopVoltage);
     }
+
+    Logger.recordOutput("Shooter/Setpoint", leftFeedback.getSetpoint());
   }
 
   private void setVelocity(double velocityRadPerSec) {

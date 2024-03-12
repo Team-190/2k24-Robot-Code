@@ -57,8 +57,8 @@ public class DriveCommands {
   static {
     switch (Constants.ROBOT) {
       case SNAPBACK:
-        autoAimKP.initDefault(0);
-        autoAimKD.initDefault(0);
+        autoAimKP.initDefault(6.0);
+        autoAimKD.initDefault(0.002);
         break;
       case ROBOT_2K24_TEST:
         autoAimKP.initDefault(6.0);
@@ -87,7 +87,7 @@ public class DriveCommands {
       BooleanSupplier aprilTagTracking,
       BooleanSupplier noteTracking) {
 
-    @SuppressWarnings({"resource"})
+    // @SuppressWarnings({"resource"})
     PIDController aimController =
         new PIDController(autoAimKP.get(), 0, autoAimKD.get(), Constants.LOOP_PERIOD_SECS);
     aimController.enableContinuousInput(-Math.PI, Math.PI);
@@ -115,7 +115,7 @@ public class DriveCommands {
               new Pose2d(new Translation2d(), linearDirection)
                   .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
                   .getTranslation();
-
+          //
           // Configure PID
           aimController.setD(autoAimKD.get());
           aimController.setP(autoAimKP.get());
@@ -183,7 +183,7 @@ public class DriveCommands {
   public static final Command moveTowardsTarget(
       Drive drive, Vision vision, double blueXCoord, VisionMode targetType) {
 
-    @SuppressWarnings({"resource"})
+    // @SuppressWarnings({"resource"})
     PIDController aimController =
         new PIDController(autoAimKP.get(), 0, autoAimKD.get(), Constants.LOOP_PERIOD_SECS);
     aimController.enableContinuousInput(-Math.PI, Math.PI);

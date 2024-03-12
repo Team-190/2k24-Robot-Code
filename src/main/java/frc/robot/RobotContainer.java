@@ -28,11 +28,9 @@ import frc.robot.subsystems.accelerator.AcceleratorIOTalonFX;
 import frc.robot.subsystems.amp.Amp;
 import frc.robot.subsystems.amp.AmpIO;
 import frc.robot.subsystems.amp.AmpIOSim;
-import frc.robot.subsystems.amp.AmpIOTalonFX;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
 import frc.robot.subsystems.climber.ClimberIOSim;
-import frc.robot.subsystems.climber.ClimberIOTalonFX;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -113,10 +111,10 @@ public class RobotContainer {
           serializer = new Serializer(new SerializerIOTalonFX());
           kicker = new Kicker(new KickerIOTalonFX());
           accelerator = new Accelerator(new AcceleratorIOTalonFX());
-          amp = new Amp(new AmpIOTalonFX());
-          climber = new Climber(new ClimberIOTalonFX());
-          aprilTagVision =
-              new Vision("AprilTagVision", new VisionIOLimelight(VisionMode.AprilTags));
+          // amp = new Amp(new AmpIOTalonFX());
+          // climber = new Climber(new ClimberIOTalonFX());
+          // aprilTagVision =
+          //     new Vision("AprilTagVision", new VisionIOLimelight(VisionMode.AprilTags));
           noteVision = new Vision("NoteVision", new VisionIOLimelight(VisionMode.Notes));
           break;
         case ROBOT_2K24_TEST:
@@ -220,9 +218,9 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "Track Speaker Close",
         CompositeCommands.getTrackSpeakerCloseCommand(drive, hood, shooter, aprilTagVision));
-    NamedCommands.registerCommand(
-        "Shoot On The Move",
-        CompositeCommands.shootOnTheMove(drive, serializer, kicker, aprilTagVision));
+    // NamedCommands.registerCommand(
+    //     "Shoot On The Move",
+    //     CompositeCommands.shootOnTheMove(drive, serializer, kicker, aprilTagVision));
 
     // autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
     autoChooser =
@@ -266,8 +264,8 @@ public class RobotContainer {
             () -> -driver.getLeftY(),
             () -> -driver.getLeftX(),
             () -> -driver.getRightX(),
-            driver.leftTrigger(),
-            driver.rightTrigger()));
+            driver.rightTrigger(),
+            driver.leftTrigger()));
     driver.y().onTrue(DriveCommands.resetHeading(drive));
     driver.rightBumper().whileTrue(CompositeCommands.getAmpCommand(shooter, hood, amp));
     driver
@@ -276,7 +274,7 @@ public class RobotContainer {
         .onFalse(CompositeCommands.getRetractCommand(intake));
     driver
         .rightTrigger()
-        .toggleOnTrue(
+        .whileTrue(
             CompositeCommands.getPosePrepShooterCommand(
                 drive, hood, shooter, accelerator, aprilTagVision));
     driver
