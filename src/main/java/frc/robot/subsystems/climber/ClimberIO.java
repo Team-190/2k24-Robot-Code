@@ -10,14 +10,14 @@ public interface ClimberIO {
     public double leftAppliedVolts = 0.0;
     public double[] leftCurrentAmps = new double[] {};
     public double[] leftTempCelcius = new double[] {};
-    public boolean leftLocked = false;
 
     public double rightPositionMeters = 0.0;
     public double rightVelocityMetersPerSec = 0.0;
     public double rightAppliedVolts = 0.0;
     public double[] rightCurrentAmps = new double[] {};
     public double[] rightTempCelcius = new double[] {};
-    public boolean rightLocked = false;
+
+    public boolean lockedPosition = true;
   }
 
   public default void updateInputs(ClimberIOInputs inputs) {}

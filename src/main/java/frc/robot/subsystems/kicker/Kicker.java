@@ -1,6 +1,7 @@
 package frc.robot.subsystems.kicker;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
@@ -37,7 +38,11 @@ public class Kicker extends SubsystemBase {
         () -> stop());
   }
 
-  public Command run() {
+  public Command outtake() {
+    return Commands.runEnd(() -> io.setVoltage(-intakeVoltage.get()), () -> stop());
+  }
+
+  public Command runKicker() {
     return runEnd(() -> io.setVoltage(intakeVoltage.get()), () -> stop());
   }
 }

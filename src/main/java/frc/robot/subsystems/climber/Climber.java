@@ -28,6 +28,7 @@ public class Climber extends SubsystemBase {
   private static final LoggedTunableNumber LOW_POSITION =
       new LoggedTunableNumber("Climber/Low Position");
 
+
   private final ClimberIO io;
   private final ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
 
@@ -102,7 +103,12 @@ public class Climber extends SubsystemBase {
     }
 
     if (DriverStation.isEnabled()) {
-      if (!inputs.leftLocked && !inputs.rightLocked) {
+      if (!leftProfiledFeedback.atGoal() && !rightProfiledFeedback.atGoal()) {
+        io.setLock(false);
+      } else {
+        io.setLock(true);
+      }
+      if (inputs.lockedPosition) {
         io.setLeftVoltage((leftProfiledFeedback.calculate(inputs.leftPositionMeters)));
         io.setRightVoltage((rightProfiledFeedback.calculate(inputs.rightPositionMeters)));
       }

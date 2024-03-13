@@ -47,7 +47,7 @@ public class Intake extends SubsystemBase {
   }
 
   private void setIntakePosition(boolean position) {
-    io.setIntakePosition(!position);
+    io.setIntakePosition(position);
   }
 
   private void toggleIntakePosition() {

@@ -10,6 +10,7 @@ import frc.robot.subsystems.hood.Hood;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.AllianceFlipUtil;
+import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
 public class ShotCalculator {
@@ -18,6 +19,15 @@ public class ShotCalculator {
   private static final InterpolatingDoubleTreeMap shooterAngleMap =
       new InterpolatingDoubleTreeMap();
   private static final InterpolatingDoubleTreeMap flightTimeMap = new InterpolatingDoubleTreeMap();
+
+  private static final LoggedTunableNumber SHOOTER_SPEED_TOLERANCE =
+      new LoggedTunableNumber("ShotCalculator/Shooter Speed Tolerance");
+
+  private static final LoggedTunableNumber ROBOT_ANGLE_TOLERANCE =
+      new LoggedTunableNumber("ShotCalculator/Robot Angle Tolerance");
+
+  private static final LoggedTunableNumber HOOD_ANGLE_TOLERANCE =
+      new LoggedTunableNumber("ShotCalculator/Hood Angle Tolerance");
 
   static {
     // Units: radians/second
@@ -41,6 +51,10 @@ public class ShotCalculator {
     // Units: seconds
     flightTimeMap.put(Units.inchesToMeters(40), 0.5);
     flightTimeMap.put(Units.inchesToMeters(150), 0.8);
+
+    SHOOTER_SPEED_TOLERANCE.initDefault(20.0);
+    ROBOT_ANGLE_TOLERANCE.initDefault(0.1);
+    HOOD_ANGLE_TOLERANCE.initDefault(0.017);
   }
 
   public static AimingParameters poseCalculation(
@@ -75,9 +89,11 @@ public class ShotCalculator {
     AimingParameters setpoints =
         poseCalculation(
             aprilTagVision.getRobotPose().get().getTranslation(), drive.getFieldRelativeVelocity());
-    return (drive.getRotation().equals(setpoints.robotAngle))
-        && (hood.getPosition().equals(setpoints.shooterAngle))
-        && shooter.getSpeed() == setpoints.shooterSpeed;
+    return (Math.abs(drive.getRotation().getRadians() - setpoints.robotAngle.getRadians())
+            <= ROBOT_ANGLE_TOLERANCE.get())
+        && (Math.abs(hood.getPosition().getRadians() - setpoints.shooterAngle.getRadians())
+            <= HOOD_ANGLE_TOLERANCE.get())
+        && (Math.abs(shooter.getSpeed() - setpoints.shooterSpeed) <= SHOOTER_SPEED_TOLERANCE.get());
   }
 
   public static record AimingParameters(

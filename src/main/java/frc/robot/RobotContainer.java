@@ -14,6 +14,7 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.NamedCommands;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -31,6 +32,7 @@ import frc.robot.subsystems.amp.AmpIOSim;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
 import frc.robot.subsystems.climber.ClimberIOSim;
+import frc.robot.subsystems.climber.ClimberIOTalonFX;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -112,9 +114,9 @@ public class RobotContainer {
           kicker = new Kicker(new KickerIOTalonFX());
           accelerator = new Accelerator(new AcceleratorIOTalonFX());
           // amp = new Amp(new AmpIOTalonFX());
-          // climber = new Climber(new ClimberIOTalonFX());
-          // aprilTagVision =
-          //     new Vision("AprilTagVision", new VisionIOLimelight(VisionMode.AprilTags));
+          climber = new Climber(new ClimberIOTalonFX());
+          aprilTagVision =
+              new Vision("AprilTagVision", new VisionIOLimelight(VisionMode.AprilTags));
           noteVision = new Vision("NoteVision", new VisionIOLimelight(VisionMode.Notes));
           break;
         case ROBOT_2K24_TEST:
@@ -268,9 +270,16 @@ public class RobotContainer {
             driver.leftTrigger()));
     driver.y().onTrue(DriveCommands.resetHeading(drive));
     driver.rightBumper().whileTrue(CompositeCommands.getAmpCommand(shooter, hood, amp));
+    driver.leftBumper().whileTrue(CompositeCommands.getOuttakeCommand(serializer, kicker));
     driver
         .leftTrigger()
-        .whileTrue(CompositeCommands.getCollectCommand(intake, serializer))
+        .whileTrue(
+            CompositeCommands.getCollectCommand(intake, serializer)
+                .andThen(
+                    Commands.startEnd(
+                            () -> driver.getHID().setRumble(RumbleType.kBothRumble, 1),
+                            () -> driver.getHID().setRumble(RumbleType.kBothRumble, 0))
+                        .withTimeout(1)))
         .onFalse(CompositeCommands.getRetractCommand(intake));
     driver
         .rightTrigger()
@@ -281,7 +290,13 @@ public class RobotContainer {
         .rightTrigger()
         .and(shooter::isShooting)
         .and(() -> ShotCalculator.shooterReady(drive, hood, shooter, aprilTagVision))
-        .whileTrue(CompositeCommands.getShootCommand(serializer, kicker));
+        .whileTrue(
+            CompositeCommands.getShootCommand(serializer, kicker)
+                .alongWith(
+                    Commands.startEnd(
+                        () -> driver.getHID().setRumble(RumbleType.kBothRumble, 1),
+                        () -> driver.getHID().setRumble(RumbleType.kBothRumble, 0)))
+                .withTimeout(1));
     driver.a().whileTrue(CompositeCommands.getShootCommand(serializer, kicker));
 
     operator.leftBumper().whileTrue(hood.increaseAngle());

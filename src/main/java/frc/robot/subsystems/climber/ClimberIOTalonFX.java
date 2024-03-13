@@ -5,6 +5,7 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -15,8 +16,7 @@ import frc.robot.util.Alert.AlertType;
 public class ClimberIOTalonFX implements ClimberIO {
   private final TalonFX leftTalon;
   private final TalonFX rightTalon;
-  private final Solenoid leftLock;
-  private final Solenoid rightLock;
+  private final Solenoid lock;
 
   private final StatusSignal<Double> leftPosition;
   private final StatusSignal<Double> leftVelocity;
@@ -30,8 +30,8 @@ public class ClimberIOTalonFX implements ClimberIO {
   private final StatusSignal<Double> rightCurrentAmps;
   private final StatusSignal<Double> rightTempCelcius;
 
-  private final double GEAR_RATIO = 1.0;
-  private final double DRUM_CIRCUMFERENCE = Units.inchesToMeters(1.0) * Math.PI;
+  private final double GEAR_RATIO = (58.0 / 16.0) * (64.0 / 18 / 0);
+  private final double DRUM_CIRCUMFERENCE = Units.inchesToMeters(2.64595) * Math.PI;
 
   private final Alert leftDisconnectedAlert =
       new Alert("Left climber Talon is disconnected, check CAN bus.", AlertType.ERROR);
@@ -43,14 +43,12 @@ public class ClimberIOTalonFX implements ClimberIO {
       case SNAPBACK:
         leftTalon = new TalonFX(4);
         rightTalon = new TalonFX(5);
-        leftLock = new Solenoid(PneumaticsModuleType.CTREPCM, 4);
-        rightLock = new Solenoid(PneumaticsModuleType.CTREPCM, 5);
+        lock = new Solenoid(PneumaticsModuleType.CTREPCM, 6);
         break;
       case ROBOT_2K24_TEST:
         leftTalon = new TalonFX(4);
         rightTalon = new TalonFX(5);
-        leftLock = new Solenoid(PneumaticsModuleType.CTREPCM, 4);
-        rightLock = new Solenoid(PneumaticsModuleType.CTREPCM, 5);
+        lock = new Solenoid(PneumaticsModuleType.CTREPCM, 6);
         break;
       default:
         throw new RuntimeException("Invalid robot");
@@ -59,6 +57,7 @@ public class ClimberIOTalonFX implements ClimberIO {
     var config = new TalonFXConfiguration();
     config.CurrentLimits.SupplyCurrentLimit = 60.0;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
+    config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     leftTalon.getConfigurator().apply(config);
     rightTalon.getConfigurator().apply(config);
 
@@ -136,7 +135,6 @@ public class ClimberIOTalonFX implements ClimberIO {
 
   @Override
   public void setLock(boolean isLocked) {
-    leftLock.set(isLocked);
-    rightLock.set(isLocked);
+    lock.set(!isLocked);
   }
 }

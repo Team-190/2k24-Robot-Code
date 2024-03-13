@@ -20,7 +20,11 @@ import java.util.Optional;
 public class CompositeCommands {
   public static final Command getCollectCommand(Intake intake, Serializer serializer) {
     return Commands.sequence(
-        intake.deployIntake(), Commands.parallel(intake.runVoltage(), serializer.intake()));
+        intake.deployIntake(), Commands.race(intake.runVoltage(), serializer.intake()));
+  }
+
+  public static final Command getOuttakeCommand(Serializer serializer, Kicker kicker) {
+    return Commands.parallel(serializer.outtake(), kicker.outtake());
   }
 
   public static final Command getRetractCommand(Intake intake) {
