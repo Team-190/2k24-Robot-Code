@@ -30,7 +30,8 @@ public class ClimberIOTalonFX implements ClimberIO {
   private final StatusSignal<Double> rightCurrentAmps;
   private final StatusSignal<Double> rightTempCelcius;
 
-  private final double GEAR_RATIO = (58.0 / 16.0) * (64.0 / 18 / 0);
+  private final double GEAR_RATIO = (58.0 / 16.0) * (64.0 / 18.0);
+
   private final double DRUM_CIRCUMFERENCE = Units.inchesToMeters(2.64595) * Math.PI;
 
   private final Alert leftDisconnectedAlert =
@@ -63,6 +64,8 @@ public class ClimberIOTalonFX implements ClimberIO {
 
     leftTalon.setPosition(0.0);
     rightTalon.setPosition(0.0);
+
+    rightTalon.setInverted(true);
 
     leftPosition = leftTalon.getPosition();
     leftVelocity = leftTalon.getVelocity();

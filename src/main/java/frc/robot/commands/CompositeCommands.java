@@ -66,8 +66,13 @@ public class CompositeCommands {
         Commands.parallel(intake.runVoltage(), serializer.intake(), kicker.shoot()));
   }
 
-  public static final Command getAmpCommand(Shooter shooter, Hood hood, Amp amp) {
-    return shooter.runAmp().alongWith(hood.setAmp()).alongWith(amp.setAmp());
+  public static final Command getAmpCommand(
+      Shooter shooter, Hood hood, Amp amp, Accelerator accelerator) {
+    return shooter
+        .runAmp()
+        .alongWith(hood.setAmp())
+        .alongWith(amp.setAmp())
+        .alongWith(accelerator.runAccelerator());
   }
 
   public static final Command getTrackNoteCenterCommand(

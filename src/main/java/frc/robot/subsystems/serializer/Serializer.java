@@ -20,7 +20,7 @@ public class Serializer extends SubsystemBase {
   public Serializer(SerializerIO io) {
     this.io = io;
     shootVoltage.initDefault(12.0);
-    intakeVoltage.initDefault(12.0);
+    intakeVoltage.initDefault(3.0);
   }
 
   public void periodic() {

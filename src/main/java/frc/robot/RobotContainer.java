@@ -269,7 +269,9 @@ public class RobotContainer {
             driver.rightTrigger(),
             driver.leftTrigger()));
     driver.y().onTrue(DriveCommands.resetHeading(drive));
-    driver.rightBumper().whileTrue(CompositeCommands.getAmpCommand(shooter, hood, amp));
+    driver
+        .rightBumper()
+        .whileTrue(CompositeCommands.getAmpCommand(shooter, hood, amp, accelerator));
     driver.leftBumper().whileTrue(CompositeCommands.getOuttakeCommand(serializer, kicker));
     driver
         .leftTrigger()
@@ -309,6 +311,7 @@ public class RobotContainer {
     operator.povLeft().onTrue(climber.preClimbSide());
     operator.povRight().onTrue(climber.preClimbCenter());
     operator.povUp().onTrue(climber.incrementClimber());
+    operator.a().onTrue(climber.stop());
   }
 
   public void updateSnapbackMechanism3d() {

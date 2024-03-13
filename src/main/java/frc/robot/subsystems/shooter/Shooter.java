@@ -26,8 +26,7 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Shooter extends SubsystemBase {
-  private static final LoggedTunableNumber DIFFERENCE =
-      new LoggedTunableNumber("Shooter/Difference");
+  private static final LoggedTunableNumber RATIO = new LoggedTunableNumber("Shooter/Ratio");
 
   private static final LoggedTunableNumber KP = new LoggedTunableNumber("Shooter/Kp");
   private static final LoggedTunableNumber KD = new LoggedTunableNumber("Shooter/Kd");
@@ -74,7 +73,7 @@ public class Shooter extends SubsystemBase {
       case SNAPBACK:
         KP.initDefault(0.035);
         KD.initDefault(0.0);
-        DIFFERENCE.initDefault(2.0 / 3.0);
+        RATIO.initDefault(2.0 / 3.0);
         DEFAULT_SPEED.initDefault(400);
         AMP_SPEED.initDefault(0.0);
         leftFeedforward = new SimpleMotorFeedforward(0.38326, 0.007755);
@@ -83,7 +82,7 @@ public class Shooter extends SubsystemBase {
       case ROBOT_2K24_TEST:
         KP.initDefault(0.035);
         KD.initDefault(0.0);
-        DIFFERENCE.initDefault(2.0 / 3.0);
+        RATIO.initDefault(2.0 / 3.0);
         DEFAULT_SPEED.initDefault(400);
         AMP_SPEED.initDefault(0.0);
         leftFeedforward = new SimpleMotorFeedforward(0.49147, 0.0069249);
@@ -92,7 +91,7 @@ public class Shooter extends SubsystemBase {
       case ROBOT_SIM:
         KP.initDefault(0.035);
         KD.initDefault(0.0);
-        DIFFERENCE.initDefault(2.0 / 3.0);
+        RATIO.initDefault(2.0 / 3.0);
         DEFAULT_SPEED.initDefault(400);
         AMP_SPEED.initDefault(0.0);
         leftFeedforward = new SimpleMotorFeedforward(0.49147, 0.0069249);
@@ -141,14 +140,14 @@ public class Shooter extends SubsystemBase {
     isOpenLoop = false;
     if (spinDirection.equals(SpinDirection.COUNTERCLOCKWISE)) {
       leftFeedback.setSetpoint(
-          velocityRadPerSec + speedOffset - (DIFFERENCE.get() + differenceOffset));
+          (velocityRadPerSec + speedOffset) * (RATIO.get() + differenceOffset));
       rightFeedback.setSetpoint(velocityRadPerSec + speedOffset);
     } else if (spinDirection.equals(SpinDirection.CLOCKWISE)) {
       leftFeedback.setSetpoint(velocityRadPerSec + speedOffset);
       rightFeedback.setSetpoint(
-          velocityRadPerSec + speedOffset - (DIFFERENCE.get() + differenceOffset));
+          (velocityRadPerSec + speedOffset) * (RATIO.get() + differenceOffset));
     } else {
-      leftFeedback.setSetpoint(velocityRadPerSec + speedOffset);
+      leftFeedback.setSetpoint((velocityRadPerSec + speedOffset) * RATIO.get());
       rightFeedback.setSetpoint(velocityRadPerSec + speedOffset);
     }
   }

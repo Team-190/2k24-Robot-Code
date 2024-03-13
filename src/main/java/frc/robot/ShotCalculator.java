@@ -37,7 +37,7 @@ public class ShotCalculator {
     shooterSpeedMap.put(Units.inchesToMeters(120), 400.0);
     // shooterSpeedMap.put(Units.inchesToMeters(140), 19.0);
     // shooterSpeedMap.put(Units.inchesToMeters(160), 88.0);
-    shooterSpeedMap.put(Units.inchesToMeters(180), 600.0);
+    shooterSpeedMap.put(Units.inchesToMeters(201), 600.0);
 
     // Units: radians
     shooterAngleMap.put(Units.inchesToMeters(60), 3.0);
@@ -46,7 +46,7 @@ public class ShotCalculator {
     shooterAngleMap.put(Units.inchesToMeters(120), 2.0);
     // shooterAngleMap.put(Units.inchesToMeters(140), 1.9);
     // shooterAngleMap.put(Units.inchesToMeters(160), 8.0);
-    shooterAngleMap.put(Units.inchesToMeters(180), 1.0);
+    shooterAngleMap.put(Units.inchesToMeters(201), 1.0);
 
     // Units: seconds
     flightTimeMap.put(Units.inchesToMeters(40), 0.5);
