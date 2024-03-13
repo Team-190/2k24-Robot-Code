@@ -32,7 +32,6 @@ import frc.robot.subsystems.amp.AmpIOSim;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
 import frc.robot.subsystems.climber.ClimberIOSim;
-import frc.robot.subsystems.climber.ClimberIOTalonFX;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -114,7 +113,7 @@ public class RobotContainer {
           kicker = new Kicker(new KickerIOTalonFX());
           accelerator = new Accelerator(new AcceleratorIOTalonFX());
           // amp = new Amp(new AmpIOTalonFX());
-          climber = new Climber(new ClimberIOTalonFX());
+          // climber = new Climber(new ClimberIOTalonFX());
           aprilTagVision =
               new Vision("AprilTagVision", new VisionIOLimelight(VisionMode.AprilTags));
           noteVision = new Vision("NoteVision", new VisionIOLimelight(VisionMode.Notes));
@@ -323,6 +322,13 @@ public class RobotContainer {
             amp.getPosition(),
             climber.getLeftPositionMeters(),
             climber.getRightPositionMeters()));
+  }
+
+  public void updatePoseCalculation() {
+    if (aprilTagVision.getRobotPose().isPresent()) {
+      ShotCalculator.poseCalculation(
+          aprilTagVision.getRobotPose().get().getTranslation(), drive.getFieldRelativeVelocity());
+    }
   }
 
   public LoggedDashboardChooser<Command> getAutoChooser() {

@@ -31,26 +31,25 @@ public class ShotCalculator {
 
   static {
     // Units: radians/second
-    shooterSpeedMap.put(Units.inchesToMeters(60), 200.0);
-    // shooterSpeedMap.put(Units.inchesToMeters(80), 10.0);
-    // shooterSpeedMap.put(Units.inchesToMeters(100), 12.0);
-    shooterSpeedMap.put(Units.inchesToMeters(120), 400.0);
-    // shooterSpeedMap.put(Units.inchesToMeters(140), 19.0);
-    // shooterSpeedMap.put(Units.inchesToMeters(160), 88.0);
-    shooterSpeedMap.put(Units.inchesToMeters(201), 600.0);
+    shooterSpeedMap.put(Units.feetToMeters(7.34), 800.0);
+    shooterSpeedMap.put(Units.feetToMeters(8.2), 800.0);
+    shooterSpeedMap.put(Units.feetToMeters(9.0), 800.0);
+    shooterSpeedMap.put(Units.feetToMeters(10.0), 800.0);
+    shooterSpeedMap.put(Units.feetToMeters(11.0), 800.0); // 600
+    shooterSpeedMap.put(Units.feetToMeters(12.2), 800.0);
+    shooterSpeedMap.put(Units.feetToMeters(14.25), 800.0);
 
     // Units: radians
-    shooterAngleMap.put(Units.inchesToMeters(60), 3.0);
-    // shooterAngleMap.put(Units.inchesToMeters(80), 2.5);
-    // shooterAngleMap.put(Units.inchesToMeters(100), 2.0);
-    shooterAngleMap.put(Units.inchesToMeters(120), 2.0);
-    // shooterAngleMap.put(Units.inchesToMeters(140), 1.9);
-    // shooterAngleMap.put(Units.inchesToMeters(160), 8.0);
-    shooterAngleMap.put(Units.inchesToMeters(201), 1.0);
+    shooterAngleMap.put(Units.feetToMeters(7.34), 0.0);
+    shooterAngleMap.put(Units.feetToMeters(8.2), 0.0);
+    shooterAngleMap.put(Units.feetToMeters(9.0), 0.27);
+    shooterAngleMap.put(Units.feetToMeters(10.0), 0.325);
+    shooterAngleMap.put(Units.feetToMeters(11.0), 0.4); // 0.3
+    shooterAngleMap.put(Units.feetToMeters(12.2), 0.425); // 0.36
+    shooterAngleMap.put(Units.feetToMeters(14.25), 0.455); // 0.376
 
     // Units: seconds
-    flightTimeMap.put(Units.inchesToMeters(40), 0.5);
-    flightTimeMap.put(Units.inchesToMeters(150), 0.8);
+    flightTimeMap.put(Units.inchesToMeters(0.0), 0.0);
 
     SHOOTER_SPEED_TOLERANCE.initDefault(20.0);
     ROBOT_ANGLE_TOLERANCE.initDefault(0.1);

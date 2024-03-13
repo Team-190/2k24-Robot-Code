@@ -141,6 +141,7 @@ public class Robot extends LoggedRobot {
     }
 
     robotContainer.updateSnapbackMechanism3d();
+    robotContainer.updatePoseCalculation();
   }
 
   /** This function is called once when the robot is disabled. */

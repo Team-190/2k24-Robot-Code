@@ -15,9 +15,9 @@ public class Vision extends VirtualSubsystem {
   private final String name;
   private final VisionIO io;
   private final VisionIOInputsAutoLogged inputs;
-  private final double CAMERA_OFFSET = Units.inchesToMeters(14);
+  private final double CAMERA_OFFSET = Units.inchesToMeters(12.75);
   private final double SPEAKER_TAG_HEIGHT = Units.inchesToMeters(57.13);
-  private final double CAMERA_HEIGHT = Units.inchesToMeters(13.375);
+  private final double CAMERA_HEIGHT = Units.inchesToMeters(18);
   private final LoggedTunableNumber CAMERA_ANGLE = new LoggedTunableNumber("Vision/Camera Angle");
   private double lastValidTimeStamp = Double.NEGATIVE_INFINITY;
   private Pose2d lastValidRobotPose = new Pose2d();
@@ -31,7 +31,7 @@ public class Vision extends VirtualSubsystem {
     this.name = name;
     this.io = io;
     inputs = new VisionIOInputsAutoLogged();
-    CAMERA_ANGLE.initDefault(0.5236);
+    CAMERA_ANGLE.initDefault(Units.degreesToRadians(33.0));
   }
 
   @Override

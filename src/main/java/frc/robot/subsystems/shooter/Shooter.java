@@ -73,7 +73,7 @@ public class Shooter extends SubsystemBase {
       case SNAPBACK:
         KP.initDefault(0.035);
         KD.initDefault(0.0);
-        RATIO.initDefault(2.0 / 3.0);
+        RATIO.initDefault(0.5);
         DEFAULT_SPEED.initDefault(400);
         AMP_SPEED.initDefault(0.0);
         leftFeedforward = new SimpleMotorFeedforward(0.38326, 0.007755);
