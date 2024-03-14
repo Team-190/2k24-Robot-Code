@@ -65,8 +65,8 @@ public class Shooter extends SubsystemBase {
 
   @AutoLogOutput private SpinDirection spinDirection = SpinDirection.CLOCKWISE;
 
-  private double speedOffset = 0;
-  private double differenceOffset = 0;
+  private double flywheelOffset = 0;
+  private double spinOffset = 0;
 
   static {
     switch (Constants.ROBOT) {
@@ -139,16 +139,14 @@ public class Shooter extends SubsystemBase {
   private void setVelocity(double velocityRadPerSec) {
     isOpenLoop = false;
     if (spinDirection.equals(SpinDirection.COUNTERCLOCKWISE)) {
-      leftFeedback.setSetpoint(
-          (velocityRadPerSec + speedOffset) * (RATIO.get() + differenceOffset));
-      rightFeedback.setSetpoint(velocityRadPerSec + speedOffset);
+      leftFeedback.setSetpoint((velocityRadPerSec + flywheelOffset) * (RATIO.get() + spinOffset));
+      rightFeedback.setSetpoint(velocityRadPerSec + flywheelOffset);
     } else if (spinDirection.equals(SpinDirection.CLOCKWISE)) {
-      leftFeedback.setSetpoint(velocityRadPerSec + speedOffset);
-      rightFeedback.setSetpoint(
-          (velocityRadPerSec + speedOffset) * (RATIO.get() + differenceOffset));
+      leftFeedback.setSetpoint(velocityRadPerSec + flywheelOffset);
+      rightFeedback.setSetpoint((velocityRadPerSec + flywheelOffset) * (RATIO.get() + spinOffset));
     } else {
-      leftFeedback.setSetpoint((velocityRadPerSec + speedOffset) * RATIO.get());
-      rightFeedback.setSetpoint(velocityRadPerSec + speedOffset);
+      leftFeedback.setSetpoint((velocityRadPerSec + flywheelOffset) * RATIO.get());
+      rightFeedback.setSetpoint(velocityRadPerSec + flywheelOffset);
     }
   }
 
@@ -168,6 +166,14 @@ public class Shooter extends SubsystemBase {
 
   public double getSpeed() {
     return Math.max(inputs.leftVelocityRadPerSec, inputs.rightVelocityRadPerSec);
+  }
+
+  public double getFlywheelOffset() {
+    return flywheelOffset;
+  }
+
+  public double getSpinOffset() {
+    return spinOffset;
   }
 
   public Command runVelocity() {
@@ -262,18 +268,18 @@ public class Shooter extends SubsystemBase {
   }
 
   public Command increaseVelocity() {
-    return Commands.runOnce(() -> speedOffset += Units.rotationsPerMinuteToRadiansPerSecond(10));
+    return Commands.runOnce(() -> flywheelOffset += Units.rotationsPerMinuteToRadiansPerSecond(10));
   }
 
   public Command decreaseVelocity() {
-    return Commands.runOnce(() -> speedOffset -= Units.rotationsPerMinuteToRadiansPerSecond(10));
+    return Commands.runOnce(() -> flywheelOffset -= Units.rotationsPerMinuteToRadiansPerSecond(10));
   }
 
   public Command increaseSpin() {
-    return Commands.runOnce(() -> differenceOffset++);
+    return Commands.runOnce(() -> spinOffset++);
   }
 
   public Command decreaseSpin() {
-    return Commands.runOnce(() -> differenceOffset--);
+    return Commands.runOnce(() -> spinOffset--);
   }
 }

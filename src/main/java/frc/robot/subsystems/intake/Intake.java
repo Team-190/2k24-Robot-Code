@@ -58,6 +58,10 @@ public class Intake extends SubsystemBase {
     return runEnd(() -> io.setRollersVoltage(rollersVoltage.get()), () -> stopRollers());
   }
 
+  public Command outtake() {
+    return runEnd(() -> io.setRollersVoltage(-12), () -> stopRollers());
+  }
+
   public Command deployIntake() {
     return runOnce(() -> setIntakePosition(true));
   }

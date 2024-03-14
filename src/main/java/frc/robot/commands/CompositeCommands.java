@@ -23,8 +23,9 @@ public class CompositeCommands {
         intake.deployIntake(), Commands.race(intake.runVoltage(), serializer.intake()));
   }
 
-  public static final Command getOuttakeCommand(Serializer serializer, Kicker kicker) {
-    return Commands.parallel(serializer.outtake(), kicker.outtake());
+  public static final Command getOuttakeCommand(
+      Intake intake, Serializer serializer, Kicker kicker) {
+    return Commands.parallel(intake.outtake(), serializer.outtake(), kicker.outtake());
   }
 
   public static final Command getRetractCommand(Intake intake) {

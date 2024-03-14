@@ -14,7 +14,9 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.NamedCommands;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -228,11 +230,7 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "Track Speaker Close",
         CompositeCommands.getTrackSpeakerCloseCommand(drive, hood, shooter, aprilTagVision));
-    // NamedCommands.registerCommand(
-    //     "Shoot On The Move",
-    //     CompositeCommands.shootOnTheMove(drive, serializer, kicker, aprilTagVision));
 
-    // autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
     autoChooser =
         new LoggedDashboardChooser<>(
             "Auto Choices", AutoBuilderNameChanger.buildNameChangedAutoChooser());
@@ -263,6 +261,34 @@ public class RobotContainer {
 
     // Configure the button bindings
     configureButtonBindings();
+
+    // Configure shuffleboard
+    Shuffleboard.getTab("Autonomous")
+        .add("Autonomous Mode", autoChooser.getSendableChooser())
+        .withPosition(0, 0)
+        .withSize(2, 2);
+    Shuffleboard.getTab("Teleoperated")
+        .add("Hood Offset", hood.getOffset())
+        .withPosition(0, 0)
+        .withSize(1, 1);
+    Shuffleboard.getTab("Teleoperated")
+        .add("Flywheel Offset", shooter.getFlywheelOffset())
+        .withPosition(0, 1)
+        .withSize(1, 1);
+    Shuffleboard.getTab("Teleoperated")
+        .add("Spin Offset", shooter.getSpinOffset())
+        .withPosition(0, 2)
+        .withSize(1, 1);
+    Shuffleboard.getTab("Teleoperated")
+        .add("Shooter View", CameraServer.addSwitchedCamera("limelight-shooter").getSource())
+        .withPosition(1, 0)
+        .withSize(5, 5)
+        .withWidget("Camera Stream");
+    Shuffleboard.getTab("Teleoperated")
+        .add("Intake View", CameraServer.addSwitchedCamera("limelight-intake").getSource())
+        .withPosition(6, 0)
+        .withSize(5, 5)
+        .withWidget("Camera Stream");
   }
 
   private void configureButtonBindings() {
@@ -280,7 +306,7 @@ public class RobotContainer {
     driver
         .rightTrigger()
         .whileTrue(CompositeCommands.getAmpCommand(shooter, hood, amp, accelerator));
-    driver.leftTrigger().whileTrue(CompositeCommands.getOuttakeCommand(serializer, kicker));
+    driver.leftTrigger().whileTrue(CompositeCommands.getOuttakeCommand(intake, serializer, kicker));
     driver
         .leftBumper()
         .whileTrue(
@@ -319,7 +345,6 @@ public class RobotContainer {
     operator.povLeft().onTrue(climber.preClimbSide());
     operator.povRight().onTrue(climber.preClimbCenter());
     operator.povUp().onTrue(climber.incrementClimber());
-    operator.a().onTrue(climber.stop());
   }
 
   public void updateSnapbackMechanism3d() {

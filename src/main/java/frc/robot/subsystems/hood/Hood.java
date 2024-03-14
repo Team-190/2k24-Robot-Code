@@ -129,6 +129,10 @@ public class Hood extends SubsystemBase {
     return inputs.position;
   }
 
+  public double getOffset() {
+    return angleOffset;
+  }
+
   public Command setAmp() {
     return runEnd(() -> setPosition(AMP_POSITION.get()), () -> setPosition(STOWED_POSITION.get()));
   }
