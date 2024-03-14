@@ -49,6 +49,10 @@ public class IntakeIOTalonFX implements IntakeIO {
     config.CurrentLimits.SupplyCurrentLimit = 60.0;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
     config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    config.Audio.AllowMusicDurDisable = true;
+    config.Audio.BeepOnBoot = false;
+    config.Audio.BeepOnConfig = false;
+
     rollersTalon.getConfigurator().apply(config);
 
     rollersPosition = rollersTalon.getPosition();

@@ -41,6 +41,9 @@ public class SerializerIOTalonFX implements SerializerIO {
     config.CurrentLimits.SupplyCurrentLimit = 40.0;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    config.Audio.AllowMusicDurDisable = true;
+    config.Audio.BeepOnBoot = false;
+    config.Audio.BeepOnConfig = false;
 
     position = serializerTalon.getPosition();
     velocity = serializerTalon.getVelocity();

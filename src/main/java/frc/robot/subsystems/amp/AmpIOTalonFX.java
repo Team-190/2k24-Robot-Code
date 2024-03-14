@@ -40,6 +40,10 @@ public class AmpIOTalonFX implements AmpIO {
     var config = new TalonFXConfiguration();
     config.CurrentLimits.SupplyCurrentLimit = 60.0;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
+    config.Audio.AllowMusicDurDisable = true;
+    config.Audio.BeepOnBoot = false;
+    config.Audio.BeepOnConfig = false;
+
     ampTalon.getConfigurator().apply(config);
     ampTalon.setPosition(0.0);
 

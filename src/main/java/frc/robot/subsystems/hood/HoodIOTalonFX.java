@@ -42,6 +42,10 @@ public class HoodIOTalonFX implements HoodIO {
     config.CurrentLimits.SupplyCurrentLimit = 60.0;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    config.Audio.AllowMusicDurDisable = true;
+    config.Audio.BeepOnBoot = false;
+    config.Audio.BeepOnConfig = false;
+
     hoodTalon.getConfigurator().apply(config);
     hoodTalon.setPosition(0.0);
 

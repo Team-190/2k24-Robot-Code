@@ -41,6 +41,9 @@ public class KickerIOTalonFX implements KickerIO {
     config.CurrentLimits.SupplyCurrentLimit = 40.0;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    config.Audio.AllowMusicDurDisable = true;
+    config.Audio.BeepOnBoot = false;
+    config.Audio.BeepOnConfig = false;
 
     position = kickerTalon.getPosition();
     velocity = kickerTalon.getVelocity();

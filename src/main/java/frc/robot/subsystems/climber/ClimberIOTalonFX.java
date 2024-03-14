@@ -59,6 +59,10 @@ public class ClimberIOTalonFX implements ClimberIO {
     config.CurrentLimits.SupplyCurrentLimit = 60.0;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    config.Audio.AllowMusicDurDisable = true;
+    config.Audio.BeepOnBoot = false;
+    config.Audio.BeepOnConfig = false;
+
     leftTalon.getConfigurator().apply(config);
     rightTalon.getConfigurator().apply(config);
 
