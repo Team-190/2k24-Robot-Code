@@ -167,7 +167,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public double getSpeed() {
-    return inputs.leftVelocityRadPerSec;
+    return Math.max(inputs.leftVelocityRadPerSec, inputs.rightVelocityRadPerSec);
   }
 
   public Command runVelocity() {

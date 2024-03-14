@@ -12,21 +12,15 @@
     "data": {
       "commands": [
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "Delay"
+            "pathName": "Source Side to Source Side Note"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "Shoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Source Side to Source Side Note"
           }
         },
         {

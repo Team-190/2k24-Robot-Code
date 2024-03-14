@@ -23,9 +23,6 @@ public class ShotCalculator {
   private static final LoggedTunableNumber SHOOTER_SPEED_TOLERANCE =
       new LoggedTunableNumber("ShotCalculator/Shooter Speed Tolerance");
 
-  private static final LoggedTunableNumber ROBOT_ANGLE_TOLERANCE =
-      new LoggedTunableNumber("ShotCalculator/Robot Angle Tolerance");
-
   private static final LoggedTunableNumber HOOD_ANGLE_TOLERANCE =
       new LoggedTunableNumber("ShotCalculator/Hood Angle Tolerance");
 
@@ -43,16 +40,16 @@ public class ShotCalculator {
     shooterAngleMap.put(Units.feetToMeters(7.34), 0.0);
     shooterAngleMap.put(Units.feetToMeters(8.2), 0.0);
     shooterAngleMap.put(Units.feetToMeters(9.0), 0.27);
-    shooterAngleMap.put(Units.feetToMeters(10.0), 0.325);
+    shooterAngleMap.put(Units.feetToMeters(10.0), 0.35);
     shooterAngleMap.put(Units.feetToMeters(11.0), 0.4); // 0.3
-    shooterAngleMap.put(Units.feetToMeters(12.2), 0.425); // 0.36
-    shooterAngleMap.put(Units.feetToMeters(14.25), 0.455); // 0.376
+    shooterAngleMap.put(Units.feetToMeters(12.2), 0.435); // 0.36
+    shooterAngleMap.put(Units.feetToMeters(14.25), 0.445); // 0.376
 
     // Units: seconds
-    flightTimeMap.put(Units.inchesToMeters(0.0), 0.0);
+    flightTimeMap.put(3.5, 0.0);
+    flightTimeMap.put(0.0, 0.0);
 
     SHOOTER_SPEED_TOLERANCE.initDefault(20.0);
-    ROBOT_ANGLE_TOLERANCE.initDefault(0.1);
     HOOD_ANGLE_TOLERANCE.initDefault(0.017);
   }
 
@@ -85,14 +82,17 @@ public class ShotCalculator {
 
   public static boolean shooterReady(
       Drive drive, Hood hood, Shooter shooter, Vision aprilTagVision) {
-    AimingParameters setpoints =
-        poseCalculation(
-            aprilTagVision.getRobotPose().get().getTranslation(), drive.getFieldRelativeVelocity());
-    return (Math.abs(drive.getRotation().getRadians() - setpoints.robotAngle.getRadians())
-            <= ROBOT_ANGLE_TOLERANCE.get())
-        && (Math.abs(hood.getPosition().getRadians() - setpoints.shooterAngle.getRadians())
-            <= HOOD_ANGLE_TOLERANCE.get())
-        && (Math.abs(shooter.getSpeed() - setpoints.shooterSpeed) <= SHOOTER_SPEED_TOLERANCE.get());
+    if (aprilTagVision.getRobotPose().isPresent()) {
+      AimingParameters setpoints =
+          poseCalculation(
+              aprilTagVision.getRobotPose().get().getTranslation(),
+              drive.getFieldRelativeVelocity());
+      return (Math.abs(hood.getPosition().getRadians() - setpoints.shooterAngle.getRadians())
+              <= HOOD_ANGLE_TOLERANCE.get())
+          && (Math.abs(shooter.getSpeed() - setpoints.shooterSpeed)
+              <= SHOOTER_SPEED_TOLERANCE.get());
+    }
+    return false;
   }
 
   public static record AimingParameters(

@@ -204,7 +204,7 @@ public class RobotContainer {
     // Pathplanner commands
     NamedCommands.registerCommand("Delay", Commands.waitSeconds(autoDelay.get()));
     NamedCommands.registerCommand(
-        "Shoot", CompositeCommands.getShootCommand(serializer, kicker).withTimeout(0.5));
+        "Shoot", CompositeCommands.getShootCommand(serializer, kicker).withTimeout(1));
     NamedCommands.registerCommand(
         "Feed", CompositeCommands.getFeedCommand(intake, serializer, kicker));
     NamedCommands.registerCommand(
@@ -265,15 +265,15 @@ public class RobotContainer {
             () -> -driver.getLeftY(),
             () -> -driver.getLeftX(),
             () -> -driver.getRightX(),
-            driver.rightTrigger(),
-            driver.leftTrigger()));
+            driver.rightBumper(),
+            driver.leftBumper()));
     driver.y().onTrue(DriveCommands.resetHeading(drive));
     driver
-        .rightBumper()
+        .rightTrigger()
         .whileTrue(CompositeCommands.getAmpCommand(shooter, hood, amp, accelerator));
-    driver.leftBumper().whileTrue(CompositeCommands.getOuttakeCommand(serializer, kicker));
+    driver.leftTrigger().whileTrue(CompositeCommands.getOuttakeCommand(serializer, kicker));
     driver
-        .leftTrigger()
+        .leftBumper()
         .whileTrue(
             CompositeCommands.getCollectCommand(intake, serializer)
                 .andThen(
@@ -283,16 +283,16 @@ public class RobotContainer {
                         .withTimeout(1)))
         .onFalse(CompositeCommands.getRetractCommand(intake));
     driver
-        .rightTrigger()
+        .rightBumper()
         .whileTrue(
             CompositeCommands.getPosePrepShooterCommand(
                 drive, hood, shooter, accelerator, aprilTagVision));
     driver
-        .rightTrigger()
-        .and(shooter::isShooting)
+        .rightBumper()
         .and(() -> ShotCalculator.shooterReady(drive, hood, shooter, aprilTagVision))
         .whileTrue(
             CompositeCommands.getShootCommand(serializer, kicker)
+                .withTimeout(0.5)
                 .alongWith(
                     Commands.startEnd(
                         () -> driver.getHID().setRumble(RumbleType.kBothRumble, 1),
@@ -328,6 +328,8 @@ public class RobotContainer {
     if (aprilTagVision.getRobotPose().isPresent()) {
       ShotCalculator.poseCalculation(
           aprilTagVision.getRobotPose().get().getTranslation(), drive.getFieldRelativeVelocity());
+      Logger.recordOutput(
+          "Shooter Ready", ShotCalculator.shooterReady(drive, hood, shooter, aprilTagVision));
     }
   }
 
