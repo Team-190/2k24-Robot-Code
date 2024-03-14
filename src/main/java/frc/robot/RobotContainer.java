@@ -301,7 +301,7 @@ public class RobotContainer {
             () -> -driver.getLeftX(),
             () -> -driver.getRightX(),
             driver.rightBumper(),
-            driver.leftBumper()));
+            driver.start()));
     driver.y().onTrue(DriveCommands.resetHeading(drive));
     driver
         .rightTrigger()
