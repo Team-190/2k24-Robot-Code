@@ -82,6 +82,10 @@ public class Vision extends VirtualSubsystem {
     this.drivePoseSupplier = drivePoseSupplier;
   }
 
+  public boolean getTv() {
+    return io.getTv();
+  }
+
   public Optional<Pose2d> getRobotPose() {
     if ((Timer.getFPGATimestamp() - lastValidTimeStamp) <= BUFFER_SECONDS
         && robotPoseBuffer.getSample(lastValidTimeStamp).isPresent()) {

@@ -37,19 +37,18 @@ public class CompositeCommands {
 
   public static final Command getPosePrepShooterCommand(
       Drive drive, Hood hood, Shooter shooter, Accelerator accelerator, Vision aprilTagVision) {
-    if (aprilTagVision.getRobotPose().isPresent()) {
-      return shooter
-          .runPoseDistance(
-              () -> Optional.of(aprilTagVision.getRobotPose().get().getTranslation()),
-              drive::getFieldRelativeVelocity)
-          .alongWith(
-              hood.setPosePosition(
-                  () -> Optional.of(aprilTagVision.getRobotPose().get().getTranslation()),
-                  drive::getFieldRelativeVelocity))
-          .alongWith(accelerator.runAccelerator());
-    } else {
-      return Commands.none();
-    }
+    return Commands.either(
+        shooter
+            .runPoseDistance(
+                () -> Optional.of(aprilTagVision.getRobotPose().get().getTranslation()),
+                drive::getFieldRelativeVelocity)
+            .alongWith(
+                hood.setPosePosition(
+                    () -> Optional.of(aprilTagVision.getRobotPose().get().getTranslation()),
+                    drive::getFieldRelativeVelocity))
+            .alongWith(accelerator.runAccelerator()),
+        Commands.none(),
+        () -> aprilTagVision.getRobotPose().isPresent());
   }
 
   public static final Command getAnglePrepShooterCommand(
@@ -82,8 +81,8 @@ public class CompositeCommands {
   public static final Command getTrackNoteCenterCommand(
       Drive drive, Intake intake, Serializer serializer, Vision noteVision) {
     return (DriveCommands.moveTowardsTarget(
-                drive, noteVision, FieldConstants.fieldLength / 2.0, VisionMode.Notes)
-            .raceWith(getCollectCommand(intake, serializer)))
+                drive, noteVision, (FieldConstants.fieldLength / 2.0) + 0.1, VisionMode.Notes)
+            .alongWith(getCollectCommand(intake, serializer)))
         .andThen(getToggleIntakeCommand(intake));
   }
 
@@ -91,7 +90,7 @@ public class CompositeCommands {
       Drive drive, Intake intake, Serializer serializer, Vision noteVision) {
     return (DriveCommands.moveTowardsTarget(
                 drive, noteVision, FieldConstants.startingLineX + 0.5, VisionMode.Notes)
-            .raceWith(getCollectCommand(intake, serializer)))
+            .alongWith(getCollectCommand(intake, serializer)))
         .andThen(getToggleIntakeCommand(intake));
   }
 
@@ -103,7 +102,7 @@ public class CompositeCommands {
   public static final Command getTrackSpeakerCloseCommand(
       Drive drive, Hood hood, Shooter shooter, Vision aprilTagVision) {
     return DriveCommands.moveTowardsTarget(
-        drive, aprilTagVision, FieldConstants.startingLineX - 0.25, VisionMode.AprilTags);
+        drive, aprilTagVision, FieldConstants.startingLineX + 0.05, VisionMode.AprilTags);
   }
 
   public static final Command shootOnTheMove(

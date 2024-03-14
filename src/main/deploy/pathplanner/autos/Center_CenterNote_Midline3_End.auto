@@ -12,9 +12,9 @@
     "data": {
       "commands": [
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "Delay"
+            "pathName": "Center to Center Note"
           }
         },
         {
@@ -24,21 +24,9 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "Center to Center Note"
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "Track Note Spike"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Track Speaker Close"
           }
         },
         {
@@ -56,7 +44,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Track Note Spike"
+            "name": "Track Note Center"
           }
         },
         {

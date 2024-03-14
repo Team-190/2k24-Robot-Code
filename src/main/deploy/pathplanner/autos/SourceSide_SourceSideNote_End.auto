@@ -32,12 +32,6 @@
         {
           "type": "named",
           "data": {
-            "name": "Track Speaker Close"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "Shoot"
           }
         }

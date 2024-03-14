@@ -204,7 +204,16 @@ public class RobotContainer {
     // Pathplanner commands
     NamedCommands.registerCommand("Delay", Commands.waitSeconds(autoDelay.get()));
     NamedCommands.registerCommand(
-        "Shoot", CompositeCommands.getShootCommand(serializer, kicker).withTimeout(1));
+        "Shoot",
+        CompositeCommands.getPosePrepShooterCommand(
+                drive, hood, shooter, accelerator, aprilTagVision)
+            .until(() -> ShotCalculator.shooterReady(drive, hood, shooter, aprilTagVision))
+            .andThen(
+                Commands.parallel(
+                        CompositeCommands.getPosePrepShooterCommand(
+                            drive, hood, shooter, accelerator, aprilTagVision),
+                        CompositeCommands.getShootCommand(serializer, kicker))
+                    .withTimeout(2)));
     NamedCommands.registerCommand(
         "Feed", CompositeCommands.getFeedCommand(intake, serializer, kicker));
     NamedCommands.registerCommand(
@@ -338,12 +347,6 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return Constants.TUNING_MODE
-        ? autoChooser.get()
-        : autoChooser
-            .get()
-            .alongWith(
-                CompositeCommands.getPosePrepShooterCommand(
-                    drive, hood, shooter, accelerator, aprilTagVision));
+    return autoChooser.get();
   }
 }

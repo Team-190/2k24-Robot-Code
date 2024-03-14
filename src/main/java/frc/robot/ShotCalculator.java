@@ -46,10 +46,10 @@ public class ShotCalculator {
     shooterAngleMap.put(Units.feetToMeters(14.25), 0.445); // 0.376
 
     // Units: seconds
-    flightTimeMap.put(3.5, 0.0);
-    flightTimeMap.put(0.0, 0.0);
+    flightTimeMap.put(0.0, 0.179);
+    flightTimeMap.put(3.5, 0.294);
 
-    SHOOTER_SPEED_TOLERANCE.initDefault(20.0);
+    SHOOTER_SPEED_TOLERANCE.initDefault(40.0);
     HOOD_ANGLE_TOLERANCE.initDefault(0.017);
   }
 

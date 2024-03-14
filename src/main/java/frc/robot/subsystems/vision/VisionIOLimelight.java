@@ -46,4 +46,9 @@ public class VisionIOLimelight implements VisionIO {
                 Units.degreesToRadians(botpose.get()[4]),
                 Units.degreesToRadians(botpose.get()[5])));
   }
+
+  @Override
+  public boolean getTv() {
+    return tv.get() != 0;
+  }
 }
