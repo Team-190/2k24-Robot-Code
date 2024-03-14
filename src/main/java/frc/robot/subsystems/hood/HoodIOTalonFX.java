@@ -11,6 +11,7 @@ import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
+import frc.robot.util.StartupSoundPlayer;
 
 public class HoodIOTalonFX implements HoodIO {
   private final TalonFX hoodTalon;
@@ -58,6 +59,8 @@ public class HoodIOTalonFX implements HoodIO {
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0, position, velocity, appliedVolts, currentAmps, tempCelcius);
     hoodTalon.optimizeBusUtilization();
+
+    StartupSoundPlayer.addInstrument(hoodTalon, 1);
   }
 
   @Override

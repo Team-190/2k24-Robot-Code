@@ -28,6 +28,7 @@ import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
+import frc.robot.util.StartupSoundPlayer;
 import java.util.Queue;
 
 /**
@@ -197,6 +198,9 @@ public class ModuleIOTalonFX implements ModuleIO {
         turnTemp);
     driveTalon.optimizeBusUtilization();
     turnTalon.optimizeBusUtilization();
+
+    StartupSoundPlayer.addInstrument(driveTalon, 2);
+    StartupSoundPlayer.addInstrument(turnTalon, 3);
 
     String moduleName =
         switch (index) {

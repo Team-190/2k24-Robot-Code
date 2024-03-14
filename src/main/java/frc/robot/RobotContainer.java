@@ -67,6 +67,7 @@ import frc.robot.subsystems.vision.VisionIOSim;
 import frc.robot.subsystems.vision.VisionMode;
 import frc.robot.util.AutoBuilderNameChanger;
 import frc.robot.util.SnapbackMechanism3d;
+import frc.robot.util.StartupSoundPlayer;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
@@ -101,6 +102,7 @@ public class RobotContainer {
       switch (Constants.ROBOT) {
         case SNAPBACK:
           // Snapback, instantiate hardware IO implementations
+          StartupSoundPlayer.chooseSound();
           drive =
               new Drive(
                   new GyroIOPigeon2(),
@@ -157,6 +159,8 @@ public class RobotContainer {
           break;
       }
     }
+
+    StartupSoundPlayer.playStartupSound();
 
     // Instantiate missing subsystems
     if (drive == null) {

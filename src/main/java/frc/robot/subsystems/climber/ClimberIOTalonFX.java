@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.Solenoid;
 import frc.robot.Constants;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
+import frc.robot.util.StartupSoundPlayer;
 
 public class ClimberIOTalonFX implements ClimberIO {
   private final TalonFX leftTalon;
@@ -97,6 +98,9 @@ public class ClimberIOTalonFX implements ClimberIO {
         rightTempCelcius);
     leftTalon.optimizeBusUtilization();
     rightTalon.optimizeBusUtilization();
+
+    StartupSoundPlayer.addInstrument(leftTalon, 1);
+    StartupSoundPlayer.addInstrument(rightTalon, 1);
   }
 
   @Override

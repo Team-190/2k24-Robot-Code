@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.Solenoid;
 import frc.robot.Constants;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
+import frc.robot.util.StartupSoundPlayer;
 
 public class IntakeIOTalonFX implements IntakeIO {
   private final TalonFX rollersTalon;
@@ -65,6 +66,8 @@ public class IntakeIOTalonFX implements IntakeIO {
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0, rollersPosition, rollersAppliedVolts, rollersCurrent, rollersTemperature);
     rollersTalon.optimizeBusUtilization();
+
+    StartupSoundPlayer.addInstrument(rollersTalon, 1);
   }
 
   @Override

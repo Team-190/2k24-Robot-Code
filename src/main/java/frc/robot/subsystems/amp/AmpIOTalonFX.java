@@ -10,6 +10,7 @@ import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
+import frc.robot.util.StartupSoundPlayer;
 
 public class AmpIOTalonFX implements AmpIO {
   private final TalonFX ampTalon;
@@ -56,6 +57,8 @@ public class AmpIOTalonFX implements AmpIO {
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0, position, velocity, appliedVolts, currentAmps, tempCelcius);
     ampTalon.optimizeBusUtilization();
+
+    StartupSoundPlayer.addInstrument(ampTalon, 1);
   }
 
   @Override

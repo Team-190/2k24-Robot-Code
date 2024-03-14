@@ -10,6 +10,7 @@ import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
+import frc.robot.util.StartupSoundPlayer;
 
 public class KickerIOTalonFX implements KickerIO {
   private final TalonFX kickerTalon;
@@ -54,6 +55,8 @@ public class KickerIOTalonFX implements KickerIO {
     BaseStatusSignal.setUpdateFrequencyForAll(100.0, velocity);
     BaseStatusSignal.setUpdateFrequencyForAll(50.0, position, appliedVolts, current, temperature);
     kickerTalon.optimizeBusUtilization();
+
+    StartupSoundPlayer.addInstrument(kickerTalon, 1);
   }
 
   @Override

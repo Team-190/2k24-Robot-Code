@@ -9,6 +9,7 @@ import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
+import frc.robot.util.StartupSoundPlayer;
 
 public class ShooterIOTalonFX implements ShooterIO {
   private final TalonFX leftShooterTalon;
@@ -81,6 +82,9 @@ public class ShooterIOTalonFX implements ShooterIO {
 
     rightShooterTalon.optimizeBusUtilization();
     leftShooterTalon.optimizeBusUtilization();
+
+    StartupSoundPlayer.addInstrument(leftShooterTalon, 1);
+    StartupSoundPlayer.addInstrument(rightShooterTalon, 1);
   }
 
   @Override

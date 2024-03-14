@@ -10,6 +10,7 @@ import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
+import frc.robot.util.StartupSoundPlayer;
 
 public class AcceleratorIOTalonFX implements AcceleratorIO {
   private final TalonFX acceleratorTalon;
@@ -54,6 +55,8 @@ public class AcceleratorIOTalonFX implements AcceleratorIO {
     BaseStatusSignal.setUpdateFrequencyForAll(100.0, velocity);
     BaseStatusSignal.setUpdateFrequencyForAll(50.0, position, appliedVolts, current, temperature);
     acceleratorTalon.optimizeBusUtilization();
+
+    StartupSoundPlayer.addInstrument(acceleratorTalon, 1);
   }
 
   @Override
