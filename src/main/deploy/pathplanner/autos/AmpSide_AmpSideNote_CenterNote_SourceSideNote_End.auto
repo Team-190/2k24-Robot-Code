@@ -56,12 +56,6 @@
         {
           "type": "named",
           "data": {
-            "name": "Track Speaker Close"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "Shoot"
           }
         },
@@ -75,12 +69,6 @@
           "type": "named",
           "data": {
             "name": "Track Note Spike"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Track Speaker Close"
           }
         },
         {
