@@ -38,7 +38,7 @@ public class Climber extends SubsystemBase {
 
   static {
     LOW_POSITION.initDefault(7);
-    HIGH_POSITION.initDefault(9);
+    HIGH_POSITION.initDefault(13);
     OFFSET.initDefault(0);
     switch (Constants.ROBOT) {
       case SNAPBACK:
