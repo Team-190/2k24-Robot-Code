@@ -20,7 +20,9 @@ import java.util.Optional;
 public class CompositeCommands {
   public static final Command getCollectCommand(Intake intake, Serializer serializer) {
     return Commands.sequence(
-        intake.deployIntake(), Commands.race(intake.runVoltage(), serializer.intake()));
+        intake.deployIntake(),
+        Commands.race(intake.runVoltage(), serializer.intake()),
+        intake.retractIntake());
   }
 
   public static final Command getOuttakeCommand(
@@ -32,8 +34,12 @@ public class CompositeCommands {
     return intake.retractIntake();
   }
 
-  public static final Command getToggleIntakeCommand(Intake intake) {
+  public static final Command getIntakeCommand(Intake intake) {
     return intake.toggleIntake();
+  }
+
+  public static final Command getCollectorActuationCommand(Intake intake) {
+    return intake.singleActuation();
   }
 
   public static final Command getPosePrepShooterCommand(
@@ -82,17 +88,15 @@ public class CompositeCommands {
   public static final Command getTrackNoteCenterCommand(
       Drive drive, Intake intake, Serializer serializer, Vision noteVision) {
     return (DriveCommands.moveTowardsTarget(
-                drive, noteVision, (FieldConstants.fieldLength / 2.0) + 0.1, VisionMode.Notes)
-            .alongWith(getCollectCommand(intake, serializer)))
-        .andThen(getToggleIntakeCommand(intake));
+            drive, noteVision, (FieldConstants.fieldLength / 2.0) + 0.1, VisionMode.Notes)
+        .alongWith(getCollectCommand(intake, serializer).withTimeout(2)));
   }
 
   public static final Command getTrackNoteSpikeCommand(
       Drive drive, Intake intake, Serializer serializer, Vision noteVision) {
     return (DriveCommands.moveTowardsTarget(
-                drive, noteVision, FieldConstants.startingLineX + 0.5, VisionMode.Notes)
-            .alongWith(getCollectCommand(intake, serializer)))
-        .andThen(getToggleIntakeCommand(intake));
+            drive, noteVision, FieldConstants.startingLineX + 0.5, VisionMode.Notes)
+        .alongWith(getCollectCommand(intake, serializer).withTimeout(2)));
   }
 
   public static final Command getTrackSpeakerFarCommand(
@@ -104,6 +108,11 @@ public class CompositeCommands {
       Drive drive, Hood hood, Shooter shooter, Vision aprilTagVision) {
     return DriveCommands.moveTowardsTarget(
         drive, aprilTagVision, FieldConstants.startingLineX + 0.05, VisionMode.AprilTags);
+  }
+
+  public static final Command getAimSpeakerCommand(
+      Drive drive, Hood hood, Shooter shooter, Vision aprilTagVision) {
+    return DriveCommands.aimTowardsTarget(drive, aprilTagVision, VisionMode.AprilTags);
   }
 
   public static final Command shootOnTheMove(

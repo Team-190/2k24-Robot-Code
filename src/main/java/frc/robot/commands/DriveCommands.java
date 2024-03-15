@@ -87,7 +87,7 @@ public class DriveCommands {
       BooleanSupplier aprilTagTracking,
       BooleanSupplier noteTracking) {
 
-    // @SuppressWarnings({"resource"})
+    @SuppressWarnings({"resource"})
     PIDController aimController =
         new PIDController(autoAimKP.get(), 0, autoAimKD.get(), Constants.LOOP_PERIOD_SECS);
     aimController.enableContinuousInput(-Math.PI, Math.PI);
@@ -180,10 +180,39 @@ public class DriveCommands {
         .ignoringDisable(true);
   }
 
+  public static final Command aimTowardsTarget(Drive drive, Vision vision, VisionMode targetType) {
+    @SuppressWarnings({"resource"})
+    PIDController aimController =
+        new PIDController(autoAimKP.get(), 0, autoAimKD.get(), Constants.LOOP_PERIOD_SECS);
+    aimController.enableContinuousInput(-Math.PI, Math.PI);
+
+    return Commands.run(
+            () -> {
+              // Configure PID
+              aimController.setD(autoAimKD.get());
+              aimController.setP(autoAimKP.get());
+
+              // Convert to field relative speeds & send command
+              Optional<Rotation2d> targetGyroAngle = vision.getTargetGyroAngle();
+              drive.runVelocity(
+                  new ChassisSpeeds(
+                      0,
+                      0,
+                      targetGyroAngle.isEmpty()
+                          ? 0.0
+                          : aimController.calculate(
+                              drive.getRotation().getRadians(),
+                              targetGyroAngle.get().getRadians())));
+            },
+            drive)
+        .until(aimController::atSetpoint)
+        .finallyDo(() -> drive.stop());
+  }
+
   public static final Command moveTowardsTarget(
       Drive drive, Vision vision, double blueXCoord, VisionMode targetType) {
 
-    // @SuppressWarnings({"resource"})
+    @SuppressWarnings({"resource"})
     PIDController aimController =
         new PIDController(autoAimKP.get(), 0, autoAimKD.get(), Constants.LOOP_PERIOD_SECS);
     aimController.enableContinuousInput(-Math.PI, Math.PI);

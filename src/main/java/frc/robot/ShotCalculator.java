@@ -41,9 +41,9 @@ public class ShotCalculator {
     shooterAngleMap.put(Units.feetToMeters(8.2), 0.0);
     shooterAngleMap.put(Units.feetToMeters(9.0), 0.27);
     shooterAngleMap.put(Units.feetToMeters(10.0), 0.35);
-    shooterAngleMap.put(Units.feetToMeters(11.0), 0.4); // 0.3
-    shooterAngleMap.put(Units.feetToMeters(12.2), 0.435); // 0.36
-    shooterAngleMap.put(Units.feetToMeters(14.25), 0.445); // 0.376
+    shooterAngleMap.put(Units.feetToMeters(11.0), 0.43); // 0.3
+    shooterAngleMap.put(Units.feetToMeters(12.2), 0.44); // 0.36
+    shooterAngleMap.put(Units.feetToMeters(14.25), 0.45); // 0.376
 
     // Units: seconds
     flightTimeMap.put(0.0, 0.179);

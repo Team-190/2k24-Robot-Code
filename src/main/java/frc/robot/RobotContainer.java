@@ -34,6 +34,7 @@ import frc.robot.subsystems.amp.AmpIOSim;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
 import frc.robot.subsystems.climber.ClimberIOSim;
+import frc.robot.subsystems.climber.ClimberIOTalonFX;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -115,7 +116,7 @@ public class RobotContainer {
           kicker = new Kicker(new KickerIOTalonFX());
           accelerator = new Accelerator(new AcceleratorIOTalonFX());
           // amp = new Amp(new AmpIOTalonFX());
-          // climber = new Climber(new ClimberIOTalonFX());
+          climber = new Climber(new ClimberIOTalonFX());
           aprilTagVision =
               new Vision("AprilTagVision", new VisionIOLimelight(VisionMode.AprilTags));
           noteVision = new Vision("NoteVision", new VisionIOLimelight(VisionMode.Notes));
@@ -207,15 +208,17 @@ public class RobotContainer {
     NamedCommands.registerCommand("Delay", Commands.waitSeconds(autoDelay.get()));
     NamedCommands.registerCommand(
         "Shoot",
-        CompositeCommands.getPosePrepShooterCommand(
-                drive, hood, shooter, accelerator, aprilTagVision)
-            .until(() -> ShotCalculator.shooterReady(drive, hood, shooter, aprilTagVision))
-            .andThen(
-                Commands.parallel(
-                        CompositeCommands.getPosePrepShooterCommand(
-                            drive, hood, shooter, accelerator, aprilTagVision),
-                        CompositeCommands.getShootCommand(serializer, kicker))
-                    .withTimeout(2)));
+        (CompositeCommands.getPosePrepShooterCommand(
+                    drive, hood, shooter, accelerator, aprilTagVision)
+                .until(() -> ShotCalculator.shooterReady(drive, hood, shooter, aprilTagVision))
+                .andThen(
+                    Commands.parallel(
+                            CompositeCommands.getPosePrepShooterCommand(
+                                drive, hood, shooter, accelerator, aprilTagVision),
+                            CompositeCommands.getShootCommand(serializer, kicker)
+                                .beforeStarting(Commands.waitSeconds(0.1)))
+                        .withTimeout(0.5)))
+            .withTimeout(2));
     NamedCommands.registerCommand(
         "Feed", CompositeCommands.getFeedCommand(intake, serializer, kicker));
     NamedCommands.registerCommand(
@@ -230,6 +233,8 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "Track Speaker Close",
         CompositeCommands.getTrackSpeakerCloseCommand(drive, hood, shooter, aprilTagVision));
+    NamedCommands.registerCommand(
+        "Aim", CompositeCommands.getAimSpeakerCommand(drive, hood, shooter, aprilTagVision));
 
     autoChooser =
         new LoggedDashboardChooser<>(
@@ -333,7 +338,8 @@ public class RobotContainer {
                         () -> driver.getHID().setRumble(RumbleType.kBothRumble, 1),
                         () -> driver.getHID().setRumble(RumbleType.kBothRumble, 0)))
                 .withTimeout(1));
-    driver.a().whileTrue(CompositeCommands.getShootCommand(serializer, kicker));
+    driver.b().whileTrue(CompositeCommands.getShootCommand(serializer, kicker));
+    driver.a().whileTrue(CompositeCommands.getCollectorActuationCommand(intake));
 
     operator.leftBumper().whileTrue(hood.increaseAngle());
     operator.leftTrigger().whileTrue(hood.decreaseAngle());

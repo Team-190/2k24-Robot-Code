@@ -28,17 +28,18 @@ public class Climber extends SubsystemBase {
   private static final LoggedTunableNumber LOW_POSITION =
       new LoggedTunableNumber("Climber/Low Position");
 
+  private static final LoggedTunableNumber OFFSET = new LoggedTunableNumber("Climber/Offset");
+
   private final ClimberIO io;
   private final ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
 
   private final ProfiledPIDController leftProfiledFeedback;
   private final ProfiledPIDController rightProfiledFeedback;
 
-  private double climberOffset = 0;
-
   static {
-    LOW_POSITION.initDefault(5);
+    LOW_POSITION.initDefault(7);
     HIGH_POSITION.initDefault(9);
+    OFFSET.initDefault(0);
     switch (Constants.ROBOT) {
       case SNAPBACK:
         KP.initDefault(5);
@@ -118,11 +119,11 @@ public class Climber extends SubsystemBase {
   }
 
   private void setLeftPosition(double leftPositionMeters) {
-    leftProfiledFeedback.setGoal(leftPositionMeters + climberOffset);
+    leftProfiledFeedback.setGoal(leftPositionMeters + OFFSET.get());
   }
 
   private void setRightPosition(double rightPositionMeters) {
-    rightProfiledFeedback.setGoal(rightPositionMeters + climberOffset);
+    rightProfiledFeedback.setGoal(rightPositionMeters + OFFSET.get());
   }
 
   public double getLeftPositionMeters() {
@@ -194,6 +195,6 @@ public class Climber extends SubsystemBase {
   }
 
   public Command incrementClimber() {
-    return Commands.runOnce(() -> climberOffset += Units.inchesToMeters(1));
+    return Commands.runOnce(() -> OFFSET.initDefault(OFFSET.get() + Units.inchesToMeters(1)));
   }
 }

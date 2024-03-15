@@ -73,4 +73,8 @@ public class Intake extends SubsystemBase {
   public Command toggleIntake() {
     return runOnce(() -> toggleIntakePosition());
   }
+
+  public Command singleActuation() {
+    return startEnd(() -> setIntakePosition(true), () -> setIntakePosition(false));
+  }
 }
