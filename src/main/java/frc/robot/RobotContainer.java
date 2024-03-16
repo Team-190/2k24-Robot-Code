@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.Mode;
 import frc.robot.commands.CompositeCommands;
@@ -259,9 +260,7 @@ public class RobotContainer {
       autoChooser.addOption("Hood Test", hood.setAmp());
       autoChooser.addOption("Amp Test", amp.setAmp());
       autoChooser.addOption("Intake Test", intake.deployIntake());
-      autoChooser.addOption("Climber Side Test", climber.preClimbSide());
-      autoChooser.addOption("Climber Center Test", climber.preClimbCenter());
-      autoChooser.addOption("Climber Climb Test", climber.climb());
+      autoChooser.addOption("Climber Test", climber.preClimb());
     }
 
     // Configure the button bindings
@@ -347,10 +346,11 @@ public class RobotContainer {
     operator.rightTrigger().whileTrue(shooter.decreaseVelocity());
     operator.y().whileTrue(shooter.increaseSpin());
     operator.a().whileTrue(shooter.decreaseSpin());
-    operator.povDown().onTrue(climber.climb());
-    operator.povLeft().onTrue(climber.preClimbSide());
-    operator.povRight().onTrue(climber.preClimbCenter());
-    operator.povUp().onTrue(climber.incrementClimber());
+    operator.povLeft().onTrue(climber.preClimb());
+    operator.povRight().onTrue(climber.preClimb());
+    operator.povUp().onTrue(climber.preClimb());
+    new Trigger(() -> operator.getLeftY() >= 0.25)
+        .whileTrue(climber.climb(() -> operator.getLeftY(), 0.25));
   }
 
   public void updateSnapbackMechanism3d() {
