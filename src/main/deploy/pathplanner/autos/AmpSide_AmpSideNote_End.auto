@@ -12,6 +12,12 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "Delay"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Amp Side to Amp Side Note"
