@@ -235,7 +235,7 @@ public class RobotContainer {
         "Track Speaker Close",
         CompositeCommands.getTrackSpeakerCloseCommand(drive, hood, shooter, aprilTagVision));
     NamedCommands.registerCommand(
-        "Aim", CompositeCommands.getAimSpeakerCommand(drive, hood, shooter, aprilTagVision));
+        "Aim", CompositeCommands.getAimSpeakerCommand(drive, aprilTagVision));
 
     autoChooser =
         new LoggedDashboardChooser<>(

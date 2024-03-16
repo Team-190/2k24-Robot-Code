@@ -20,6 +20,12 @@
         {
           "type": "named",
           "data": {
+            "name": "Aim"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "Shoot"
           }
         },
@@ -27,6 +33,12 @@
           "type": "named",
           "data": {
             "name": "Track Note Spike"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Aim"
           }
         },
         {
@@ -51,6 +63,12 @@
           "type": "path",
           "data": {
             "pathName": "Mideline 5 to Speaker Far"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Aim"
           }
         },
         {
