@@ -106,6 +106,7 @@ public class Shooter extends SubsystemBase {
     this.io = io;
     leftFeedback = new PIDController(KP.get(), 0.0, KD.get(), Constants.LOOP_PERIOD_SECS);
     rightFeedback = new PIDController(KP.get(), 0.0, KD.get(), Constants.LOOP_PERIOD_SECS);
+    setDefaultCommand(runVelocity());
   }
 
   public void periodic() {
