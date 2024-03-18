@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.6805767222645559,
-      "y": 4.428886913329382
+      "x": 0.6279860178767976,
+      "y": 4.5091137801323224
     },
-    "rotation": 119.15279655236915
+    "rotation": 120.86680945113707
   },
   "command": {
     "type": "sequential",
@@ -14,19 +14,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Source Side to Source Side Note"
+            "pathName": "Source Side to Shot"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Shoot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Track Note Spike"
+            "name": "Aim"
           }
         },
         {
@@ -50,7 +44,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Mideline 5 to Speaker Far"
+            "pathName": "Midline 5 to Speaker Far"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Track Speaker Far"
           }
         },
         {
@@ -62,7 +62,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Source Side to Midline 4"
+            "pathName": "Speaker Far to Midline 4"
           }
         },
         {
@@ -72,9 +72,15 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "Mideline 4 to Speaker Far"
+            "pathName": "Midline 4 to Speaker Far"
           }
         },
         {
@@ -92,6 +98,6 @@
       ]
     }
   },
-  "folder": "Four",
+  "folder": "Three",
   "choreoAuto": false
 }

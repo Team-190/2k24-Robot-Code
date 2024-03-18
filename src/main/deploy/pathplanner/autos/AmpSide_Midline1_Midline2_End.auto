@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.6805767222645559,
-      "y": 4.428886913329382
+      "x": 0.6009765281297698,
+      "y": 6.583676387831718
     },
-    "rotation": 117.79254572906477
+    "rotation": -121.37300514010846
   },
   "command": {
     "type": "sequential",
@@ -14,19 +14,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Source Side to Source Side Note"
+            "pathName": "Amp Side to Midline1 Note"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Shoot"
+            "name": "Track Note Center"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Midline1 Note to Speaker Far"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Track Note Spike"
+            "name": "Track Speaker Far"
           }
         },
         {
@@ -38,37 +44,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Center to Center Note"
+            "pathName": "Speaker Far to Midline2 Note"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Track Note Spike"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
+            "name": "Track Note Center"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Center to Amp Side Note"
+            "pathName": "Midline2 Note to Speaker Far"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Track Note Spike"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Track Speaker Close"
+            "name": "Track Speaker Far"
           }
         },
         {
@@ -80,6 +74,6 @@
       ]
     }
   },
-  "folder": "Four",
+  "folder": "Three",
   "choreoAuto": false
 }
