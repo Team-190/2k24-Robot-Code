@@ -95,7 +95,7 @@ public class CompositeCommands {
   public static final Command getTrackNoteSpikeCommand(
       Drive drive, Intake intake, Serializer serializer, Vision noteVision) {
     return (DriveCommands.moveTowardsTarget(
-            drive, noteVision, FieldConstants.startingLineX + 0.5, VisionMode.Notes)
+            drive, noteVision, FieldConstants.startingLineX + 1, VisionMode.Notes)
         .alongWith(getCollectCommand(intake, serializer).withTimeout(2)));
   }
 

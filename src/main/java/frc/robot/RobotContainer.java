@@ -206,7 +206,7 @@ public class RobotContainer {
     noteVision.setDrivePoseSupplier(drive::getPose);
 
     // Pathplanner commands
-    // NamedCommands.registerCommand("Delay", Commands.waitSeconds(autoDelay.get()));
+    NamedCommands.registerCommand("Deploy", intake.deployIntake());
     NamedCommands.registerCommand(
         "Shoot",
         (CompositeCommands.getPosePrepShooterCommand(
@@ -217,7 +217,7 @@ public class RobotContainer {
                             CompositeCommands.getPosePrepShooterCommand(
                                 drive, hood, shooter, accelerator, aprilTagVision),
                             CompositeCommands.getShootCommand(serializer, kicker)
-                                .beforeStarting(Commands.waitSeconds(0.1)))
+                                .beforeStarting(Commands.waitSeconds(0.2)))
                         .withTimeout(0.5)))
             .withTimeout(2));
     NamedCommands.registerCommand(

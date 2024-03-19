@@ -40,8 +40,6 @@ public class AutoBuilderNameChanger {
         return "START: AMP \n -> AMP SIDE NOTE \n -> MIDLINE 1";
       case "AmpSide_Midline1_Midline2_End":
         return "START: AMP \n -> MIDLINE 1 \n -> MIDLINE 2";
-      case "Center_CenterNote_Midline3_End":
-        return "START: CENTER \n -> CENTER NOTE \n -> MIDLINE3";
       case "SourceSide_End":
         return "START: SOURCE \n -> GTFOOTW";
       case "SourceSide_Midline5_Midline4_End":
