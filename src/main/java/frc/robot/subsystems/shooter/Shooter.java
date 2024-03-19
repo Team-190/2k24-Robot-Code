@@ -6,7 +6,6 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -42,8 +41,6 @@ public class Shooter extends SubsystemBase {
   private static SimpleMotorFeedforward leftFeedforward;
   private static SimpleMotorFeedforward rightFeedforward;
 
-  private boolean isShooting = false;
-
   private final PIDController leftFeedback;
   private final PIDController rightFeedback;
   private boolean isOpenLoop = true;
@@ -74,7 +71,7 @@ public class Shooter extends SubsystemBase {
         KP.initDefault(0.035);
         KD.initDefault(0.0);
         RATIO.initDefault(0.5);
-        DEFAULT_SPEED.initDefault(400);
+        DEFAULT_SPEED.initDefault(600);
         AMP_SPEED.initDefault(0.0);
         leftFeedforward = new SimpleMotorFeedforward(0.38326, 0.007755);
         rightFeedforward = new SimpleMotorFeedforward(0.18553, 0.0074688);
@@ -92,7 +89,7 @@ public class Shooter extends SubsystemBase {
         KP.initDefault(0.035);
         KD.initDefault(0.0);
         RATIO.initDefault(2.0 / 3.0);
-        DEFAULT_SPEED.initDefault(400);
+        DEFAULT_SPEED.initDefault(600);
         AMP_SPEED.initDefault(0.0);
         leftFeedforward = new SimpleMotorFeedforward(0.49147, 0.0069249);
         rightFeedforward = new SimpleMotorFeedforward(0.72165, 0.0075142);
@@ -146,7 +143,8 @@ public class Shooter extends SubsystemBase {
       leftFeedback.setSetpoint(velocityRadPerSec + flywheelOffset);
       rightFeedback.setSetpoint((velocityRadPerSec + flywheelOffset) * (RATIO.get() + spinOffset));
     } else {
-      leftFeedback.setSetpoint((velocityRadPerSec + flywheelOffset) * RATIO.get());
+      // YEET MODE :)
+      leftFeedback.setSetpoint(velocityRadPerSec + flywheelOffset);
       rightFeedback.setSetpoint(velocityRadPerSec + flywheelOffset);
     }
   }
@@ -159,10 +157,6 @@ public class Shooter extends SubsystemBase {
   private void setVoltage(double volts) {
     isOpenLoop = true;
     openLoopVoltage = volts;
-  }
-
-  public boolean isShooting() {
-    return isShooting;
   }
 
   public double getSpeed() {
@@ -181,11 +175,9 @@ public class Shooter extends SubsystemBase {
     return runEnd(
         () -> {
           setVelocity(DEFAULT_SPEED.get());
-          isShooting = true;
         },
         () -> {
           stop();
-          isShooting = false;
         });
   }
 
@@ -193,11 +185,9 @@ public class Shooter extends SubsystemBase {
     return runEnd(
         () -> {
           setVelocity(AMP_SPEED.get());
-          isShooting = true;
         },
         () -> {
           stop();
-          isShooting = false;
         });
   }
 
@@ -269,18 +259,24 @@ public class Shooter extends SubsystemBase {
   }
 
   public Command increaseVelocity() {
-    return Commands.runOnce(() -> flywheelOffset += Units.rotationsPerMinuteToRadiansPerSecond(10));
+    return Commands.runOnce(() -> flywheelOffset += 10);
   }
 
   public Command decreaseVelocity() {
-    return Commands.runOnce(() -> flywheelOffset -= Units.rotationsPerMinuteToRadiansPerSecond(10));
+    return Commands.runOnce(() -> flywheelOffset -= 10);
   }
 
   public Command increaseSpin() {
-    return Commands.runOnce(() -> spinOffset++);
+    return Commands.runOnce(() -> {
+      if(RATIO.get() + spinOffset < 0.9)
+        spinOffset += 0.1;
+      });
   }
 
   public Command decreaseSpin() {
-    return Commands.runOnce(() -> spinOffset--);
+    return Commands.runOnce(() -> {
+      if(RATIO.get() + spinOffset > 0.1)
+      spinOffset -= 0.1;
+      });
   }
 }

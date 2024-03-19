@@ -135,11 +135,11 @@ public class Climber extends SubsystemBase {
         .andThen(Commands.waitSeconds(0.25))
         .andThen(
             setLeftPosition(CLIMB_POSITION.get()).alongWith(setRightPosition(CLIMB_POSITION.get())))
-        .andThen(() -> io.setLock(true));
+        .finallyDo(() -> io.setLock(true));
   }
 
   public Command climb(DoubleSupplier speed, double deadband) {
-    return Commands.runOnce(() -> io.setLock(false))
+    return (Commands.runOnce(() -> io.setLock(false))
         .andThen(Commands.waitSeconds(0.25))
         .andThen(
             Commands.either(
@@ -161,7 +161,11 @@ public class Climber extends SubsystemBase {
                       io.setRightVoltage(0);
                       io.setLock(true);
                     }),
-                () -> Math.abs(speed.getAsDouble()) > deadband));
+                () -> Math.abs(speed.getAsDouble()) > deadband)))
+        .alongWith(Commands.run(() -> {
+          leftProfiledFeedback.reset(inputs.leftPositionMeters, inputs.leftVelocityMetersPerSec);
+          rightProfiledFeedback.reset(inputs.leftPositionMeters, inputs.leftVelocityMetersPerSec);
+        })).finallyDo(() -> io.setLock(true));
   }
 
   public Command stop() {

@@ -74,7 +74,7 @@ public class Hood extends SubsystemBase {
         STOWED_POSITION.initDefault(Units.degreesToRadians(38.0));
         AMP_POSITION.initDefault(Units.degreesToRadians(15.0));
         MIN_POSITION.initDefault(0.0);
-        MAX_POSITION.initDefault(0.0);
+        MAX_POSITION.initDefault(0.75);
         break;
       default:
         break;
@@ -130,7 +130,7 @@ public class Hood extends SubsystemBase {
   }
 
   public double getOffset() {
-    return angleOffset;
+    return (double) Math.round(Units.radiansToDegrees(angleOffset) * 100) / 100;
   }
 
   public Command setAmp() {

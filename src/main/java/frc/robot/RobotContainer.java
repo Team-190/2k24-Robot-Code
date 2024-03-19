@@ -271,15 +271,15 @@ public class RobotContainer {
         .withPosition(0, 0)
         .withSize(2, 2);
     Shuffleboard.getTab("Teleoperated")
-        .add("Hood Offset", hood.getOffset())
+        .addNumber("Hood Offset", hood::getOffset)
         .withPosition(0, 0)
         .withSize(1, 1);
     Shuffleboard.getTab("Teleoperated")
-        .add("Flywheel Offset", shooter.getFlywheelOffset())
+        .addNumber("Flywheel Offset", shooter::getFlywheelOffset)
         .withPosition(0, 1)
         .withSize(1, 1);
     Shuffleboard.getTab("Teleoperated")
-        .add("Spin Offset", shooter.getSpinOffset())
+        .addNumber("Spin Offset", shooter::getSpinOffset)
         .withPosition(0, 2)
         .withSize(1, 1);
     Shuffleboard.getTab("Teleoperated")
