@@ -140,32 +140,37 @@ public class Climber extends SubsystemBase {
 
   public Command climb(DoubleSupplier speed, double deadband) {
     return (Commands.runOnce(() -> io.setLock(false))
-        .andThen(Commands.waitSeconds(0.25))
-        .andThen(
-            Commands.either(
-                Commands.runEnd(
-                    () -> {
-                      io.setLeftVoltage(
-                          -speed.getAsDouble() * RobotController.getBatteryVoltage() * 0.25);
-                      io.setRightVoltage(
-                          -speed.getAsDouble() * RobotController.getBatteryVoltage() * 0.25);
-                    },
-                    () -> {
-                      io.setLeftVoltage(0);
-                      io.setRightVoltage(0);
-                      io.setLock(true);
-                    }),
-                Commands.run(
-                    () -> {
-                      io.setLeftVoltage(0);
-                      io.setRightVoltage(0);
-                      io.setLock(true);
-                    }),
-                () -> Math.abs(speed.getAsDouble()) > deadband)))
-        .alongWith(Commands.run(() -> {
-          leftProfiledFeedback.reset(inputs.leftPositionMeters, inputs.leftVelocityMetersPerSec);
-          rightProfiledFeedback.reset(inputs.leftPositionMeters, inputs.leftVelocityMetersPerSec);
-        })).finallyDo(() -> io.setLock(true));
+            .andThen(Commands.waitSeconds(0.25))
+            .andThen(
+                Commands.either(
+                    Commands.runEnd(
+                        () -> {
+                          io.setLeftVoltage(
+                              -speed.getAsDouble() * RobotController.getBatteryVoltage() * 0.25);
+                          io.setRightVoltage(
+                              -speed.getAsDouble() * RobotController.getBatteryVoltage() * 0.25);
+                        },
+                        () -> {
+                          io.setLeftVoltage(0);
+                          io.setRightVoltage(0);
+                          io.setLock(true);
+                        }),
+                    Commands.run(
+                        () -> {
+                          io.setLeftVoltage(0);
+                          io.setRightVoltage(0);
+                          io.setLock(true);
+                        }),
+                    () -> Math.abs(speed.getAsDouble()) > deadband)))
+        .alongWith(
+            Commands.run(
+                () -> {
+                  leftProfiledFeedback.reset(
+                      inputs.leftPositionMeters, inputs.leftVelocityMetersPerSec);
+                  rightProfiledFeedback.reset(
+                      inputs.leftPositionMeters, inputs.leftVelocityMetersPerSec);
+                }))
+        .finallyDo(() -> io.setLock(true));
   }
 
   public Command stop() {

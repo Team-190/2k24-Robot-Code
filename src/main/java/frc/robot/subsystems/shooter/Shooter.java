@@ -267,16 +267,16 @@ public class Shooter extends SubsystemBase {
   }
 
   public Command increaseSpin() {
-    return Commands.runOnce(() -> {
-      if(RATIO.get() + spinOffset < 0.9)
-        spinOffset += 0.1;
-      });
+    return Commands.runOnce(
+        () -> {
+          if (RATIO.get() + spinOffset < 0.9) spinOffset += 0.1;
+        });
   }
 
   public Command decreaseSpin() {
-    return Commands.runOnce(() -> {
-      if(RATIO.get() + spinOffset > 0.1)
-      spinOffset -= 0.1;
-      });
+    return Commands.runOnce(
+        () -> {
+          if (RATIO.get() + spinOffset > 0.1) spinOffset -= 0.1;
+        });
   }
 }

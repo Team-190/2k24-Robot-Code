@@ -206,7 +206,7 @@ public class RobotContainer {
     noteVision.setDrivePoseSupplier(drive::getPose);
 
     // Pathplanner commands
-    NamedCommands.registerCommand("Delay", Commands.waitSeconds(autoDelay.get()));
+    // NamedCommands.registerCommand("Delay", Commands.waitSeconds(autoDelay.get()));
     NamedCommands.registerCommand(
         "Shoot",
         (CompositeCommands.getPosePrepShooterCommand(
@@ -377,6 +377,6 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return autoChooser.get();
+    return Commands.waitSeconds(autoDelay.get()).andThen(autoChooser.get().asProxy());
   }
 }

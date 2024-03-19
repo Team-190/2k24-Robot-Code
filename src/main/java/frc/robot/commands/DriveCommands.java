@@ -231,7 +231,11 @@ public class DriveCommands {
             },
             drive)
         .until(() -> aimController.atSetpoint())
-        .finallyDo(() -> drive.stop());
+        .finallyDo(
+            () -> {
+              drive.stop();
+              aimController.reset();
+            });
   }
 
   public static final Command moveTowardsTarget(
