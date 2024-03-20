@@ -187,8 +187,44 @@ public class Climber extends SubsystemBase {
                 .until(() -> inputs.leftPositionMeters < 0.5),
             Commands.runEnd(() -> io.setRightVoltage(-8.0), () -> io.setRightVoltage(0.0))
                 .until(() -> inputs.leftPositionMeters < 0.5)),
+        Commands.parallel(
+                Commands.run(
+                    () -> {
+                      io.setLeftVoltage(-1.1);
+                      io.setRightVoltage(-1.1);
+                    }),
+                Commands.runOnce(() -> io.setLock(true)))
+            .withTimeout(0.25),
+        stop(),
+        Commands.runOnce(
+            () -> {
+              leftProfiledFeedback.reset(
+                  inputs.leftPositionMeters, inputs.leftVelocityMetersPerSec);
+              rightProfiledFeedback.reset(
+                  inputs.leftPositionMeters, inputs.leftVelocityMetersPerSec);
+            }));
+  }
+
+  public Command zero() {
+    return Commands.sequence(
+        Commands.runOnce(() -> io.setLock(false)),
         Commands.waitSeconds(0.25),
-        Commands.runOnce(() -> io.setLock(true)));
+        Commands.parallel(
+            Commands.runEnd(() -> io.setLeftVoltage(-1.0), () -> io.setLeftVoltage(0.0))
+                .until(() -> inputs.leftCurrentAmps[inputs.leftCurrentAmps.length - 1] >= 2),
+            Commands.runEnd(() -> io.setRightVoltage(-1.0), () -> io.setRightVoltage(0.0))
+                .until(() -> inputs.rightCurrentAmps[inputs.rightCurrentAmps.length - 1] >= 2)),
+        stop(),
+        Commands.runOnce(
+            () -> {
+              io.setLock(true);
+              inputs.leftPositionMeters = 0.0;
+              inputs.rightPositionMeters = 0.0;
+              leftProfiledFeedback.reset(
+                  inputs.leftPositionMeters, inputs.leftVelocityMetersPerSec);
+              rightProfiledFeedback.reset(
+                  inputs.leftPositionMeters, inputs.leftVelocityMetersPerSec);
+            }));
   }
 
   public Command stop() {

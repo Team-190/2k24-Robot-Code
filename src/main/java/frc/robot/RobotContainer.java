@@ -61,7 +61,6 @@ import frc.robot.subsystems.serializer.SerializerIOTalonFX;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.ShooterIOSim;
-import frc.robot.subsystems.shooter.ShooterIOTalonFX;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOLimelight;
@@ -110,7 +109,7 @@ public class RobotContainer {
                   new ModuleIOTalonFX(1),
                   new ModuleIOTalonFX(2),
                   new ModuleIOTalonFX(3));
-          shooter = new Shooter(new ShooterIOTalonFX());
+          // shooter = new Shooter(new ShooterIOTalonFX());
           hood = new Hood(new HoodIOTalonFX());
           intake = new Intake(new IntakeIOTalonFX());
           serializer = new Serializer(new SerializerIOTalonFX());
@@ -346,6 +345,7 @@ public class RobotContainer {
     operator.povRight().onTrue(climber.preClimb());
     operator.povUp().onTrue(climber.preClimb());
     operator.povDown().onTrue(climber.climbAutomatic());
+    operator.back().onTrue(climber.zero());
     new Trigger(() -> operator.getLeftY() >= 0.25)
         .whileTrue(climber.climbManual(() -> operator.getLeftY(), 0.25));
   }
