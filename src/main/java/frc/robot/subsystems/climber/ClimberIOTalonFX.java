@@ -59,6 +59,11 @@ public class ClimberIOTalonFX implements ClimberIO {
     config.CurrentLimits.SupplyCurrentLimit = 60.0;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    // config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+    // config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 3; // bottom soft limit in rotations
+    // config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+    // config.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
+    // 6 * DRUM_CIRCUMFERENCE * GEAR_RATIO; // top soft limit in rotations
     config.Audio.AllowMusicDurDisable = true;
     config.Audio.BeepOnBoot = false;
     config.Audio.BeepOnConfig = false;
@@ -66,10 +71,10 @@ public class ClimberIOTalonFX implements ClimberIO {
     leftTalon.getConfigurator().apply(config);
     rightTalon.getConfigurator().apply(config);
 
+    rightTalon.setInverted(true);
+
     leftTalon.setPosition(0.0);
     rightTalon.setPosition(0.0);
-
-    rightTalon.setInverted(true);
 
     leftPosition = leftTalon.getPosition();
     leftVelocity = leftTalon.getVelocity();

@@ -131,9 +131,6 @@ public class RobotContainer {
                   new ModuleIOTalonFX(1),
                   new ModuleIOTalonFX(2),
                   new ModuleIOTalonFX(3));
-          shooter = new Shooter(new ShooterIOTalonFX());
-          serializer = new Serializer(new SerializerIOTalonFX());
-          accelerator = new Accelerator(new AcceleratorIOTalonFX());
           break;
 
         case ROBOT_SIM:
@@ -348,8 +345,9 @@ public class RobotContainer {
     operator.povLeft().onTrue(climber.preClimb());
     operator.povRight().onTrue(climber.preClimb());
     operator.povUp().onTrue(climber.preClimb());
+    operator.povDown().onTrue(climber.climbAutomatic());
     new Trigger(() -> operator.getLeftY() >= 0.25)
-        .whileTrue(climber.climb(() -> operator.getLeftY(), 0.25));
+        .whileTrue(climber.climbManual(() -> operator.getLeftY(), 0.25));
   }
 
   public void updateSnapbackMechanism3d() {

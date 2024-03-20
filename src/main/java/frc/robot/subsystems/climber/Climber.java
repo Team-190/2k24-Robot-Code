@@ -70,8 +70,8 @@ public class Climber extends SubsystemBase {
         new ProfiledPIDController(
             KP.get(), 0.0, KD.get(), new Constraints(MAX_VELOCITY.get(), MAX_ACCELERATION.get()));
 
-    leftProfiledFeedback.setTolerance(3);
-    rightProfiledFeedback.setTolerance(3);
+    leftProfiledFeedback.setTolerance(1);
+    rightProfiledFeedback.setTolerance(1);
   }
 
   public void periodic() {
@@ -138,7 +138,7 @@ public class Climber extends SubsystemBase {
         .finallyDo(() -> io.setLock(true));
   }
 
-  public Command climb(DoubleSupplier speed, double deadband) {
+  public Command climbManual(DoubleSupplier speed, double deadband) {
     return (Commands.runOnce(() -> io.setLock(false))
             .andThen(Commands.waitSeconds(0.25))
             .andThen(
@@ -171,6 +171,24 @@ public class Climber extends SubsystemBase {
                       inputs.leftPositionMeters, inputs.leftVelocityMetersPerSec);
                 }))
         .finallyDo(() -> io.setLock(true));
+  }
+
+  public Command climbAutomatic() {
+    return Commands.sequence(
+        Commands.runOnce(() -> io.setLock(false)),
+        Commands.waitSeconds(0.25),
+        Commands.parallel(
+            Commands.runEnd(() -> io.setLeftVoltage(-6.0), () -> io.setLeftVoltage(0.0))
+                .until(() -> inputs.leftCurrentAmps[inputs.leftCurrentAmps.length - 1] >= 25),
+            Commands.runEnd(() -> io.setRightVoltage(-6.0), () -> io.setRightVoltage(0.0))
+                .until(() -> inputs.rightCurrentAmps[inputs.rightCurrentAmps.length - 1] >= 25)),
+        Commands.race(
+            Commands.runEnd(() -> io.setLeftVoltage(-8.0), () -> io.setLeftVoltage(0.0))
+                .until(() -> inputs.leftPositionMeters < 0.5),
+            Commands.runEnd(() -> io.setRightVoltage(-8.0), () -> io.setRightVoltage(0.0))
+                .until(() -> inputs.leftPositionMeters < 0.5)),
+        Commands.waitSeconds(0.25),
+        Commands.runOnce(() -> io.setLock(true)));
   }
 
   public Command stop() {
