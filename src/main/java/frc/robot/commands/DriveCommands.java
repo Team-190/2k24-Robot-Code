@@ -29,12 +29,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants;
-import frc.robot.FieldConstants;
-import frc.robot.ShotCalculator;
-import frc.robot.ShotCalculator.AimingParameters;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.vision.Vision;
-import frc.robot.subsystems.vision.VisionMode;
 import frc.robot.util.LoggedTunableNumber;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
@@ -79,8 +74,8 @@ public class DriveCommands {
    */
   public static final Command joystickDrive(
       Drive drive,
-      Vision aprilTagVision,
-      Vision noteVision,
+      // Vision aprilTagVision,
+      // Vision noteVision,
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
       DoubleSupplier omegaSupplier,
@@ -99,7 +94,9 @@ public class DriveCommands {
               MathUtil.applyDeadband(
                   Math.hypot(xSupplier.getAsDouble(), ySupplier.getAsDouble()), DEADBAND);
           Rotation2d linearDirection =
-              new Rotation2d(xSupplier.getAsDouble(), ySupplier.getAsDouble());
+              new Rotation2d(
+                  MathUtil.applyDeadband(xSupplier.getAsDouble(), DEADBAND),
+                  MathUtil.applyDeadband(ySupplier.getAsDouble(), DEADBAND));
           double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
 
           // Square values
@@ -131,6 +128,7 @@ public class DriveCommands {
           double robotRelativeXVel = linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec();
           double robotRelativeYVel = linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec();
 
+          /*
           if (noteTracking.getAsBoolean()) {
             targetGyroAngle = noteVision.getTargetGyroAngle();
           } else if (aprilTagVision.getRobotPose().isPresent()) {
@@ -145,7 +143,7 @@ public class DriveCommands {
                     visionPose.getTranslation(), deadbandFieldRelativeVelocity);
             targetGyroAngle = Optional.of(calculatedAim.robotAngle());
             feedForwardRadialVelocity = calculatedAim.radialVelocity();
-          }
+          } */
           ChassisSpeeds chassisSpeeds =
               ChassisSpeeds.fromFieldRelativeSpeeds(
                   robotRelativeXVel,
@@ -180,126 +178,127 @@ public class DriveCommands {
         .ignoringDisable(true);
   }
 
-  public static final Command aimTowardsTarget(
-      Drive drive, Vision aprilTagVision, VisionMode targetType) {
-    @SuppressWarnings({"resource"})
-    PIDController aimController =
-        new PIDController(autoAimKP.get(), 0, autoAimKD.get(), Constants.LOOP_PERIOD_SECS);
-    aimController.enableContinuousInput(-Math.PI, Math.PI);
-    aimController.setTolerance(0.017);
+  // public static final Command aimTowardsTarget(
+  //     Drive drive, Vision aprilTagVision, VisionMode targetType) {
+  //   @SuppressWarnings({"resource"})
+  //   PIDController aimController =
+  //       new PIDController(autoAimKP.get(), 0, autoAimKD.get(), Constants.LOOP_PERIOD_SECS);
+  //   aimController.enableContinuousInput(-Math.PI, Math.PI);
+  //   aimController.setTolerance(0.017);
 
-    return Commands.run(
-            () -> {
-              aimController.setD(autoAimKD.get());
-              aimController.setP(autoAimKP.get());
+  //   return Commands.run(
+  //           () -> {
+  //             aimController.setD(autoAimKD.get());
+  //             aimController.setP(autoAimKP.get());
 
-              // Get robot relative vel
-              boolean isFlipped =
-                  DriverStation.getAlliance().isPresent()
-                      && DriverStation.getAlliance().get() == Alliance.Red;
-              Optional<Rotation2d> targetGyroAngle = Optional.empty();
-              Rotation2d measuredGyroAngle = drive.getRotation();
-              double feedForwardRadialVelocity = 0.0;
+  //             // Get robot relative vel
+  //             boolean isFlipped =
+  //                 DriverStation.getAlliance().isPresent()
+  //                     && DriverStation.getAlliance().get() == Alliance.Red;
+  //             Optional<Rotation2d> targetGyroAngle = Optional.empty();
+  //             Rotation2d measuredGyroAngle = drive.getRotation();
+  //             double feedForwardRadialVelocity = 0.0;
 
-              if (aprilTagVision.getRobotPose().isPresent()) {
-                Pose2d visionPose = aprilTagVision.getRobotPose().get();
-                measuredGyroAngle = visionPose.getRotation();
-                Translation2d deadbandFieldRelativeVelocity =
-                    (drive.getFieldRelativeVelocity().getNorm()
-                            < autoAimFieldVelocityDeadband.get())
-                        ? new Translation2d(0, 0)
-                        : drive.getFieldRelativeVelocity();
-                AimingParameters calculatedAim =
-                    ShotCalculator.poseCalculation(
-                        visionPose.getTranslation(), deadbandFieldRelativeVelocity);
-                targetGyroAngle = Optional.of(calculatedAim.robotAngle());
-                feedForwardRadialVelocity = calculatedAim.radialVelocity();
-              }
-              ChassisSpeeds chassisSpeeds =
-                  ChassisSpeeds.fromFieldRelativeSpeeds(
-                      0,
-                      0,
-                      feedForwardRadialVelocity
-                          + aimController.calculate(
-                              measuredGyroAngle.getRadians(), targetGyroAngle.get().getRadians()),
-                      isFlipped
-                          ? drive.getRotation().plus(new Rotation2d(Math.PI))
-                          : drive.getRotation());
+  //             if (aprilTagVision.getRobotPose().isPresent()) {
+  //               Pose2d visionPose = aprilTagVision.getRobotPose().get();
+  //               measuredGyroAngle = visionPose.getRotation();
+  //               Translation2d deadbandFieldRelativeVelocity =
+  //                   (drive.getFieldRelativeVelocity().getNorm()
+  //                           < autoAimFieldVelocityDeadband.get())
+  //                       ? new Translation2d(0, 0)
+  //                       : drive.getFieldRelativeVelocity();
+  //               AimingParameters calculatedAim =
+  //                   ShotCalculator.poseCalculation(
+  //                       visionPose.getTranslation(), deadbandFieldRelativeVelocity);
+  //               targetGyroAngle = Optional.of(calculatedAim.robotAngle());
+  //               feedForwardRadialVelocity = calculatedAim.radialVelocity();
+  //             }
+  //             ChassisSpeeds chassisSpeeds =
+  //                 ChassisSpeeds.fromFieldRelativeSpeeds(
+  //                     0,
+  //                     0,
+  //                     feedForwardRadialVelocity
+  //                         + aimController.calculate(
+  //                             measuredGyroAngle.getRadians(),
+  // targetGyroAngle.get().getRadians()),
+  //                     isFlipped
+  //                         ? drive.getRotation().plus(new Rotation2d(Math.PI))
+  //                         : drive.getRotation());
 
-              // Convert to field relative speeds & send command
-              drive.runVelocity(chassisSpeeds);
-            },
-            drive)
-        .until(() -> aimController.atSetpoint())
-        .finallyDo(
-            () -> {
-              drive.stop();
-              aimController.reset();
-            });
-  }
+  //             // Convert to field relative speeds & send command
+  //             drive.runVelocity(chassisSpeeds);
+  //           },
+  //           drive)
+  //       .until(() -> aimController.atSetpoint())
+  //       .finallyDo(
+  //           () -> {
+  //             drive.stop();
+  //             aimController.reset();
+  //           });
+  // }
 
-  public static final Command moveTowardsTarget(
-      Drive drive, Vision vision, double blueXCoord, VisionMode targetType) {
+  // public static final Command moveTowardsTarget(
+  //     Drive drive, Vision vision, double blueXCoord, VisionMode targetType) {
 
-    @SuppressWarnings({"resource"})
-    PIDController aimController =
-        new PIDController(autoAimKP.get(), 0, autoAimKD.get(), Constants.LOOP_PERIOD_SECS);
-    aimController.enableContinuousInput(-Math.PI, Math.PI);
+  //   @SuppressWarnings({"resource"})
+  //   PIDController aimController =
+  //       new PIDController(autoAimKP.get(), 0, autoAimKD.get(), Constants.LOOP_PERIOD_SECS);
+  //   aimController.enableContinuousInput(-Math.PI, Math.PI);
 
-    DoubleSupplier targetXCoord =
-        () -> {
-          boolean isRed =
-              DriverStation.getAlliance().isPresent()
-                  && DriverStation.getAlliance().get().equals(Alliance.Red);
-          return isRed ? FieldConstants.fieldLength - blueXCoord : blueXCoord;
-        };
+  //   DoubleSupplier targetXCoord =
+  //       () -> {
+  //         boolean isRed =
+  //             DriverStation.getAlliance().isPresent()
+  //                 && DriverStation.getAlliance().get().equals(Alliance.Red);
+  //         return isRed ? FieldConstants.fieldLength - blueXCoord : blueXCoord;
+  //       };
 
-    return Commands.run(
-            () -> {
-              // Configure PID
-              aimController.setD(autoAimKD.get());
-              aimController.setP(autoAimKP.get());
+  //   return Commands.run(
+  //           () -> {
+  //             // Configure PID
+  //             aimController.setD(autoAimKD.get());
+  //             aimController.setP(autoAimKP.get());
 
-              // Convert to field relative speeds & send command
-              Optional<Rotation2d> targetGyroAngle = vision.getTargetGyroAngle();
-              double distanceT =
-                  MathUtil.clamp(
-                      Math.abs(drive.getPose().getX() - targetXCoord.getAsDouble())
-                          / autoAimXVelRange.get(),
-                      0.0,
-                      1.0);
-              double speed =
-                  MathUtil.interpolate(autoAimXVelMin.get(), autoAimXVelMax.get(), distanceT);
-              drive.runVelocity(
-                  new ChassisSpeeds(
-                      targetType.equals(VisionMode.AprilTags) ? speed : -speed,
-                      0,
-                      targetGyroAngle.isEmpty()
-                          ? 0.0
-                          : aimController.calculate(
-                              drive.getRotation().getRadians(),
-                              targetGyroAngle.get().getRadians())));
-            },
-            drive)
-        .until(
-            () -> {
-              boolean endAboveTargetXCoord;
-              boolean isRed =
-                  DriverStation.getAlliance().isPresent()
-                      && DriverStation.getAlliance().get().equals(Alliance.Red);
-              if (isRed) {
-                endAboveTargetXCoord = targetType.equals(VisionMode.AprilTags);
-              } else {
-                endAboveTargetXCoord = targetType.equals(VisionMode.Notes);
-              }
-              if (endAboveTargetXCoord) {
-                return drive.getPose().getX() > targetXCoord.getAsDouble();
-              } else {
-                return drive.getPose().getX() < targetXCoord.getAsDouble();
-              }
-            })
-        .finallyDo(() -> drive.stop());
-  }
+  //             // Convert to field relative speeds & send command
+  //             Optional<Rotation2d> targetGyroAngle = vision.getTargetGyroAngle();
+  //             double distanceT =
+  //                 MathUtil.clamp(
+  //                     Math.abs(drive.getPose().getX() - targetXCoord.getAsDouble())
+  //                         / autoAimXVelRange.get(),
+  //                     0.0,
+  //                     1.0);
+  //             double speed =
+  //                 MathUtil.interpolate(autoAimXVelMin.get(), autoAimXVelMax.get(), distanceT);
+  //             drive.runVelocity(
+  //                 new ChassisSpeeds(
+  //                     targetType.equals(VisionMode.AprilTags) ? speed : -speed,
+  //                     0,
+  //                     targetGyroAngle.isEmpty()
+  //                         ? 0.0
+  //                         : aimController.calculate(
+  //                             drive.getRotation().getRadians(),
+  //                             targetGyroAngle.get().getRadians())));
+  //           },
+  //           drive)
+  //       .until(
+  //           () -> {
+  //             boolean endAboveTargetXCoord;
+  //             boolean isRed =
+  //                 DriverStation.getAlliance().isPresent()
+  //                     && DriverStation.getAlliance().get().equals(Alliance.Red);
+  //             if (isRed) {
+  //               endAboveTargetXCoord = targetType.equals(VisionMode.AprilTags);
+  //             } else {
+  //               endAboveTargetXCoord = targetType.equals(VisionMode.Notes);
+  //             }
+  //             if (endAboveTargetXCoord) {
+  //               return drive.getPose().getX() > targetXCoord.getAsDouble();
+  //             } else {
+  //               return drive.getPose().getX() < targetXCoord.getAsDouble();
+  //             }
+  //           })
+  //       .finallyDo(() -> drive.stop());
+  // }
 
   public static final Command runSysIdQuasistatic(Drive drive, Direction direction) {
     return new SysIdRoutine(

@@ -143,8 +143,8 @@ public class Robot extends LoggedRobot {
       lowBatteryAlert.set(true);
     }
 
-    robotContainer.updateSnapbackMechanism3d();
-    robotContainer.updatePoseCalculation();
+    // robotContainer.updateSnapbackMechanism3d();
+    // robotContainer.updatePoseCalculation();
   }
 
   /** This function is called once when the robot is disabled. */
