@@ -30,18 +30,6 @@ public class CompositeCommands {
     return Commands.parallel(intake.outtake(), serializer.outtake(), kicker.outtake());
   }
 
-  public static final Command getRetractCommand(Intake intake) {
-    return intake.retractIntake();
-  }
-
-  public static final Command getIntakeCommand(Intake intake) {
-    return intake.toggleIntake();
-  }
-
-  public static final Command getCollectorActuationCommand(Intake intake) {
-    return intake.singleActuation();
-  }
-
   public static final Command getPosePrepShooterCommand(
       Drive drive, Hood hood, Shooter shooter, Accelerator accelerator, Vision aprilTagVision) {
     return Commands.either(

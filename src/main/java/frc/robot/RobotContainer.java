@@ -316,7 +316,7 @@ public class RobotContainer {
                             () -> driver.getHID().setRumble(RumbleType.kBothRumble, 1),
                             () -> driver.getHID().setRumble(RumbleType.kBothRumble, 0))
                         .withTimeout(1)))
-        .onFalse(CompositeCommands.getRetractCommand(intake));
+        .onFalse(intake.retractIntake());
     driver
         .rightBumper()
         .whileTrue(
@@ -334,7 +334,7 @@ public class RobotContainer {
                         () -> driver.getHID().setRumble(RumbleType.kBothRumble, 0)))
                 .withTimeout(1));
     driver.b().whileTrue(CompositeCommands.getShootCommand(serializer, kicker));
-    driver.a().whileTrue(CompositeCommands.getCollectorActuationCommand(intake));
+    driver.a().whileTrue(intake.singleActuation());
 
     operator.leftBumper().whileTrue(hood.increaseAngle());
     operator.leftTrigger().whileTrue(hood.decreaseAngle());
