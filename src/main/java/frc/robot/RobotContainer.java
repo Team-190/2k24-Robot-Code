@@ -206,16 +206,8 @@ public class RobotContainer {
     NamedCommands.registerCommand("Deploy", intake.deployIntake());
     NamedCommands.registerCommand(
         "Shoot",
-        (CompositeCommands.getPosePrepShooterCommand(
-                    drive, hood, shooter, accelerator, aprilTagVision)
-                .until(() -> ShotCalculator.shooterReady(drive, hood, shooter, aprilTagVision))
-                .andThen(
-                    Commands.parallel(
-                            CompositeCommands.getPosePrepShooterCommand(
-                                drive, hood, shooter, accelerator, aprilTagVision),
-                            CompositeCommands.getShootCommand(serializer, kicker)
-                                .beforeStarting(Commands.waitSeconds(0.2)))
-                        .withTimeout(0.5)))
+        (Commands.waitUntil(() -> ShotCalculator.shooterReady(drive, hood, shooter, aprilTagVision))
+                .andThen(CompositeCommands.getShootCommand(serializer, kicker).withTimeout(0.25)))
             .withTimeout(2));
     NamedCommands.registerCommand(
         "Feed", CompositeCommands.getFeedCommand(intake, serializer, kicker));
@@ -376,6 +368,9 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return Commands.waitSeconds(autoDelay.get()).andThen(autoChooser.get().asProxy());
+    return (Commands.waitSeconds(autoDelay.get()).andThen(autoChooser.get().asProxy()))
+        .alongWith(
+            CompositeCommands.getPosePrepShooterCommand(
+                drive, hood, shooter, accelerator, aprilTagVision));
   }
 }

@@ -33,17 +33,18 @@ public class CompositeCommands {
   public static final Command getPosePrepShooterCommand(
       Drive drive, Hood hood, Shooter shooter, Accelerator accelerator, Vision aprilTagVision) {
     return Commands.either(
-        shooter
-            .runPoseDistance(
-                () -> Optional.of(aprilTagVision.getRobotPose().get().getTranslation()),
-                drive::getFieldRelativeVelocity)
-            .alongWith(
-                hood.setPosePosition(
+            shooter
+                .runPoseDistance(
                     () -> Optional.of(aprilTagVision.getRobotPose().get().getTranslation()),
-                    drive::getFieldRelativeVelocity))
-            .alongWith(accelerator.runAccelerator()),
-        Commands.none(),
-        () -> aprilTagVision.getRobotPose().isPresent());
+                    drive::getFieldRelativeVelocity)
+                .alongWith(
+                    hood.setPosePosition(
+                        () -> Optional.of(aprilTagVision.getRobotPose().get().getTranslation()),
+                        drive::getFieldRelativeVelocity))
+                .alongWith(accelerator.runAccelerator()),
+            shooter.runVelocity(),
+            () -> aprilTagVision.getRobotPose().isPresent())
+        .repeatedly();
   }
 
   public static final Command getAnglePrepShooterCommand(
@@ -51,7 +52,8 @@ public class CompositeCommands {
     return shooter
         .runAngleDistance()
         .alongWith(hood.setAnglePosition())
-        .alongWith(accelerator.runAccelerator());
+        .alongWith(accelerator.runAccelerator())
+        .repeatedly();
   }
 
   public static final Command getShootCommand(Serializer serializer, Kicker kicker) {
