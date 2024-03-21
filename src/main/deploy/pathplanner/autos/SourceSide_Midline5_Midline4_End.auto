@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.6279860178767976,
-      "y": 4.5091137801323224
+      "x": 0.6105853807149207,
+      "y": 4.513943614781817
     },
     "rotation": 120.86680945113707
   },
@@ -50,7 +50,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Track Speaker Far"
+            "name": "Aim"
           }
         },
         {
@@ -72,12 +72,6 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "Midline 4 to Speaker Far"
@@ -86,7 +80,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Track Speaker Far"
+            "name": "Aim"
           }
         },
         {

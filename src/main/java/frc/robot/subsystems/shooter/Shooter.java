@@ -72,7 +72,7 @@ public class Shooter extends SubsystemBase {
         KD.initDefault(0.0);
         RATIO.initDefault(0.5);
         DEFAULT_SPEED.initDefault(600);
-        AMP_SPEED.initDefault(0.0);
+        AMP_SPEED.initDefault(800);
         leftFeedforward = new SimpleMotorFeedforward(0.38326, 0.007755);
         rightFeedforward = new SimpleMotorFeedforward(0.18553, 0.0074688);
         break;
