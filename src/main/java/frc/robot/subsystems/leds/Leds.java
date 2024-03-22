@@ -91,7 +91,6 @@ public class Leds extends VirtualSubsystem {
               }
             });
     loadingNotifier.startPeriodic(0.02);
-
   }
 
   public synchronized void periodic() {
@@ -255,14 +254,15 @@ public class Leds extends VirtualSubsystem {
   private void stripes(List<Color> colors, int length, double duration) {
     int offset = (int) (Timer.getFPGATimestamp() % duration / duration * length * colors.size());
     for (int i = 0; i < length; i++) {
-      int colorIndex = (int) (Math.floor((double) (i - offset) / length) + colors.size()) % colors.size();
+      int colorIndex =
+          (int) (Math.floor((double) (i - offset) / length) + colors.size()) % colors.size();
       colorIndex = colors.size() - 1 - colorIndex;
       buffer.setLED(i, colors.get(colorIndex));
     }
   }
-  
-  private void bling118() {
 
+  private void bling118() {
+    stripes(List.of(Color.kWhiteSmoke, Color.kBlack), length, 0.5);
   }
 
   public void setNoteSupplier(BooleanSupplier noteSupplier) {

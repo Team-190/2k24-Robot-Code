@@ -49,12 +49,14 @@ public class Kicker extends SubsystemBase {
   }
 
   public Command runKicker() {
-    return runEnd(() -> {
-      io.setVoltage(intakeVoltage.get());
-      isShooting = true;
-    }, () -> {
-      stop();
-      isShooting = false;
-    });
+    return runEnd(
+        () -> {
+          io.setVoltage(intakeVoltage.get());
+          isShooting = true;
+        },
+        () -> {
+          stop();
+          isShooting = false;
+        });
   }
 }
