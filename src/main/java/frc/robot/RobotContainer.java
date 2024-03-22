@@ -204,6 +204,8 @@ public class RobotContainer {
     aprilTagVision.setDrivePoseSupplier(drive::getPose);
     noteVision.setDrivePoseSupplier(drive::getPose);
     leds.setNoteSupplier(serializer::hasNote);
+    leds.setPrepSupplier(shooter::isShooting);
+    leds.setShootSupplier(kicker::isShooting);
 
     // Pathplanner commands
     NamedCommands.registerCommand("Deploy", intake.deployIntake());

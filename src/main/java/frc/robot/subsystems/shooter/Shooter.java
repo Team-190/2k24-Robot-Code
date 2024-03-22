@@ -65,6 +65,8 @@ public class Shooter extends SubsystemBase {
   private double flywheelOffset = 0;
   private double spinOffset = 0;
 
+  private boolean isShooting = false;
+
   static {
     switch (Constants.ROBOT) {
       case SNAPBACK:
@@ -169,6 +171,10 @@ public class Shooter extends SubsystemBase {
 
   public double getSpinOffset() {
     return spinOffset;
+  }
+
+  public boolean isShooting() {
+    return isShooting;
   }
 
   public Command runVelocity() {

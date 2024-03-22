@@ -34,6 +34,8 @@ public class Leds extends VirtualSubsystem {
   // Robot state tracking
   public int loopCycleCount = 0;
   public boolean hasNote = false;
+  public boolean isPreparing = false;
+  public boolean isShooting = false;
   public boolean autoFinished = false;
   public double autoFinishedTime = 0.0;
   public boolean lowBatteryAlert = false;
@@ -58,8 +60,8 @@ public class Leds extends VirtualSubsystem {
   private static final double strobeFastDuration = 0.1;
   // private static final double strobeSlowDuration = 0.2;
   private static final double breathDuration = 1.0;
-  // private static final double rainbowCycleLength = 25.0;
-  // private static final double rainbowDuration = 0.25;
+  private static final double rainbowCycleLength = 25.0;
+  private static final double rainbowDuration = 0.25;
   private static final double waveExponent = 0.4;
   private static final double waveFastCycleLength = 25.0;
   private static final double waveFastDuration = 0.25;
@@ -71,6 +73,8 @@ public class Leds extends VirtualSubsystem {
   private static final double autoFadeMaxTime = 5.0; // Return to normal
 
   private BooleanSupplier noteSupplier;
+  private BooleanSupplier prepSupplier;
+  private BooleanSupplier shootSupplier;
 
   private Leds() {
     leds = new AddressableLED(0);
@@ -92,6 +96,8 @@ public class Leds extends VirtualSubsystem {
 
   public synchronized void periodic() {
     hasNote = noteSupplier.getAsBoolean();
+    isPreparing = prepSupplier.getAsBoolean();
+    isShooting = shootSupplier.getAsBoolean();
     lowBatteryAlert = RobotController.getBatteryVoltage() <= 11.8;
     // Update alliance color
     if (DriverStation.isFMSAttached()) {
@@ -135,7 +141,7 @@ public class Leds extends VirtualSubsystem {
         solid(1.0 - ((Timer.getFPGATimestamp() - lastEnabledTime) / autoFadeTime), Color.kGreen);
       } else if (lowBatteryAlert) {
         // Low battery
-        strobe(Color.kOrangeRed, Color.kBlack, strobeFastDuration);
+        strobe(Color.kOrangeRed, strobeFastDuration);
       } else if (prideLeds) {
         // Pride stripes
         stripes(
@@ -162,13 +168,17 @@ public class Leds extends VirtualSubsystem {
       }
 
     } else if (DriverStation.isAutonomous()) {
-      wave(Color.kGold, Color.kDarkBlue, waveFastCycleLength, waveFastDuration);
+      rainbow(rainbowCycleLength, rainbowDuration);
       if (autoFinished) {
         double fullTime = (double) length / waveFastCycleLength * waveFastDuration;
         solid((Timer.getFPGATimestamp() - autoFinishedTime) / fullTime, Color.kGreen);
       }
     } else { // Enabled
-      if (hasNote) {
+      if (isShooting) {
+        bling118();
+      } else if (isPreparing) {
+        strobe(Color.kOrange, strobeFastDuration);
+      } else if (hasNote) {
         solid(Color.kGreen);
       }
     }
@@ -196,9 +206,9 @@ public class Leds extends VirtualSubsystem {
     solid(c1On ? c1 : c2);
   }
 
-  // private void strobe(Color color, double duration) {
-  //   strobe(color, Color.kBlack, duration);
-  // }
+  private void strobe(Color color, double duration) {
+    strobe(color, Color.kBlack, duration);
+  }
 
   // private void breath(Color c1, Color c2) {
   //   breath(c1, c2, Timer.getFPGATimestamp());
@@ -213,15 +223,15 @@ public class Leds extends VirtualSubsystem {
     solid(new Color(red, green, blue));
   }
 
-  // private void rainbow(double cycleLength, double duration) {
-  //   double x = (1 - ((Timer.getFPGATimestamp() / duration) % 1.0)) * 180.0;
-  //   double xDiffPerLed = 180.0 / cycleLength;
-  //   for (int i = 0; i < length; i++) {
-  //     x += xDiffPerLed;
-  //     x %= 180.0;
-  //     buffer.setHSV(i, (int) x, 255, 255);
-  //   }
-  // }
+  private void rainbow(double cycleLength, double duration) {
+    double x = (1 - ((Timer.getFPGATimestamp() / duration) % 1.0)) * 180.0;
+    double xDiffPerLed = 180.0 / cycleLength;
+    for (int i = 0; i < length; i++) {
+      x += xDiffPerLed;
+      x %= 180.0;
+      buffer.setHSV(i, (int) x, 255, 255);
+    }
+  }
 
   private void wave(Color c1, Color c2, double cycleLength, double duration) {
     double x = (1 - ((Timer.getFPGATimestamp() % duration) / duration)) * 2.0 * Math.PI;
@@ -245,14 +255,25 @@ public class Leds extends VirtualSubsystem {
   private void stripes(List<Color> colors, int length, double duration) {
     int offset = (int) (Timer.getFPGATimestamp() % duration / duration * length * colors.size());
     for (int i = 0; i < length; i++) {
-      int colorIndex =
-          (int) (Math.floor((double) (i - offset) / length) + colors.size()) % colors.size();
+      int colorIndex = (int) (Math.floor((double) (i - offset) / length) + colors.size()) % colors.size();
       colorIndex = colors.size() - 1 - colorIndex;
       buffer.setLED(i, colors.get(colorIndex));
     }
   }
+  
+  private void bling118() {
+
+  }
 
   public void setNoteSupplier(BooleanSupplier noteSupplier) {
     this.noteSupplier = noteSupplier;
+  }
+
+  public void setPrepSupplier(BooleanSupplier prepSupplier) {
+    this.prepSupplier = prepSupplier;
+  }
+
+  public void setShootSupplier(BooleanSupplier shootSupplier) {
+    this.shootSupplier = shootSupplier;
   }
 }
