@@ -19,4 +19,8 @@ public interface VisionIO {
   public default boolean getTv() {
     return false;
   }
+
+  public default void enableLEDs() {}
+
+  public default void disableLEDs() {}
 }

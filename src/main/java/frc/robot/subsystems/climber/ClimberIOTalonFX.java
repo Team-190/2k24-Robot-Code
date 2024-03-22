@@ -16,7 +16,7 @@ import frc.robot.util.Alert.AlertType;
 public class ClimberIOTalonFX implements ClimberIO {
   private final TalonFX leftTalon;
   private final TalonFX rightTalon;
-  private final Solenoid lock;
+  private final Solenoid climberSolenoid;
 
   private final StatusSignal<Double> leftPosition;
   private final StatusSignal<Double> leftVelocity;
@@ -44,12 +44,12 @@ public class ClimberIOTalonFX implements ClimberIO {
       case SNAPBACK:
         leftTalon = new TalonFX(4);
         rightTalon = new TalonFX(5);
-        lock = new Solenoid(PneumaticsModuleType.CTREPCM, 6);
+        climberSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 6);
         break;
       case ROBOT_2K24_TEST:
         leftTalon = new TalonFX(4);
         rightTalon = new TalonFX(5);
-        lock = new Solenoid(PneumaticsModuleType.CTREPCM, 6);
+        climberSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 6);
         break;
       default:
         throw new RuntimeException("Invalid robot");
@@ -147,6 +147,6 @@ public class ClimberIOTalonFX implements ClimberIO {
 
   @Override
   public void setLock(boolean isLocked) {
-    lock.set(!isLocked);
+    climberSolenoid.set(!isLocked);
   }
 }

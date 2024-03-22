@@ -108,7 +108,7 @@ public class DriveCommands {
 
           if (aprilTagTracking.getAsBoolean()) {
             linearMagnitude =
-                Math.min(linearMagnitude, 0.75); // change this to smaller for shoot on the move.
+                Math.min(linearMagnitude, 0.33); // change this to smaller for shoot on the move.
           }
 
           // Calcaulate new linear velocity

@@ -5,6 +5,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.VirtualSubsystem;
 import java.util.Optional;
@@ -26,6 +28,8 @@ public class Vision extends VirtualSubsystem {
   private final TimeInterpolatableBuffer<Pose2d> robotPoseBuffer =
       TimeInterpolatableBuffer.createBuffer(BUFFER_SECONDS);
   private Supplier<Pose2d> drivePoseSupplier = null;
+
+  private static final double BLINK_TIME = 0.067;
 
   public Vision(String name, VisionIO io) {
     this.name = name;
@@ -98,5 +102,25 @@ public class Vision extends VirtualSubsystem {
       return Optional.of(currentPoseFromCam);
     }
     return Optional.empty();
+  }
+
+  public Command blinkLEDs() {
+    return Commands.sequence(
+        Commands.runOnce(() -> io.enableLEDs()),
+        Commands.waitSeconds(BLINK_TIME),
+        Commands.runOnce(() -> io.disableLEDs()),
+        Commands.waitSeconds(BLINK_TIME),
+        Commands.runOnce(() -> io.enableLEDs()),
+        Commands.waitSeconds(BLINK_TIME),
+        Commands.runOnce(() -> io.disableLEDs()),
+        Commands.waitSeconds(BLINK_TIME),
+        Commands.runOnce(() -> io.enableLEDs()),
+        Commands.waitSeconds(BLINK_TIME),
+        Commands.runOnce(() -> io.disableLEDs()),
+        Commands.waitSeconds(BLINK_TIME));
+  }
+
+  public void disableLEDs() {
+    io.disableLEDs();
   }
 }

@@ -31,7 +31,6 @@ import frc.robot.subsystems.accelerator.AcceleratorIOSim;
 import frc.robot.subsystems.accelerator.AcceleratorIOTalonFX;
 import frc.robot.subsystems.amp.Amp;
 import frc.robot.subsystems.amp.AmpIO;
-import frc.robot.subsystems.amp.AmpIOSim;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
 import frc.robot.subsystems.climber.ClimberIOSim;
@@ -148,7 +147,6 @@ public class RobotContainer {
           serializer = new Serializer(new SerializerIOSim());
           kicker = new Kicker(new KickerIOSim());
           accelerator = new Accelerator(new AcceleratorIOSim());
-          amp = new Amp(new AmpIOSim());
           climber = new Climber(new ClimberIOSim());
           aprilTagVision =
               new Vision("AprilTagVision", new VisionIOSim(VisionMode.AprilTags, drive::getPose));
@@ -213,10 +211,12 @@ public class RobotContainer {
         "Feed", CompositeCommands.getFeedCommand(intake, serializer, kicker));
     NamedCommands.registerCommand(
         "Track Note Center",
-        CompositeCommands.getTrackNoteCenterCommand(drive, intake, serializer, noteVision));
+        CompositeCommands.getTrackNoteCenterCommand(
+            drive, intake, serializer, noteVision, aprilTagVision));
     NamedCommands.registerCommand(
         "Track Note Spike",
-        CompositeCommands.getTrackNoteSpikeCommand(drive, intake, serializer, noteVision));
+        CompositeCommands.getTrackNoteSpikeCommand(
+            drive, intake, serializer, noteVision, aprilTagVision));
     NamedCommands.registerCommand(
         "Track Speaker Far",
         CompositeCommands.getTrackSpeakerFarCommand(drive, hood, shooter, aprilTagVision));
@@ -247,7 +247,7 @@ public class RobotContainer {
       autoChooser.addOption("Shooter SysId", shooter.runSysId());
 
       autoChooser.addOption("Hood Test", hood.setAmp());
-      autoChooser.addOption("Amp Test", amp.setAmp());
+      autoChooser.addOption("Amp Test", amp.deployAmp());
       autoChooser.addOption("Intake Test", intake.deployIntake());
     }
 
@@ -302,12 +302,7 @@ public class RobotContainer {
     driver
         .leftBumper()
         .whileTrue(
-            CompositeCommands.getCollectCommand(intake, serializer)
-                .andThen(
-                    Commands.startEnd(
-                            () -> driver.getHID().setRumble(RumbleType.kBothRumble, 1),
-                            () -> driver.getHID().setRumble(RumbleType.kBothRumble, 0))
-                        .withTimeout(1)))
+            CompositeCommands.getCollectCommand(intake, serializer, noteVision, aprilTagVision))
         .onFalse(intake.retractIntake());
     driver
         .rightBumper()
@@ -349,7 +344,6 @@ public class RobotContainer {
         SnapbackMechanism3d.getPoses(
             intake.isDeployed(),
             hood.getPosition(),
-            amp.getPosition(),
             climber.getLeftPositionMeters(),
             climber.getRightPositionMeters()));
   }

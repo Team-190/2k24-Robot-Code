@@ -52,7 +52,7 @@ public class Hood extends SubsystemBase {
         MAX_VELOCITY.initDefault(50.0);
         MAX_ACCELERATION.initDefault(40.0);
         STOWED_POSITION.initDefault(0.0);
-        AMP_POSITION.initDefault(0.5);
+        AMP_POSITION.initDefault(0.3);
         MIN_POSITION.initDefault(0.0);
         MAX_POSITION.initDefault(0.75);
         break;

@@ -18,11 +18,18 @@ import frc.robot.subsystems.vision.VisionMode;
 import java.util.Optional;
 
 public class CompositeCommands {
-  public static final Command getCollectCommand(Intake intake, Serializer serializer) {
+  public static final Command getCollectCommand(
+      Intake intake, Serializer serializer, Vision noteVision, Vision aprilTagVision) {
     return Commands.sequence(
-        intake.deployIntake(),
-        Commands.race(intake.runVoltage(), serializer.intake()),
-        intake.retractIntake());
+            intake.deployIntake(),
+            Commands.race(intake.runVoltage(), serializer.intake()),
+            Commands.parallel(
+                intake.retractIntake(), noteVision.blinkLEDs(), aprilTagVision.blinkLEDs()))
+        .finallyDo(
+            () -> {
+              noteVision.disableLEDs();
+              aprilTagVision.disableLEDs();
+            });
   }
 
   public static final Command getOuttakeCommand(
@@ -32,19 +39,21 @@ public class CompositeCommands {
 
   public static final Command getPosePrepShooterCommand(
       Drive drive, Hood hood, Shooter shooter, Accelerator accelerator, Vision aprilTagVision) {
-    return Commands.either(
-            shooter
-                .runPoseDistance(
-                    () -> Optional.of(aprilTagVision.getRobotPose().get().getTranslation()),
-                    drive::getFieldRelativeVelocity)
-                .alongWith(
-                    hood.setPosePosition(
-                        () -> Optional.of(aprilTagVision.getRobotPose().get().getTranslation()),
-                        drive::getFieldRelativeVelocity))
-                .alongWith(accelerator.runAccelerator()),
-            shooter.runVelocity(),
-            () -> aprilTagVision.getRobotPose().isPresent())
-        .repeatedly();
+    return shooter
+        .runPoseDistance(
+            () ->
+                aprilTagVision.getRobotPose().isPresent()
+                    ? Optional.of(aprilTagVision.getRobotPose().get().getTranslation())
+                    : Optional.empty(),
+            drive::getFieldRelativeVelocity)
+        .alongWith(
+            hood.setPosePosition(
+                () ->
+                    aprilTagVision.getRobotPose().isPresent()
+                        ? Optional.of(aprilTagVision.getRobotPose().get().getTranslation())
+                        : Optional.empty(),
+                drive::getFieldRelativeVelocity))
+        .alongWith(accelerator.runAccelerator());
   }
 
   public static final Command getAnglePrepShooterCommand(
@@ -52,8 +61,7 @@ public class CompositeCommands {
     return shooter
         .runAngleDistance()
         .alongWith(hood.setAnglePosition())
-        .alongWith(accelerator.runAccelerator())
-        .repeatedly();
+        .alongWith(accelerator.runAccelerator());
   }
 
   public static final Command getShootCommand(Serializer serializer, Kicker kicker) {
@@ -71,22 +79,24 @@ public class CompositeCommands {
     return shooter
         .runAmp()
         .alongWith(hood.setAmp())
-        .alongWith(amp.setAmp())
+        .alongWith(amp.deployAmp())
         .alongWith(accelerator.runAccelerator());
   }
 
   public static final Command getTrackNoteCenterCommand(
-      Drive drive, Intake intake, Serializer serializer, Vision noteVision) {
+      Drive drive, Intake intake, Serializer serializer, Vision noteVision, Vision aprilTagVision) {
     return (DriveCommands.moveTowardsTarget(
             drive, noteVision, (FieldConstants.fieldLength / 2.0) + 0.1, VisionMode.Notes)
-        .alongWith(getCollectCommand(intake, serializer).withTimeout(2)));
+        .alongWith(
+            getCollectCommand(intake, serializer, noteVision, aprilTagVision).withTimeout(2)));
   }
 
   public static final Command getTrackNoteSpikeCommand(
-      Drive drive, Intake intake, Serializer serializer, Vision noteVision) {
+      Drive drive, Intake intake, Serializer serializer, Vision noteVision, Vision aprilTagVision) {
     return (DriveCommands.moveTowardsTarget(
             drive, noteVision, FieldConstants.startingLineX + 1, VisionMode.Notes)
-        .alongWith(getCollectCommand(intake, serializer).withTimeout(2)));
+        .alongWith(
+            getCollectCommand(intake, serializer, noteVision, aprilTagVision).withTimeout(2)));
   }
 
   public static final Command getTrackSpeakerFarCommand(

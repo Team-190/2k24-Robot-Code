@@ -30,6 +30,7 @@ public class ShotCalculator {
     shooterSpeedMap.put(2.16, 800.0);
     shooterSpeedMap.put(2.45, 800.0);
     shooterSpeedMap.put(2.69, 800.0);
+    shooterAngleMap.put(2.84, 800.0);
     shooterSpeedMap.put(2.98, 800.0);
     shooterSpeedMap.put(3.19, 800.0);
     shooterSpeedMap.put(3.52, 800.0);
@@ -40,6 +41,7 @@ public class ShotCalculator {
     shooterAngleMap.put(2.16, 0.05);
     shooterAngleMap.put(2.45, 0.05);
     shooterAngleMap.put(2.69, 0.35);
+    shooterAngleMap.put(2.84, 0.41);
     shooterAngleMap.put(2.98, 0.415);
     shooterAngleMap.put(3.19, 0.42); // 0.3
     shooterAngleMap.put(3.52, 0.43); // 0.36

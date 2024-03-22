@@ -6,17 +6,19 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.DoubleSubscriber;
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.FieldConstants;
 
 public class VisionIOLimelight implements VisionIO {
+  private final NetworkTable table;
   private final DoubleSubscriber tx;
   private final DoubleSubscriber ty;
   private final DoubleSubscriber tv;
   private final DoubleArraySubscriber botpose;
 
   public VisionIOLimelight(VisionMode mode) {
-    var table = NetworkTableInstance.getDefault().getTable(mode.name);
+    table = NetworkTableInstance.getDefault().getTable(mode.name);
     tx = table.getDoubleTopic("tx").subscribe(0.0);
     ty = table.getDoubleTopic("ty").subscribe(0.0);
     tv = table.getDoubleTopic("tv").subscribe(0.0);
@@ -50,5 +52,15 @@ public class VisionIOLimelight implements VisionIO {
   @Override
   public boolean getTv() {
     return tv.get() != 0;
+  }
+
+  @Override
+  public void enableLEDs() {
+    table.getEntry("ledMode").setNumber(3);
+  }
+
+  @Override
+  public void disableLEDs() {
+    table.getEntry("ledMode").setNumber(1);
   }
 }

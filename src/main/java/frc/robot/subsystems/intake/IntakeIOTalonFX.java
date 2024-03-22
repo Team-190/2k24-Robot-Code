@@ -15,8 +15,7 @@ import frc.robot.util.Alert.AlertType;
 
 public class IntakeIOTalonFX implements IntakeIO {
   private final TalonFX rollersTalon;
-  private final Solenoid leftSolenoid;
-  private final Solenoid rightSolenoid;
+  private final Solenoid intakeSolenoid;
 
   private final StatusSignal<Double> rollersPosition;
   private final StatusSignal<Double> rollersVelocity;
@@ -33,13 +32,11 @@ public class IntakeIOTalonFX implements IntakeIO {
     switch (Constants.ROBOT) {
       case SNAPBACK:
         rollersTalon = new TalonFX(17);
-        leftSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 5);
-        rightSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 7);
+        intakeSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 5);
         break;
       case ROBOT_2K24_TEST:
         rollersTalon = new TalonFX(17);
-        leftSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 5);
-        rightSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 7);
+        intakeSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 5);
         break;
       default:
         throw new RuntimeException("Invalid robot");
@@ -87,8 +84,7 @@ public class IntakeIOTalonFX implements IntakeIO {
     inputs.rollersCurrentAmps = new double[] {rollersCurrent.getValueAsDouble()};
     inputs.rollersTempCelcius = new double[] {rollersTemperature.getValueAsDouble()};
 
-    inputs.leftPosition = leftSolenoid.get();
-    inputs.rightPosition = rightSolenoid.get();
+    inputs.leftPosition = intakeSolenoid.get();
   }
 
   @Override
@@ -98,13 +94,11 @@ public class IntakeIOTalonFX implements IntakeIO {
 
   @Override
   public void setIntakePosition(boolean position) {
-    leftSolenoid.set(position);
-    rightSolenoid.set(position);
+    intakeSolenoid.set(position);
   }
 
   @Override
   public void toggleIntakePosition() {
-    leftSolenoid.toggle();
-    rightSolenoid.toggle();
+    intakeSolenoid.toggle();
   }
 }
