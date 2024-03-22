@@ -31,6 +31,7 @@ import frc.robot.subsystems.accelerator.AcceleratorIOSim;
 import frc.robot.subsystems.accelerator.AcceleratorIOTalonFX;
 import frc.robot.subsystems.amp.Amp;
 import frc.robot.subsystems.amp.AmpIO;
+import frc.robot.subsystems.amp.AmpIOTalonFX;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
 import frc.robot.subsystems.climber.ClimberIOSim;
@@ -53,6 +54,7 @@ import frc.robot.subsystems.kicker.Kicker;
 import frc.robot.subsystems.kicker.KickerIO;
 import frc.robot.subsystems.kicker.KickerIOSim;
 import frc.robot.subsystems.kicker.KickerIOTalonFX;
+import frc.robot.subsystems.leds.Leds;
 import frc.robot.subsystems.serializer.Serializer;
 import frc.robot.subsystems.serializer.SerializerIO;
 import frc.robot.subsystems.serializer.SerializerIOSim;
@@ -85,6 +87,7 @@ public class RobotContainer {
   private Climber climber;
   private Vision aprilTagVision;
   private Vision noteVision;
+  private Leds leds;
 
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
@@ -115,11 +118,12 @@ public class RobotContainer {
           serializer = new Serializer(new SerializerIOTalonFX());
           kicker = new Kicker(new KickerIOTalonFX());
           accelerator = new Accelerator(new AcceleratorIOTalonFX());
-          // amp = new Amp(new AmpIOTalonFX());
+          amp = new Amp(new AmpIOTalonFX());
           climber = new Climber(new ClimberIOTalonFX());
           aprilTagVision =
               new Vision("AprilTagVision", new VisionIOLimelight(VisionMode.AprilTags));
           noteVision = new Vision("NoteVision", new VisionIOLimelight(VisionMode.Notes));
+          leds = Leds.getInstance();
           break;
         case ROBOT_2K24_TEST:
           // Test robot, instantiate hardware IO implementations
@@ -199,6 +203,7 @@ public class RobotContainer {
     // Set up suppliers
     aprilTagVision.setDrivePoseSupplier(drive::getPose);
     noteVision.setDrivePoseSupplier(drive::getPose);
+    leds.setNoteSupplier(serializer::hasNote);
 
     // Pathplanner commands
     NamedCommands.registerCommand("Deploy", intake.deployIntake());
@@ -297,7 +302,8 @@ public class RobotContainer {
     driver.y().onTrue(DriveCommands.resetHeading(drive));
     driver
         .rightTrigger()
-        .whileTrue(CompositeCommands.getAmpCommand(shooter, hood, amp, accelerator));
+        .whileTrue(CompositeCommands.getAmpCommand(shooter, hood, amp, accelerator))
+        .onFalse(amp.retractAmp());
     driver.leftTrigger().whileTrue(CompositeCommands.getOuttakeCommand(intake, serializer, kicker));
     driver
         .leftBumper()

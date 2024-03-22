@@ -33,6 +33,10 @@ public class Serializer extends SubsystemBase {
     io.setVoltage(0.0);
   }
 
+  public boolean hasNote() {
+    return sensor.get();
+  }
+
   public Command shoot() {
     return runEnd(
         () -> {

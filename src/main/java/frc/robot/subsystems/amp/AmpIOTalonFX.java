@@ -10,10 +10,10 @@ public class AmpIOTalonFX implements AmpIO {
   public AmpIOTalonFX() {
     switch (Constants.ROBOT) {
       case SNAPBACK:
-        ampSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 7);
+        ampSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 5);
         break;
       case ROBOT_2K24_TEST:
-        ampSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 7);
+        ampSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 5);
         break;
       default:
         throw new RuntimeException("Invalid robot");
