@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.6009765281297698,
-      "y": 6.583676387831718
+      "x": 0.5170321451754012,
+      "y": 6.665668032190766
     },
     "rotation": -121.37300514010846
   },
@@ -12,9 +12,33 @@
     "data": {
       "commands": [
         {
+          "type": "path",
+          "data": {
+            "pathName": "Amp Side to Amp Side Note"
+          }
+        },
+        {
           "type": "named",
           "data": {
-            "name": "Delay"
+            "name": "Aim"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Track Note Spike"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Aim"
           }
         },
         {
@@ -26,7 +50,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Amp Side to Midline1 Note"
+            "pathName": "Amp Side to Midline 1"
           }
         },
         {
@@ -38,13 +62,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Midline1 Note to Speaker Far"
+            "pathName": "Midline 1 to Speaker Far"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Track Speaker Far"
+            "name": "Aim"
           }
         },
         {
@@ -74,61 +98,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Track Speaker Far"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Speaker Far to Midline3 Note"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Track Note Center"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Mideline3 Note to Speaker Far"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Track Speaker Far"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Speaker Far to Amp Side Note"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Track Note Spike"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Track Speaker Close"
+            "name": "Aim"
           }
         },
         {
@@ -140,6 +110,6 @@
       ]
     }
   },
-  "folder": "Five",
+  "folder": "Four",
   "choreoAuto": false
 }

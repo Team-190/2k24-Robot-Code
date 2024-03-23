@@ -6,8 +6,8 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.Constants;
 
 public class ShooterIOSim implements ShooterIO {
-  private DCMotorSim leftMotorSim = new DCMotorSim(DCMotor.getKrakenX60(2), 2.0, 0.004);
-  private DCMotorSim rightMotorSim = new DCMotorSim(DCMotor.getKrakenX60(2), 2.0, 0.004);
+  private DCMotorSim leftMotorSim = new DCMotorSim(DCMotor.getKrakenX60(1), 2.0, 0.004);
+  private DCMotorSim rightMotorSim = new DCMotorSim(DCMotor.getKrakenX60(1), 2.0, 0.004);
 
   private double leftAppliedVolts = 0.0;
   private double rightAppliedVolts = 0.0;
@@ -15,6 +15,7 @@ public class ShooterIOSim implements ShooterIO {
   @Override
   public void updateInputs(ShooterIOInputs inputs) {
     leftMotorSim.update(Constants.LOOP_PERIOD_SECS);
+    rightMotorSim.update(Constants.LOOP_PERIOD_SECS);
 
     inputs.leftPositionRad = leftMotorSim.getAngularPositionRad();
     inputs.leftVelocityRadPerSec = leftMotorSim.getAngularVelocityRadPerSec();
@@ -32,9 +33,14 @@ public class ShooterIOSim implements ShooterIO {
   @Override
   public void setLeftVoltage(double volts) {
     leftAppliedVolts = MathUtil.clamp(volts, -12.0, 12.0);
-    rightAppliedVolts = MathUtil.clamp(volts, -12.0, 12.0);
 
     leftMotorSim.setInputVoltage(leftAppliedVolts);
+  }
+
+  @Override
+  public void setRightVoltage(double volts) {
+    rightAppliedVolts = MathUtil.clamp(volts, -12.0, 12.0);
+
     rightMotorSim.setInputVoltage(rightAppliedVolts);
   }
 }

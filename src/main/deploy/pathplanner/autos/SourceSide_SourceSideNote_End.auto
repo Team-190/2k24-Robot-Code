@@ -12,9 +12,9 @@
     "data": {
       "commands": [
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "Delay"
+            "pathName": "Source Side to Source Side Note"
           }
         },
         {
@@ -24,21 +24,9 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "Source Side to Source Side Note"
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "Track Note Spike"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Track Speaker Close"
           }
         },
         {

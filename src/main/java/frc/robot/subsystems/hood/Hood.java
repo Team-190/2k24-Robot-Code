@@ -52,7 +52,7 @@ public class Hood extends SubsystemBase {
         MAX_VELOCITY.initDefault(50.0);
         MAX_ACCELERATION.initDefault(40.0);
         STOWED_POSITION.initDefault(0.0);
-        AMP_POSITION.initDefault(0.4);
+        AMP_POSITION.initDefault(0.3);
         MIN_POSITION.initDefault(0.0);
         MAX_POSITION.initDefault(0.75);
         break;
@@ -74,7 +74,7 @@ public class Hood extends SubsystemBase {
         STOWED_POSITION.initDefault(Units.degreesToRadians(38.0));
         AMP_POSITION.initDefault(Units.degreesToRadians(15.0));
         MIN_POSITION.initDefault(0.0);
-        MAX_POSITION.initDefault(0.0);
+        MAX_POSITION.initDefault(0.75);
         break;
       default:
         break;
@@ -127,6 +127,10 @@ public class Hood extends SubsystemBase {
 
   public Rotation2d getPosition() {
     return inputs.position;
+  }
+
+  public double getOffset() {
+    return (double) Math.round(Units.radiansToDegrees(angleOffset) * 100) / 100;
   }
 
   public Command setAmp() {

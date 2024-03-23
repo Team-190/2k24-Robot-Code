@@ -2,13 +2,14 @@ package frc.robot.subsystems.climber;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
+import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
 public class Climber extends SubsystemBase {
@@ -22,11 +23,8 @@ public class Climber extends SubsystemBase {
   private static final LoggedTunableNumber STOWED_POSITION =
       new LoggedTunableNumber("Climber/Stowed Position");
 
-  private static final LoggedTunableNumber HIGH_POSITION =
-      new LoggedTunableNumber("Climber/High Position");
-
-  private static final LoggedTunableNumber LOW_POSITION =
-      new LoggedTunableNumber("Climber/Low Position");
+  private static final LoggedTunableNumber CLIMB_POSITION =
+      new LoggedTunableNumber("Climber/Climb Position");
 
   private final ClimberIO io;
   private final ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
@@ -34,11 +32,8 @@ public class Climber extends SubsystemBase {
   private final ProfiledPIDController leftProfiledFeedback;
   private final ProfiledPIDController rightProfiledFeedback;
 
-  private double climberOffset = 0;
-
   static {
-    LOW_POSITION.initDefault(5);
-    HIGH_POSITION.initDefault(9);
+    CLIMB_POSITION.initDefault(11);
     switch (Constants.ROBOT) {
       case SNAPBACK:
         KP.initDefault(5);
@@ -75,8 +70,8 @@ public class Climber extends SubsystemBase {
         new ProfiledPIDController(
             KP.get(), 0.0, KD.get(), new Constraints(MAX_VELOCITY.get(), MAX_ACCELERATION.get()));
 
-    leftProfiledFeedback.setTolerance(9);
-    rightProfiledFeedback.setTolerance(9);
+    leftProfiledFeedback.setTolerance(1);
+    rightProfiledFeedback.setTolerance(1);
   }
 
   public void periodic() {
@@ -98,13 +93,6 @@ public class Climber extends SubsystemBase {
           new Constraints(MAX_VELOCITY.get(), MAX_ACCELERATION.get()));
     }
 
-    if (DriverStation.isEnabled()) {
-      if (inputs.lockedPosition) {
-        io.setLeftVoltage((leftProfiledFeedback.calculate(inputs.leftPositionMeters)));
-        io.setRightVoltage((rightProfiledFeedback.calculate(inputs.rightPositionMeters)));
-      }
-    }
-
     if (DriverStation.isDisabled()) {
       io.setLock(true);
       leftProfiledFeedback.reset(inputs.leftPositionMeters, 0.0);
@@ -117,12 +105,21 @@ public class Climber extends SubsystemBase {
     Logger.recordOutput("Climber/Right/Setpoint", rightProfiledFeedback.getSetpoint().position);
   }
 
-  private void setLeftPosition(double leftPositionMeters) {
-    leftProfiledFeedback.setGoal(leftPositionMeters + climberOffset);
+  private Command setLeftPosition(double leftPositionMeters) {
+    return Commands.run(
+            () ->
+                io.setLeftVoltage(
+                    leftProfiledFeedback.calculate(inputs.leftPositionMeters, leftPositionMeters)))
+        .until(() -> leftProfiledFeedback.atGoal());
   }
 
-  private void setRightPosition(double rightPositionMeters) {
-    rightProfiledFeedback.setGoal(rightPositionMeters + climberOffset);
+  private Command setRightPosition(double rightPositionMeters) {
+    return Commands.run(
+            () ->
+                io.setRightVoltage(
+                    rightProfiledFeedback.calculate(
+                        inputs.rightPositionMeters, rightPositionMeters)))
+        .until(() -> rightProfiledFeedback.atGoal());
   }
 
   public double getLeftPositionMeters() {
@@ -133,55 +130,101 @@ public class Climber extends SubsystemBase {
     return inputs.rightPositionMeters;
   }
 
-  public Command preClimbCenter() {
+  public Command preClimb() {
     return Commands.runOnce(() -> io.setLock(false))
         .andThen(Commands.waitSeconds(0.25))
         .andThen(
-            Commands.runOnce(
-                () -> {
-                  setLeftPosition(LOW_POSITION.get());
-                  setRightPosition(LOW_POSITION.get());
-                }))
-        .andThen(
-            () -> {
-              if (leftProfiledFeedback.atGoal() && rightProfiledFeedback.atGoal()) {
-                io.setLock(true);
-              }
-            });
+            setLeftPosition(CLIMB_POSITION.get()).alongWith(setRightPosition(CLIMB_POSITION.get())))
+        .finallyDo(() -> io.setLock(true));
   }
 
-  public Command preClimbSide() {
-    return Commands.runOnce(() -> io.setLock(false))
-        .andThen(Commands.waitSeconds(0.25))
-        .andThen(
-            Commands.runOnce(
+  public Command climbManual(DoubleSupplier speed, double deadband) {
+    return (Commands.runOnce(() -> io.setLock(false))
+            .andThen(Commands.waitSeconds(0.25))
+            .andThen(
+                Commands.either(
+                    Commands.runEnd(
+                        () -> {
+                          io.setLeftVoltage(
+                              -speed.getAsDouble() * RobotController.getBatteryVoltage() * 0.25);
+                          io.setRightVoltage(
+                              -speed.getAsDouble() * RobotController.getBatteryVoltage() * 0.25);
+                        },
+                        () -> {
+                          io.setLeftVoltage(0);
+                          io.setRightVoltage(0);
+                          io.setLock(true);
+                        }),
+                    Commands.run(
+                        () -> {
+                          io.setLeftVoltage(0);
+                          io.setRightVoltage(0);
+                          io.setLock(true);
+                        }),
+                    () -> Math.abs(speed.getAsDouble()) > deadband)))
+        .alongWith(
+            Commands.run(
                 () -> {
-                  setLeftPosition(HIGH_POSITION.get());
-                  setRightPosition(HIGH_POSITION.get());
+                  leftProfiledFeedback.reset(
+                      inputs.leftPositionMeters, inputs.leftVelocityMetersPerSec);
+                  rightProfiledFeedback.reset(
+                      inputs.leftPositionMeters, inputs.leftVelocityMetersPerSec);
                 }))
-        .andThen(
-            () -> {
-              if (leftProfiledFeedback.atGoal() && rightProfiledFeedback.atGoal()) {
-                io.setLock(true);
-              }
-            });
+        .finallyDo(() -> io.setLock(true));
   }
 
-  public Command climb() {
-    return Commands.runOnce(() -> io.setLock(false))
-        .andThen(Commands.waitSeconds(0.25))
-        .andThen(
-            Commands.runOnce(
-                () -> {
-                  setLeftPosition(STOWED_POSITION.get());
-                  setRightPosition(STOWED_POSITION.get());
-                }))
-        .andThen(
+  public Command climbAutomatic() {
+    return Commands.sequence(
+        Commands.runOnce(() -> io.setLock(false)),
+        Commands.waitSeconds(0.25),
+        Commands.parallel(
+            Commands.runEnd(() -> io.setLeftVoltage(-6.0), () -> io.setLeftVoltage(0.0))
+                .until(() -> inputs.leftCurrentAmps[inputs.leftCurrentAmps.length - 1] >= 25),
+            Commands.runEnd(() -> io.setRightVoltage(-6.0), () -> io.setRightVoltage(0.0))
+                .until(() -> inputs.rightCurrentAmps[inputs.rightCurrentAmps.length - 1] >= 25)),
+        Commands.race(
+            Commands.runEnd(() -> io.setLeftVoltage(-8.0), () -> io.setLeftVoltage(0.0))
+                .until(() -> inputs.leftPositionMeters < 0.5),
+            Commands.runEnd(() -> io.setRightVoltage(-8.0), () -> io.setRightVoltage(0.0))
+                .until(() -> inputs.leftPositionMeters < 0.5)),
+        Commands.parallel(
+                Commands.run(
+                    () -> {
+                      io.setLeftVoltage(-1.1);
+                      io.setRightVoltage(-1.1);
+                    }),
+                Commands.runOnce(() -> io.setLock(true)))
+            .withTimeout(0.25),
+        stop(),
+        Commands.runOnce(
             () -> {
-              if (leftProfiledFeedback.atGoal() && rightProfiledFeedback.atGoal()) {
-                io.setLock(true);
-              }
-            });
+              leftProfiledFeedback.reset(
+                  inputs.leftPositionMeters, inputs.leftVelocityMetersPerSec);
+              rightProfiledFeedback.reset(
+                  inputs.leftPositionMeters, inputs.leftVelocityMetersPerSec);
+            }));
+  }
+
+  public Command zero() {
+    return Commands.sequence(
+        Commands.runOnce(() -> io.setLock(false)),
+        Commands.waitSeconds(0.25),
+        Commands.parallel(
+            Commands.runEnd(() -> io.setLeftVoltage(-1.0), () -> io.setLeftVoltage(0.0))
+                .until(() -> inputs.leftCurrentAmps[inputs.leftCurrentAmps.length - 1] >= 2),
+            Commands.runEnd(() -> io.setRightVoltage(-1.0), () -> io.setRightVoltage(0.0))
+                .until(() -> inputs.rightCurrentAmps[inputs.rightCurrentAmps.length - 1] >= 2)),
+        stop(),
+        Commands.runOnce(
+            () -> {
+              io.setLock(true);
+              inputs.leftPositionMeters = 0.0;
+              inputs.rightPositionMeters = 0.0;
+              leftProfiledFeedback.reset(
+                  inputs.leftPositionMeters, inputs.leftVelocityMetersPerSec);
+              rightProfiledFeedback.reset(
+                  inputs.leftPositionMeters, inputs.leftVelocityMetersPerSec);
+            }));
   }
 
   public Command stop() {
@@ -191,9 +234,5 @@ public class Climber extends SubsystemBase {
           io.setRightVoltage(0.0);
           io.setLock(true);
         });
-  }
-
-  public Command incrementClimber() {
-    return Commands.runOnce(() -> climberOffset += Units.inchesToMeters(1));
   }
 }

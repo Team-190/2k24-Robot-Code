@@ -15,6 +15,8 @@ public class Kicker extends SubsystemBase {
   private static final LoggedTunableNumber intakeVoltage =
       new LoggedTunableNumber("Kicker/Intake voltage");
 
+  private boolean isShooting = false;
+
   public Kicker(KickerIO io) {
     this.io = io;
     shootVoltage.initDefault(12.0);
@@ -30,6 +32,10 @@ public class Kicker extends SubsystemBase {
     io.setVoltage(0.0);
   }
 
+  public boolean isShooting() {
+    return isShooting;
+  }
+
   public Command shoot() {
     return runEnd(
         () -> {
@@ -43,6 +49,14 @@ public class Kicker extends SubsystemBase {
   }
 
   public Command runKicker() {
-    return runEnd(() -> io.setVoltage(intakeVoltage.get()), () -> stop());
+    return runEnd(
+        () -> {
+          io.setVoltage(intakeVoltage.get());
+          isShooting = true;
+        },
+        () -> {
+          stop();
+          isShooting = false;
+        });
   }
 }

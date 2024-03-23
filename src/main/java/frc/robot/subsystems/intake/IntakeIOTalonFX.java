@@ -15,8 +15,7 @@ import frc.robot.util.Alert.AlertType;
 
 public class IntakeIOTalonFX implements IntakeIO {
   private final TalonFX rollersTalon;
-  private final Solenoid leftSolenoid;
-  private final Solenoid rightSolenoid;
+  private final Solenoid solenoid;
 
   private final StatusSignal<Double> rollersPosition;
   private final StatusSignal<Double> rollersVelocity;
@@ -33,13 +32,11 @@ public class IntakeIOTalonFX implements IntakeIO {
     switch (Constants.ROBOT) {
       case SNAPBACK:
         rollersTalon = new TalonFX(17);
-        leftSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 5);
-        rightSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 7);
+        solenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 7);
         break;
       case ROBOT_2K24_TEST:
         rollersTalon = new TalonFX(17);
-        leftSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 5);
-        rightSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 7);
+        solenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 7);
         break;
       default:
         throw new RuntimeException("Invalid robot");
@@ -49,6 +46,10 @@ public class IntakeIOTalonFX implements IntakeIO {
     config.CurrentLimits.SupplyCurrentLimit = 60.0;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
     config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    config.Audio.AllowMusicDurDisable = true;
+    config.Audio.BeepOnBoot = false;
+    config.Audio.BeepOnConfig = false;
+
     rollersTalon.getConfigurator().apply(config);
 
     rollersPosition = rollersTalon.getPosition();
@@ -83,8 +84,7 @@ public class IntakeIOTalonFX implements IntakeIO {
     inputs.rollersCurrentAmps = new double[] {rollersCurrent.getValueAsDouble()};
     inputs.rollersTempCelcius = new double[] {rollersTemperature.getValueAsDouble()};
 
-    inputs.leftPosition = leftSolenoid.get();
-    inputs.rightPosition = rightSolenoid.get();
+    inputs.leftPosition = solenoid.get();
   }
 
   @Override
@@ -94,13 +94,11 @@ public class IntakeIOTalonFX implements IntakeIO {
 
   @Override
   public void setIntakePosition(boolean position) {
-    leftSolenoid.set(position);
-    rightSolenoid.set(position);
+    solenoid.set(position);
   }
 
   @Override
   public void toggleIntakePosition() {
-    leftSolenoid.toggle();
-    rightSolenoid.toggle();
+    solenoid.toggle();
   }
 }

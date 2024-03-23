@@ -15,4 +15,12 @@ public interface VisionIO {
   }
 
   public default void updateInputs(VisionIOInputs inputs) {}
+
+  public default boolean getTv() {
+    return false;
+  }
+
+  public default void enableLEDs() {}
+
+  public default void disableLEDs() {}
 }

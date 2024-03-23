@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.44686721852076183,
-      "y": 6.712444649960525
+      "x": 0.6456678440422406,
+      "y": 4.525637769224256
     },
-    "rotation": -119.56152084062566
+    "rotation": 122.00538320808347
   },
   "command": {
     "type": "sequential",
@@ -14,19 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Amp Side to Amp Side Note"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Track Note Spike"
+            "pathName": "Source Side to Shot"
           }
         },
         {
@@ -40,10 +28,16 @@
           "data": {
             "name": "Shoot"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Source Side to Useless"
+          }
         }
       ]
     }
   },
-  "folder": "Two",
+  "folder": "One",
   "choreoAuto": false
 }

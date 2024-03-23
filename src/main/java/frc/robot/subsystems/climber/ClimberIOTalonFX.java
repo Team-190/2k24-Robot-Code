@@ -16,7 +16,7 @@ import frc.robot.util.Alert.AlertType;
 public class ClimberIOTalonFX implements ClimberIO {
   private final TalonFX leftTalon;
   private final TalonFX rightTalon;
-  private final Solenoid lock;
+  private final Solenoid climberSolenoid;
 
   private final StatusSignal<Double> leftPosition;
   private final StatusSignal<Double> leftVelocity;
@@ -44,12 +44,12 @@ public class ClimberIOTalonFX implements ClimberIO {
       case SNAPBACK:
         leftTalon = new TalonFX(4);
         rightTalon = new TalonFX(5);
-        lock = new Solenoid(PneumaticsModuleType.CTREPCM, 6);
+        climberSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 6);
         break;
       case ROBOT_2K24_TEST:
         leftTalon = new TalonFX(4);
         rightTalon = new TalonFX(5);
-        lock = new Solenoid(PneumaticsModuleType.CTREPCM, 6);
+        climberSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 6);
         break;
       default:
         throw new RuntimeException("Invalid robot");
@@ -59,13 +59,22 @@ public class ClimberIOTalonFX implements ClimberIO {
     config.CurrentLimits.SupplyCurrentLimit = 60.0;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    // config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+    // config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 3; // bottom soft limit in rotations
+    // config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+    // config.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
+    // 6 * DRUM_CIRCUMFERENCE * GEAR_RATIO; // top soft limit in rotations
+    config.Audio.AllowMusicDurDisable = true;
+    config.Audio.BeepOnBoot = false;
+    config.Audio.BeepOnConfig = false;
+
     leftTalon.getConfigurator().apply(config);
     rightTalon.getConfigurator().apply(config);
 
+    rightTalon.setInverted(true);
+
     leftTalon.setPosition(0.0);
     rightTalon.setPosition(0.0);
-
-    rightTalon.setInverted(true);
 
     leftPosition = leftTalon.getPosition();
     leftVelocity = leftTalon.getVelocity();
@@ -138,6 +147,6 @@ public class ClimberIOTalonFX implements ClimberIO {
 
   @Override
   public void setLock(boolean isLocked) {
-    lock.set(!isLocked);
+    climberSolenoid.set(!isLocked);
   }
 }

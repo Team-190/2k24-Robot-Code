@@ -113,25 +113,25 @@ public class ModuleIOTalonFX implements ModuleIO {
             driveTalon = new TalonFX(0, "drive");
             turnTalon = new TalonFX(1, "drive");
             cancoder = new CANcoder(2, "drive");
-            absoluteEncoderOffset = Rotation2d.fromRadians(-1.248660361338912);
+            absoluteEncoderOffset = Rotation2d.fromRadians(1.8775924843720249);
             break;
           case 1:
             driveTalon = new TalonFX(10, "drive");
             turnTalon = new TalonFX(11, "drive");
             cancoder = new CANcoder(12, "drive");
-            absoluteEncoderOffset = Rotation2d.fromRadians(-1.1090681096413186);
+            absoluteEncoderOffset = Rotation2d.fromRadians(1.9865051203119053);
             break;
           case 2:
             driveTalon = new TalonFX(20, "drive");
             turnTalon = new TalonFX(21, "drive");
             cancoder = new CANcoder(22, "drive");
-            absoluteEncoderOffset = Rotation2d.fromRadians(-1.9834371587361341);
+            absoluteEncoderOffset = Rotation2d.fromRadians(1.1612234564294304);
             break;
           case 3:
             driveTalon = new TalonFX(30, "drive");
             turnTalon = new TalonFX(31, "drive");
             cancoder = new CANcoder(32, "drive");
-            absoluteEncoderOffset = Rotation2d.fromRadians(0.07669903939428206);
+            absoluteEncoderOffset = Rotation2d.fromRadians(-3.06182565261974);
             break;
           default:
             throw new RuntimeException("Invalid module index");
@@ -144,12 +144,20 @@ public class ModuleIOTalonFX implements ModuleIO {
     var driveConfig = new TalonFXConfiguration();
     driveConfig.CurrentLimits.SupplyCurrentLimit = 40.0;
     driveConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    driveConfig.Audio.AllowMusicDurDisable = true;
+    driveConfig.Audio.BeepOnBoot = false;
+    driveConfig.Audio.BeepOnConfig = false;
+
     driveTalon.getConfigurator().apply(driveConfig);
     setDriveBrakeMode(true);
 
     var turnConfig = new TalonFXConfiguration();
     turnConfig.CurrentLimits.SupplyCurrentLimit = 30.0;
     turnConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    turnConfig.Audio.AllowMusicDurDisable = true;
+    turnConfig.Audio.BeepOnBoot = false;
+    turnConfig.Audio.BeepOnConfig = false;
+
     turnTalon.getConfigurator().apply(turnConfig);
     setTurnBrakeMode(true);
 

@@ -20,7 +20,6 @@ public class SnapbackMechanism3d {
   public static final Pose3d[] getPoses(
       boolean intakeDeployed,
       Rotation2d hoodAngle,
-      Rotation2d ampAngle,
       double leftExtensionMeters,
       double rightExtensionMeters) {
 
@@ -30,8 +29,6 @@ public class SnapbackMechanism3d {
             0.0,
             0.48,
             new Rotation3d(0.0, -hoodAngle.getRadians() + Units.degreesToRadians(38.0), 0.0));
-    Pose3d ampPose =
-        new Pose3d(-0.327, 0.0, 0.525, new Rotation3d(0.0, -ampAngle.getRadians(), 0.0));
 
     Pose3d intakeTopBarPose = new Pose3d();
     Pose3d intakeBottomBarPose = new Pose3d();
@@ -87,7 +84,6 @@ public class SnapbackMechanism3d {
       new Pose3d(),
       new Pose3d(),
       hoodPose,
-      ampPose,
       intakeTopBarPose,
       intakeBottomBarPose,
       intakeRollersPose,

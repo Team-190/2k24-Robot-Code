@@ -2,19 +2,25 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.2490196273393739,
-      "y": 5.57998439840296
+      "x": 0.6105853807149207,
+      "y": 4.513943614781817
     },
-    "rotation": -177.51044707800085
+    "rotation": 120.86680945113707
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
         {
+          "type": "path",
+          "data": {
+            "pathName": "Source Side to Shot"
+          }
+        },
+        {
           "type": "named",
           "data": {
-            "name": "Delay"
+            "name": "Aim"
           }
         },
         {
@@ -26,19 +32,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Center to Center Note"
+            "pathName": "Source Side to Midline5"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Track Note Spike"
+            "name": "Track Note Center"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Midline 5 to Speaker Far"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Track Speaker Close"
+            "name": "Aim"
           }
         },
         {
@@ -50,25 +62,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Center Note to Midline3 Note"
+            "pathName": "Speaker Far to Midline 4"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Track Note Spike"
+            "name": "Track Note Center"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Midline3 Note to End"
+            "pathName": "Midline 4 to Speaker Far"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Track Speaker Far"
+            "name": "Aim"
           }
         },
         {

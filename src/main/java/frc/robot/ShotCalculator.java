@@ -4,7 +4,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
-import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.hood.Hood;
 import frc.robot.subsystems.shooter.Shooter;
@@ -23,36 +22,41 @@ public class ShotCalculator {
   private static final LoggedTunableNumber SHOOTER_SPEED_TOLERANCE =
       new LoggedTunableNumber("ShotCalculator/Shooter Speed Tolerance");
 
-  private static final LoggedTunableNumber ROBOT_ANGLE_TOLERANCE =
-      new LoggedTunableNumber("ShotCalculator/Robot Angle Tolerance");
-
   private static final LoggedTunableNumber HOOD_ANGLE_TOLERANCE =
       new LoggedTunableNumber("ShotCalculator/Hood Angle Tolerance");
 
   static {
-    // Units: radians/second
-    shooterSpeedMap.put(Units.feetToMeters(7.34), 800.0);
-    shooterSpeedMap.put(Units.feetToMeters(8.2), 800.0);
-    shooterSpeedMap.put(Units.feetToMeters(9.0), 800.0);
-    shooterSpeedMap.put(Units.feetToMeters(10.0), 800.0);
-    shooterSpeedMap.put(Units.feetToMeters(11.0), 800.0); // 600
-    shooterSpeedMap.put(Units.feetToMeters(12.2), 800.0);
-    shooterSpeedMap.put(Units.feetToMeters(14.25), 800.0);
+    // Units: radians/second          possibly 775.0
+    shooterSpeedMap.put(2.16, 800.0);
+    shooterSpeedMap.put(2.45, 800.0);
+    shooterSpeedMap.put(2.69, 800.0);
+    shooterAngleMap.put(2.84, 800.0);
+    shooterSpeedMap.put(2.98, 800.0);
+    shooterSpeedMap.put(3.19, 800.0);
+    shooterSpeedMap.put(3.52, 800.0);
+    shooterSpeedMap.put(3.85, 900.0);
+    shooterSpeedMap.put(4.29, 900.0);
 
     // Units: radians
-    shooterAngleMap.put(Units.feetToMeters(7.34), 0.0);
-    shooterAngleMap.put(Units.feetToMeters(8.2), 0.0);
-    shooterAngleMap.put(Units.feetToMeters(9.0), 0.27);
-    shooterAngleMap.put(Units.feetToMeters(10.0), 0.325);
-    shooterAngleMap.put(Units.feetToMeters(11.0), 0.4); // 0.3
-    shooterAngleMap.put(Units.feetToMeters(12.2), 0.425); // 0.36
-    shooterAngleMap.put(Units.feetToMeters(14.25), 0.455); // 0.376
+    shooterAngleMap.put(2.16, 0.05);
+    shooterAngleMap.put(2.45, 0.05);
+    shooterAngleMap.put(2.69, 0.35);
+    shooterAngleMap.put(2.84, 0.41);
+    shooterAngleMap.put(2.98, 0.415);
+    shooterAngleMap.put(3.19, 0.42); // 0.3
+    shooterAngleMap.put(3.52, 0.43); // 0.36
+    shooterAngleMap.put(3.85, 0.465); // 0.376
+    shooterAngleMap.put(4.29, 0.48);
 
     // Units: seconds
-    flightTimeMap.put(Units.inchesToMeters(0.0), 0.0);
+    flightTimeMap.put(2.50, (4.42 - 4.24));
+    flightTimeMap.put(2.75, (2.56 - 2.33));
+    flightTimeMap.put(3.00, (3.43 - 3.18));
+    flightTimeMap.put(3.25, (3.20 - 2.94));
+    flightTimeMap.put(3.50, (2.64 - 2.42));
+    flightTimeMap.put(4.0, (2.60 - 2.32));
 
-    SHOOTER_SPEED_TOLERANCE.initDefault(20.0);
-    ROBOT_ANGLE_TOLERANCE.initDefault(0.1);
+    SHOOTER_SPEED_TOLERANCE.initDefault(40.0);
     HOOD_ANGLE_TOLERANCE.initDefault(0.017);
   }
 
@@ -85,14 +89,17 @@ public class ShotCalculator {
 
   public static boolean shooterReady(
       Drive drive, Hood hood, Shooter shooter, Vision aprilTagVision) {
-    AimingParameters setpoints =
-        poseCalculation(
-            aprilTagVision.getRobotPose().get().getTranslation(), drive.getFieldRelativeVelocity());
-    return (Math.abs(drive.getRotation().getRadians() - setpoints.robotAngle.getRadians())
-            <= ROBOT_ANGLE_TOLERANCE.get())
-        && (Math.abs(hood.getPosition().getRadians() - setpoints.shooterAngle.getRadians())
-            <= HOOD_ANGLE_TOLERANCE.get())
-        && (Math.abs(shooter.getSpeed() - setpoints.shooterSpeed) <= SHOOTER_SPEED_TOLERANCE.get());
+    if (aprilTagVision.getRobotPose().isPresent()) {
+      AimingParameters setpoints =
+          poseCalculation(
+              aprilTagVision.getRobotPose().get().getTranslation(),
+              drive.getFieldRelativeVelocity());
+      return (Math.abs(hood.getPosition().getRadians() - setpoints.shooterAngle.getRadians())
+              <= HOOD_ANGLE_TOLERANCE.get())
+          && (Math.abs(shooter.getSpeed() - setpoints.shooterSpeed)
+              <= SHOOTER_SPEED_TOLERANCE.get());
+    }
+    return false;
   }
 
   public static record AimingParameters(

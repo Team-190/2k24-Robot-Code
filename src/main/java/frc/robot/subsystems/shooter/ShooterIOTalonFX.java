@@ -50,6 +50,10 @@ public class ShooterIOTalonFX implements ShooterIO {
     var config = new TalonFXConfiguration();
     config.CurrentLimits.SupplyCurrentLimit = 60.0;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
+    config.Audio.AllowMusicDurDisable = true;
+    config.Audio.BeepOnBoot = false;
+    config.Audio.BeepOnConfig = false;
+
     leftShooterTalon.getConfigurator().apply(config);
     rightShooterTalon.getConfigurator().apply(config);
 
