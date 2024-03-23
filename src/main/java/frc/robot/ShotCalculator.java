@@ -4,6 +4,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.hood.Hood;
 import frc.robot.subsystems.shooter.Shooter;
@@ -57,7 +58,7 @@ public class ShotCalculator {
     flightTimeMap.put(4.0, (2.60 - 2.32));
 
     SHOOTER_SPEED_TOLERANCE.initDefault(40.0);
-    HOOD_ANGLE_TOLERANCE.initDefault(0.017);
+    HOOD_ANGLE_TOLERANCE.initDefault(Units.degreesToRadians(2));
   }
 
   public static AimingParameters poseCalculation(

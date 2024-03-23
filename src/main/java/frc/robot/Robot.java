@@ -113,6 +113,7 @@ public class Robot extends LoggedRobot {
     disabledTimer.reset();
     disabledTimer.start();
 
+    RobotController.setBrownoutVoltage(6);
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our autonomous chooser on the dashboard.
     robotContainer = new RobotContainer();

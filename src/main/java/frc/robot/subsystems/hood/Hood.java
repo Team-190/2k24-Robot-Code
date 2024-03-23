@@ -42,7 +42,7 @@ public class Hood extends SubsystemBase {
 
   private final ProfiledPIDController profiledFeedback;
 
-  private double angleOffset = 0;
+  private double angleOffset = Units.degreesToRadians(0);
 
   static {
     switch (Constants.ROBOT) {
