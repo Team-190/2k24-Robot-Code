@@ -33,7 +33,7 @@ public class Climber extends SubsystemBase {
   private final ProfiledPIDController rightProfiledFeedback;
 
   static {
-    CLIMB_POSITION.initDefault(11);
+    CLIMB_POSITION.initDefault(12.5);
     switch (Constants.ROBOT) {
       case SNAPBACK:
         KP.initDefault(5);
