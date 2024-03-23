@@ -101,6 +101,7 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    leds = Leds.getInstance();
     if (Constants.getMode() != Mode.REPLAY) {
       switch (Constants.ROBOT) {
         case SNAPBACK:
@@ -123,7 +124,6 @@ public class RobotContainer {
           aprilTagVision =
               new Vision("AprilTagVision", new VisionIOLimelight(VisionMode.AprilTags));
           noteVision = new Vision("NoteVision", new VisionIOLimelight(VisionMode.Notes));
-          leds = Leds.getInstance();
           break;
         case ROBOT_2K24_TEST:
           // Test robot, instantiate hardware IO implementations
