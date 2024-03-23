@@ -161,6 +161,17 @@ public class Hood extends SubsystemBase {
         () -> setPosition(STOWED_POSITION.get()));
   }
 
+  public Command zero() {
+    return Commands.sequence(
+        Commands.runEnd(() -> io.setVoltage(-1.0), () -> io.setVoltage(0.0))
+            .until(() -> inputs.currentAmps[0] >= 2.0),
+        Commands.runOnce(
+            () -> {
+              io.resetPosition();
+              profiledFeedback.reset(0.0, inputs.velocityRadPerSec);
+            }));
+  }
+
   public Command increaseAngle() {
     return Commands.runOnce(() -> angleOffset += Units.degreesToRadians(0.25));
   }

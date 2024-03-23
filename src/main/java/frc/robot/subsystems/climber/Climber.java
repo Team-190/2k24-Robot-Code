@@ -218,12 +218,9 @@ public class Climber extends SubsystemBase {
         Commands.runOnce(
             () -> {
               io.setLock(true);
-              inputs.leftPositionMeters = 0.0;
-              inputs.rightPositionMeters = 0.0;
-              leftProfiledFeedback.reset(
-                  inputs.leftPositionMeters, inputs.leftVelocityMetersPerSec);
-              rightProfiledFeedback.reset(
-                  inputs.leftPositionMeters, inputs.leftVelocityMetersPerSec);
+              io.resetPosition();
+              leftProfiledFeedback.reset(0.0, inputs.leftVelocityMetersPerSec);
+              rightProfiledFeedback.reset(0.0, inputs.leftVelocityMetersPerSec);
             }));
   }
 

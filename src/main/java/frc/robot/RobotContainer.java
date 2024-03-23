@@ -341,6 +341,7 @@ public class RobotContainer {
     operator.povUp().onTrue(climber.preClimb());
     operator.povDown().onTrue(climber.climbAutomatic());
     operator.back().onTrue(climber.zero());
+    operator.start().onTrue(hood.zero());
     new Trigger(() -> operator.getLeftY() >= 0.25)
         .whileTrue(climber.climbManual(() -> operator.getLeftY(), 0.25));
   }
