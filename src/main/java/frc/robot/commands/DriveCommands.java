@@ -221,8 +221,8 @@ public class DriveCommands {
                       0,
                       0,
                       feedForwardRadialVelocity
-                          + aimController.calculate(
-                              measuredGyroAngle.getRadians(), targetGyroAngle.get().getRadians()),
+                          + (targetGyroAngle.isPresent() ? aimController.calculate(
+                              measuredGyroAngle.getRadians(), targetGyroAngle.get().getRadians()) : 0),
                       isFlipped
                           ? drive.getRotation().plus(new Rotation2d(Math.PI))
                           : drive.getRotation());
