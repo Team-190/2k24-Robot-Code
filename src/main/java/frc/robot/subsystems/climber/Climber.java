@@ -33,7 +33,7 @@ public class Climber extends SubsystemBase {
   private final ProfiledPIDController rightProfiledFeedback;
 
   static {
-    CLIMB_POSITION.initDefault(11);
+    CLIMB_POSITION.initDefault(12.5);
     switch (Constants.ROBOT) {
       case SNAPBACK:
         KP.initDefault(5);
@@ -218,12 +218,9 @@ public class Climber extends SubsystemBase {
         Commands.runOnce(
             () -> {
               io.setLock(true);
-              inputs.leftPositionMeters = 0.0;
-              inputs.rightPositionMeters = 0.0;
-              leftProfiledFeedback.reset(
-                  inputs.leftPositionMeters, inputs.leftVelocityMetersPerSec);
-              rightProfiledFeedback.reset(
-                  inputs.leftPositionMeters, inputs.leftVelocityMetersPerSec);
+              io.resetPosition();
+              leftProfiledFeedback.reset(0.0, inputs.leftVelocityMetersPerSec);
+              rightProfiledFeedback.reset(0.0, inputs.leftVelocityMetersPerSec);
             }));
   }
 

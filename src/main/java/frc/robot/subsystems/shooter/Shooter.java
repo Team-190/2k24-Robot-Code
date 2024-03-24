@@ -70,13 +70,13 @@ public class Shooter extends SubsystemBase {
   static {
     switch (Constants.ROBOT) {
       case SNAPBACK:
-        KP.initDefault(0.035);
+        KP.initDefault(0.008);
         KD.initDefault(0.0);
         RATIO.initDefault(0.5);
         DEFAULT_SPEED.initDefault(600);
         AMP_SPEED.initDefault(550);
-        leftFeedforward = new SimpleMotorFeedforward(0.38326, 0.007755);
-        rightFeedforward = new SimpleMotorFeedforward(0.18553, 0.0074688);
+        leftFeedforward = new SimpleMotorFeedforward(0.134, 0.0071266);
+        rightFeedforward = new SimpleMotorFeedforward(0.14543, 0.0068754);
         break;
       case ROBOT_2K24_TEST:
         KP.initDefault(0.035);

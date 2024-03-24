@@ -42,7 +42,7 @@ public class Hood extends SubsystemBase {
 
   private final ProfiledPIDController profiledFeedback;
 
-  private double angleOffset = 0;
+  private double angleOffset = Units.degreesToRadians(0);
 
   static {
     switch (Constants.ROBOT) {
@@ -159,6 +159,17 @@ public class Hood extends SubsystemBase {
           setPosition(aimingParameters.shooterAngle().getRadians());
         },
         () -> setPosition(STOWED_POSITION.get()));
+  }
+
+  public Command zero() {
+    return Commands.sequence(
+        Commands.runEnd(() -> io.setVoltage(-1.0), () -> io.setVoltage(0.0))
+            .until(() -> inputs.currentAmps[0] >= 2.0),
+        Commands.runOnce(
+            () -> {
+              io.resetPosition();
+              profiledFeedback.reset(0.0, inputs.velocityRadPerSec);
+            }));
   }
 
   public Command increaseAngle() {

@@ -31,7 +31,6 @@ import frc.robot.subsystems.accelerator.AcceleratorIOSim;
 import frc.robot.subsystems.accelerator.AcceleratorIOTalonFX;
 import frc.robot.subsystems.amp.Amp;
 import frc.robot.subsystems.amp.AmpIO;
-import frc.robot.subsystems.amp.AmpIOTalonFX;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
 import frc.robot.subsystems.climber.ClimberIOSim;
@@ -101,6 +100,7 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    leds = Leds.getInstance();
     if (Constants.getMode() != Mode.REPLAY) {
       switch (Constants.ROBOT) {
         case SNAPBACK:
@@ -118,12 +118,11 @@ public class RobotContainer {
           serializer = new Serializer(new SerializerIOTalonFX());
           kicker = new Kicker(new KickerIOTalonFX());
           accelerator = new Accelerator(new AcceleratorIOTalonFX());
-          amp = new Amp(new AmpIOTalonFX());
+          // amp = new Amp(new AmpIOTalonFX());
           climber = new Climber(new ClimberIOTalonFX());
           aprilTagVision =
               new Vision("AprilTagVision", new VisionIOLimelight(VisionMode.AprilTags));
           noteVision = new Vision("NoteVision", new VisionIOLimelight(VisionMode.Notes));
-          leds = Leds.getInstance();
           break;
         case ROBOT_2K24_TEST:
           // Test robot, instantiate hardware IO implementations
@@ -342,6 +341,7 @@ public class RobotContainer {
     operator.povUp().onTrue(climber.preClimb());
     operator.povDown().onTrue(climber.climbAutomatic());
     operator.back().onTrue(climber.zero());
+    operator.start().onTrue(hood.zero());
     new Trigger(() -> operator.getLeftY() >= 0.25)
         .whileTrue(climber.climbManual(() -> operator.getLeftY(), 0.25));
   }
