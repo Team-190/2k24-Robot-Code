@@ -37,6 +37,9 @@ public class Hood extends SubsystemBase {
   private static final LoggedTunableNumber MAX_POSITION =
       new LoggedTunableNumber("Hood/Maximum Angle");
 
+  private static final LoggedTunableNumber GOAL_TOLERANCE =
+      new LoggedTunableNumber("Hood/Goal Tolerance");
+
   private final HoodIO io;
   private final HoodIOInputsAutoLogged inputs = new HoodIOInputsAutoLogged();
 
@@ -45,6 +48,7 @@ public class Hood extends SubsystemBase {
   private double angleOffset = Units.degreesToRadians(0);
 
   static {
+    GOAL_TOLERANCE.initDefault(0.0);
     switch (Constants.ROBOT) {
       case SNAPBACK:
         KP.initDefault(25.0);
@@ -131,6 +135,11 @@ public class Hood extends SubsystemBase {
 
   public double getOffset() {
     return (double) Math.round(Units.radiansToDegrees(angleOffset) * 100) / 100;
+  }
+
+  public boolean atGoal() {
+    return Math.abs(profiledFeedback.getGoal().position - profiledFeedback.getSetpoint().position)
+        <= GOAL_TOLERANCE.get();
   }
 
   public Command setAmp() {

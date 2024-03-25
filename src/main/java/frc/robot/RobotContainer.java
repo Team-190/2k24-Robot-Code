@@ -210,7 +210,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Deploy", intake.deployIntake());
     NamedCommands.registerCommand(
         "Shoot",
-        (Commands.waitUntil(() -> ShotCalculator.shooterReady(drive, hood, shooter, aprilTagVision))
+        (Commands.waitUntil(() -> ShotCalculator.shooterReady(hood, shooter))
                 .andThen(CompositeCommands.getShootCommand(serializer, kicker).withTimeout(0.25)))
             .withTimeout(2));
     NamedCommands.registerCommand(
@@ -318,7 +318,7 @@ public class RobotContainer {
                 drive, hood, shooter, accelerator, aprilTagVision));
     driver
         .rightBumper()
-        .and(() -> ShotCalculator.shooterReady(drive, hood, shooter, aprilTagVision))
+        .and(() -> ShotCalculator.shooterReady(hood, shooter))
         .whileTrue(
             CompositeCommands.getShootCommand(serializer, kicker)
                 .withTimeout(0.5)
@@ -360,8 +360,7 @@ public class RobotContainer {
     if (aprilTagVision.getRobotPose().isPresent()) {
       ShotCalculator.poseCalculation(
           aprilTagVision.getRobotPose().get().getTranslation(), drive.getFieldRelativeVelocity());
-      Logger.recordOutput(
-          "Shooter Ready", ShotCalculator.shooterReady(drive, hood, shooter, aprilTagVision));
+      Logger.recordOutput("Shooter Ready", ShotCalculator.shooterReady(hood, shooter));
     }
   }
 

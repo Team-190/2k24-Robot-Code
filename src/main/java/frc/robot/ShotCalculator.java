@@ -5,10 +5,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.util.Units;
-import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.hood.Hood;
 import frc.robot.subsystems.shooter.Shooter;
-import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
@@ -88,19 +86,8 @@ public class ShotCalculator {
     return null;
   }
 
-  public static boolean shooterReady(
-      Drive drive, Hood hood, Shooter shooter, Vision aprilTagVision) {
-    if (aprilTagVision.getRobotPose().isPresent()) {
-      AimingParameters setpoints =
-          poseCalculation(
-              aprilTagVision.getRobotPose().get().getTranslation(),
-              drive.getFieldRelativeVelocity());
-      return (Math.abs(hood.getPosition().getRadians() - setpoints.shooterAngle.getRadians())
-              <= HOOD_ANGLE_TOLERANCE.get())
-          && (Math.abs(shooter.getSpeed() - setpoints.shooterSpeed)
-              <= SHOOTER_SPEED_TOLERANCE.get());
-    }
-    return false;
+  public static boolean shooterReady(Hood hood, Shooter shooter) {
+    return shooter.atGoal() && hood.atGoal();
   }
 
   public static record AimingParameters(
