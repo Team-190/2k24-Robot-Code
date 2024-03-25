@@ -65,9 +65,6 @@ public class Shooter extends SubsystemBase {
   private boolean isOpenLoop = true;
   private double openLoopVoltage = 0.0;
 
-  private double leftGoal = 0.0;
-  private double rightGoal = 0.0;
-
   private final SysIdRoutine sysIdRoutine =
       new SysIdRoutine(
           new SysIdRoutine.Config(
@@ -91,7 +88,8 @@ public class Shooter extends SubsystemBase {
   private boolean isShooting = false;
 
   static {
-    GOAL_TOLERANCE.initDefault(10);
+    GOAL_TOLERANCE.initDefault(0);
+    MAX_ACCELERATION.initDefault(1000);
     KS_LEFT.initDefault(0.134);
     KV_LEFT.initDefault(0.0071266);
     KA_LEFT.initDefault(0.0);
@@ -130,8 +128,8 @@ public class Shooter extends SubsystemBase {
     leftFeedback = new PIDController(KP.get(), 0.0, KD.get(), Constants.LOOP_PERIOD_SECS);
     rightFeedback = new PIDController(KP.get(), 0.0, KD.get(), Constants.LOOP_PERIOD_SECS);
 
-    leftFeedforward = new SimpleMotorFeedforward(KS_LEFT.get(), KV_LEFT.get(), KA_LEFT.get());
-    rightFeedforward = new SimpleMotorFeedforward(KS_RIGHT.get(), KV_RIGHT.get(), KA_RIGHT.get());
+    leftFeedforward = new SimpleMotorFeedforward(KS_LEFT.get(), KV_LEFT.get());
+    rightFeedforward = new SimpleMotorFeedforward(KS_RIGHT.get(), KV_RIGHT.get());
 
     leftProfile = new LinearProfile(MAX_ACCELERATION.get(), Constants.LOOP_PERIOD_SECS);
     rightProfile = new LinearProfile(MAX_ACCELERATION.get(), Constants.LOOP_PERIOD_SECS);
@@ -158,17 +156,15 @@ public class Shooter extends SubsystemBase {
     if (KS_LEFT.hasChanged(hashCode())
         || KV_LEFT.hasChanged(hashCode())
         || KA_LEFT.hasChanged(hashCode())) {
-      leftFeedforward = new SimpleMotorFeedforward(KS_LEFT.get(), KV_LEFT.get(), KA_LEFT.get());
+      leftFeedforward = new SimpleMotorFeedforward(KS_LEFT.get(), KV_LEFT.get());
     }
     if (KS_RIGHT.hasChanged(hashCode())
         || KV_RIGHT.hasChanged(hashCode())
         || KA_RIGHT.hasChanged(hashCode())) {
-      rightFeedforward = new SimpleMotorFeedforward(KS_RIGHT.get(), KV_RIGHT.get(), KA_RIGHT.get());
+      rightFeedforward = new SimpleMotorFeedforward(KS_RIGHT.get(), KV_RIGHT.get());
     }
 
     if (!isOpenLoop) {
-      leftProfile.setGoal(leftGoal);
-      rightProfile.setGoal(rightGoal);
       double leftSetpoint = leftProfile.calculateSetpoint();
       double rightSetpoint = rightProfile.calculateSetpoint();
       io.setLeftVoltage(
@@ -184,6 +180,11 @@ public class Shooter extends SubsystemBase {
 
     Logger.recordOutput("Shooter/Left Goal", leftProfile.getGoal());
     Logger.recordOutput("Shooter/Right Goal", rightProfile.getGoal());
+
+    Logger.recordOutput("Shooter/Left Setpoint", leftFeedback.getSetpoint());
+    Logger.recordOutput("Shooter/Right Setpoint", rightFeedback.getSetpoint());
+
+    Logger.recordOutput("Shooter/At Goal", atGoal());
   }
 
   private void setVelocity(double velocityRadPerSec) {

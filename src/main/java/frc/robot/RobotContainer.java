@@ -329,6 +329,7 @@ public class RobotContainer {
                 .withTimeout(1));
     driver.b().whileTrue(CompositeCommands.getShootCommand(serializer, kicker));
     driver.a().whileTrue(intake.singleActuation());
+    driver.x().onTrue(hood.zero());
 
     operator.leftBumper().whileTrue(hood.increaseAngle());
     operator.leftTrigger().whileTrue(hood.decreaseAngle());
@@ -341,7 +342,6 @@ public class RobotContainer {
     operator.povUp().onTrue(climber.preClimb());
     operator.povDown().onTrue(climber.climbAutomatic());
     operator.back().onTrue(climber.zero());
-    operator.start().onTrue(hood.zero());
     new Trigger(() -> operator.getLeftY() >= 0.25)
         .whileTrue(climber.climbManual(() -> operator.getLeftY(), 0.25));
   }

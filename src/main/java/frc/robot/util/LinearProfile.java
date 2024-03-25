@@ -8,14 +8,13 @@
 package frc.robot.util;
 
 import lombok.Getter;
-import lombok.Setter;
 
 /** Ramps up and down to setpoint for velocity closed loop control */
 public class LinearProfile {
   private double dv;
   @Getter private final double period;
   @Getter private double currentSetpoint = 0;
-  @Getter @Setter private double goal = 0;
+  private double goal = 0;
 
   /**
    * Creates a new LinearProfile
@@ -31,6 +30,15 @@ public class LinearProfile {
   /** Set the max acceleration constraint in rpm/sec */
   public void setMaxAcceleration(double maxAcceleration) {
     dv = maxAcceleration * period;
+  }
+
+  public double getGoal() {
+    return goal;
+  }
+
+  public void setGoal(double goal) {
+    this.goal = goal;
+    System.out.println(goal);
   }
 
   /**
