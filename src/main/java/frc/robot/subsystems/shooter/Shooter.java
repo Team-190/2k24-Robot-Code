@@ -167,6 +167,8 @@ public class Shooter extends SubsystemBase {
     if (!isOpenLoop) {
       double leftSetpoint = leftProfile.calculateSetpoint();
       double rightSetpoint = rightProfile.calculateSetpoint();
+      leftFeedback.setSetpoint(leftSetpoint);
+      rightFeedback.setSetpoint(rightSetpoint);
       io.setLeftVoltage(
           leftFeedforward.calculate(leftSetpoint)
               + leftFeedback.calculate(inputs.leftVelocityRadPerSec));
@@ -181,8 +183,8 @@ public class Shooter extends SubsystemBase {
     Logger.recordOutput("Shooter/Left Goal", leftProfile.getGoal());
     Logger.recordOutput("Shooter/Right Goal", rightProfile.getGoal());
 
-    Logger.recordOutput("Shooter/Left Setpoint", leftFeedback.getSetpoint());
-    Logger.recordOutput("Shooter/Right Setpoint", rightFeedback.getSetpoint());
+    Logger.recordOutput("Shooter/Left Setpoint", leftProfile.calculateSetpoint());
+    Logger.recordOutput("Shooter/Right Setpoint", rightProfile.calculateSetpoint());
 
     Logger.recordOutput("Shooter/At Goal", atGoal());
   }
