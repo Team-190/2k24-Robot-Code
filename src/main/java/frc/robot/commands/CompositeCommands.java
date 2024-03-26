@@ -64,8 +64,8 @@ public class CompositeCommands {
         .alongWith(accelerator.runAccelerator());
   }
 
-  public static final Command getShootCommand(Serializer serializer, Kicker kicker) {
-    return serializer.shoot().alongWith(kicker.shoot());
+  public static final Command getShootCommand(Intake intake, Serializer serializer, Kicker kicker) {
+    return serializer.shoot().alongWith(intake.runVoltage(), kicker.shoot());
   }
 
   public static final Command getFeedCommand(Intake intake, Serializer serializer, Kicker kicker) {
@@ -115,7 +115,7 @@ public class CompositeCommands {
   }
 
   public static final Command shootOnTheMove(
-      Drive drive, Serializer serializer, Kicker kicker, Vision vision) {
+      Drive drive, Intake intake, Serializer serializer, Kicker kicker, Vision vision) {
     return Commands.run(
             () -> {
               if (vision.getRobotPose().isPresent()) {
@@ -128,6 +128,6 @@ public class CompositeCommands {
                                 .robotAngle()));
               }
             })
-        .alongWith(getShootCommand(serializer, kicker));
+        .alongWith(getShootCommand(intake, serializer, kicker));
   }
 }

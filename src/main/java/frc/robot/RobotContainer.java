@@ -15,7 +15,6 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -211,7 +210,9 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "Shoot",
         (Commands.waitUntil(() -> ShotCalculator.shooterReady(hood, shooter))
-                .andThen(CompositeCommands.getShootCommand(serializer, kicker).withTimeout(0.25)))
+                .andThen(
+                    CompositeCommands.getShootCommand(intake, serializer, kicker)
+                        .withTimeout(0.25)))
             .withTimeout(2));
     NamedCommands.registerCommand(
         "Feed", CompositeCommands.getFeedCommand(intake, serializer, kicker));
@@ -320,14 +321,10 @@ public class RobotContainer {
         .rightBumper()
         .and(() -> ShotCalculator.shooterReady(hood, shooter))
         .whileTrue(
-            CompositeCommands.getShootCommand(serializer, kicker)
-                .withTimeout(0.5)
-                .alongWith(
-                    Commands.startEnd(
-                        () -> driver.getHID().setRumble(RumbleType.kBothRumble, 1),
-                        () -> driver.getHID().setRumble(RumbleType.kBothRumble, 0)))
-                .withTimeout(1));
-    driver.b().whileTrue(CompositeCommands.getShootCommand(serializer, kicker));
+            Commands.waitSeconds(0.25)
+                .andThen(CompositeCommands.getShootCommand(intake, serializer, kicker))
+                .withTimeout(0.5));
+    driver.b().whileTrue(CompositeCommands.getShootCommand(intake, serializer, kicker));
     driver.a().whileTrue(intake.singleActuation());
     driver.x().onTrue(hood.zero());
 

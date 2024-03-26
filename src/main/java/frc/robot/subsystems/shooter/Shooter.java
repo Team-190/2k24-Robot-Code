@@ -89,13 +89,13 @@ public class Shooter extends SubsystemBase {
 
   static {
     GOAL_TOLERANCE.initDefault(0);
-    MAX_ACCELERATION.initDefault(1000);
-    KS_LEFT.initDefault(0.134);
-    KV_LEFT.initDefault(0.0071266);
-    KA_LEFT.initDefault(0.0);
-    KS_RIGHT.initDefault(0.14543);
-    KV_RIGHT.initDefault(0.0068754);
-    KA_RIGHT.initDefault(0.0);
+    MAX_ACCELERATION.initDefault(250);
+    KS_LEFT.initDefault(0.13053);
+    KV_LEFT.initDefault(0.0072202);
+    KA_LEFT.initDefault(0.0010296);
+    KS_RIGHT.initDefault(0.15054);
+    KV_RIGHT.initDefault(0.0068511);
+    KA_RIGHT.initDefault(0.0011501);
     switch (Constants.ROBOT) {
       case SNAPBACK:
         KP.initDefault(0.008);
@@ -128,8 +128,8 @@ public class Shooter extends SubsystemBase {
     leftFeedback = new PIDController(KP.get(), 0.0, KD.get(), Constants.LOOP_PERIOD_SECS);
     rightFeedback = new PIDController(KP.get(), 0.0, KD.get(), Constants.LOOP_PERIOD_SECS);
 
-    leftFeedforward = new SimpleMotorFeedforward(KS_LEFT.get(), KV_LEFT.get());
-    rightFeedforward = new SimpleMotorFeedforward(KS_RIGHT.get(), KV_RIGHT.get());
+    leftFeedforward = new SimpleMotorFeedforward(KS_LEFT.get(), KV_LEFT.get(), KA_LEFT.get());
+    rightFeedforward = new SimpleMotorFeedforward(KS_RIGHT.get(), KV_RIGHT.get(), KA_RIGHT.get());
 
     leftProfile = new LinearProfile(MAX_ACCELERATION.get(), Constants.LOOP_PERIOD_SECS);
     rightProfile = new LinearProfile(MAX_ACCELERATION.get(), Constants.LOOP_PERIOD_SECS);
@@ -156,12 +156,12 @@ public class Shooter extends SubsystemBase {
     if (KS_LEFT.hasChanged(hashCode())
         || KV_LEFT.hasChanged(hashCode())
         || KA_LEFT.hasChanged(hashCode())) {
-      leftFeedforward = new SimpleMotorFeedforward(KS_LEFT.get(), KV_LEFT.get());
+      leftFeedforward = new SimpleMotorFeedforward(KS_LEFT.get(), KV_LEFT.get(), KA_LEFT.get());
     }
     if (KS_RIGHT.hasChanged(hashCode())
         || KV_RIGHT.hasChanged(hashCode())
         || KA_RIGHT.hasChanged(hashCode())) {
-      rightFeedforward = new SimpleMotorFeedforward(KS_RIGHT.get(), KV_RIGHT.get());
+      rightFeedforward = new SimpleMotorFeedforward(KS_RIGHT.get(), KV_RIGHT.get(), KA_RIGHT.get());
     }
 
     if (!isOpenLoop) {
