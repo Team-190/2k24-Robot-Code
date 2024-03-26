@@ -8,7 +8,6 @@ import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.hood.Hood;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.util.AllianceFlipUtil;
-import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
 public class ShotCalculator {
@@ -18,12 +17,6 @@ public class ShotCalculator {
   private static final InterpolatingDoubleTreeMap shooterAngleMap =
       new InterpolatingDoubleTreeMap();
   private static final InterpolatingDoubleTreeMap flightTimeMap = new InterpolatingDoubleTreeMap();
-
-  private static final LoggedTunableNumber SHOOTER_SPEED_TOLERANCE =
-      new LoggedTunableNumber("ShotCalculator/Shooter Speed Tolerance");
-
-  private static final LoggedTunableNumber HOOD_ANGLE_TOLERANCE =
-      new LoggedTunableNumber("ShotCalculator/Hood Angle Tolerance");
 
   static {
     shooterSpeedMap.put(2.16, 800.0);
@@ -54,9 +47,6 @@ public class ShotCalculator {
     flightTimeMap.put(3.25, (3.20 - 2.94));
     flightTimeMap.put(3.50, (2.64 - 2.42));
     flightTimeMap.put(4.0, (2.60 - 2.32));
-
-    SHOOTER_SPEED_TOLERANCE.initDefault(40.0);
-    HOOD_ANGLE_TOLERANCE.initDefault(Units.degreesToRadians(2));
   }
 
   public static AimingParameters poseCalculation(

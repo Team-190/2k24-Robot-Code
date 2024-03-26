@@ -89,7 +89,7 @@ public class Shooter extends SubsystemBase {
 
   static {
     GOAL_TOLERANCE.initDefault(0);
-    MAX_ACCELERATION.initDefault(250);
+    MAX_ACCELERATION.initDefault(425);
     KS_LEFT.initDefault(0.13053);
     KV_LEFT.initDefault(0.0072202);
     KA_LEFT.initDefault(0.0010296);
