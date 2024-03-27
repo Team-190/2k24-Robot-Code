@@ -19,7 +19,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.Mode;
 import frc.robot.commands.CompositeCommands;
@@ -303,10 +302,6 @@ public class RobotContainer {
             driver.rightBumper(),
             driver.start()));
     driver.y().onTrue(DriveCommands.resetHeading(drive));
-    driver
-        .rightTrigger()
-        .whileTrue(CompositeCommands.getAmpCommand(shooter, hood, amp, accelerator, kicker))
-        .onFalse(amp.retractAmp());
     driver.leftTrigger().whileTrue(CompositeCommands.getOuttakeCommand(intake, serializer, kicker));
     driver
         .leftBumper()
@@ -327,21 +322,18 @@ public class RobotContainer {
                 .withTimeout(0.5));
     driver.b().whileTrue(CompositeCommands.getShootCommand(intake, serializer, kicker));
     driver.a().whileTrue(intake.singleActuation());
-    driver.x().onTrue(hood.zero());
 
     operator.leftBumper().whileTrue(hood.increaseAngle());
     operator.leftTrigger().whileTrue(hood.decreaseAngle());
-    operator.rightBumper().whileTrue(shooter.increaseVelocity());
-    operator.rightTrigger().whileTrue(shooter.decreaseVelocity());
-    operator.y().whileTrue(shooter.increaseSpin());
-    operator.a().whileTrue(shooter.decreaseSpin());
-    operator.povLeft().onTrue(climber.preClimb());
-    operator.povRight().onTrue(climber.preClimb());
+    operator.y().whileTrue(shooter.increaseVelocity());
+    operator.a().whileTrue(shooter.decreaseVelocity());
+    operator
+        .rightTrigger()
+        .whileTrue(CompositeCommands.getAmpCommand(shooter, hood, amp, accelerator, kicker))
+        .onFalse(amp.retractAmp());
     operator.povUp().onTrue(climber.preClimb());
     operator.povDown().onTrue(climber.climbAutomatic());
     operator.back().onTrue(climber.zero());
-    new Trigger(() -> operator.getLeftY() >= 0.25)
-        .whileTrue(climber.climbManual(() -> operator.getLeftY(), 0.25));
   }
 
   public void updateSnapbackMechanism3d() {
