@@ -75,12 +75,14 @@ public class CompositeCommands {
   }
 
   public static final Command getAmpCommand(
-      Shooter shooter, Hood hood, Amp amp, Accelerator accelerator) {
+      Shooter shooter, Hood hood, Amp amp, Accelerator accelerator, Kicker kicker) {
     return shooter
         .runAmp()
         .alongWith(hood.setAmp())
         .alongWith(amp.deployAmp())
-        .alongWith(accelerator.runAccelerator());
+        .alongWith(accelerator.runAccelerator())
+        //TODO: Need to add a delay here. Amp bar should be up before the kicker moves the note
+        .alongWith(kicker.shoot());
   }
 
   public static final Command getTrackNoteCenterCommand(
