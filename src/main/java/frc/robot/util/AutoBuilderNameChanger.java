@@ -48,6 +48,8 @@ public class AutoBuilderNameChanger {
         return "START: SOURCE \n -> SOURCE SIDE NOTE";
       case "SourceSide_SourceSideNote_Midline5_End":
         return "START: SOURCE \n -> SOURCE SIDE NOTE \n -> MIDLINE 5";
+      case "Leave":
+        return "START: OPPONENT SOURCE \n -> LEAVE";
     }
 
     return defaultName;
