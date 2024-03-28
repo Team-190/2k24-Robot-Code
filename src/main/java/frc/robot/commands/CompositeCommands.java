@@ -32,6 +32,13 @@ public class CompositeCommands {
             });
   }
 
+  public static final Command getCollectCommand(Intake intake, Serializer serializer) {
+    return Commands.sequence(
+        intake.deployIntake(),
+        Commands.race(intake.runVoltage(), serializer.intake()),
+        intake.retractIntake());
+  }
+
   public static final Command getOuttakeCommand(
       Intake intake, Serializer serializer, Kicker kicker) {
     return Commands.parallel(intake.outtake(), serializer.outtake(), kicker.outtake());
@@ -83,7 +90,7 @@ public class CompositeCommands {
       Drive drive, Intake intake, Serializer serializer, Vision noteVision, Vision aprilTagVision) {
     return (DriveCommands.moveTowardsTarget(
                 drive, noteVision, (FieldConstants.fieldLength / 2.0) + 0.1, VisionMode.Notes)
-            .alongWith(getCollectCommand(intake, serializer, noteVision, aprilTagVision)))
+            .alongWith(getCollectCommand(intake, serializer)))
         .withTimeout(3);
   }
 
@@ -91,7 +98,7 @@ public class CompositeCommands {
       Drive drive, Intake intake, Serializer serializer, Vision noteVision, Vision aprilTagVision) {
     return (DriveCommands.moveTowardsTarget(
                 drive, noteVision, FieldConstants.startingLineX + 1, VisionMode.Notes)
-            .alongWith(getCollectCommand(intake, serializer, noteVision, aprilTagVision)))
+            .alongWith(getCollectCommand(intake, serializer)))
         .withTimeout(2);
   }
 
