@@ -45,6 +45,9 @@ public class Shooter extends SubsystemBase {
   private static final LoggedTunableNumber DEFAULT_SPEED =
       new LoggedTunableNumber("Shooter/Default Speed");
 
+  private static final LoggedTunableNumber FEED_SPEED =
+      new LoggedTunableNumber("Shooter/Feed Speed");
+
   private static final LoggedTunableNumber AMP_SPEED = new LoggedTunableNumber("Shooter/Amp Speed");
 
   private static final LoggedTunableNumber GOAL_TOLERANCE =
@@ -88,7 +91,7 @@ public class Shooter extends SubsystemBase {
   private boolean isShooting = false;
 
   static {
-    GOAL_TOLERANCE.initDefault(0);
+    GOAL_TOLERANCE.initDefault(10);
     MAX_ACCELERATION.initDefault(425);
     KS_LEFT.initDefault(0.13053);
     KV_LEFT.initDefault(0.0072202);
@@ -96,13 +99,14 @@ public class Shooter extends SubsystemBase {
     KS_RIGHT.initDefault(0.15054);
     KV_RIGHT.initDefault(0.0068511);
     KA_RIGHT.initDefault(0.0011501);
+    FEED_SPEED.initDefault(550);
     switch (Constants.ROBOT) {
       case SNAPBACK:
         KP.initDefault(0.008);
         KD.initDefault(0.0);
         RATIO.initDefault(0.5);
         DEFAULT_SPEED.initDefault(600);
-        AMP_SPEED.initDefault(550);
+        AMP_SPEED.initDefault(400);
         break;
       case ROBOT_2K24_TEST:
         KP.initDefault(0.035);
@@ -249,6 +253,16 @@ public class Shooter extends SubsystemBase {
     return runEnd(
         () -> {
           setVelocity(AMP_SPEED.get());
+        },
+        () -> {
+          stop();
+        });
+  }
+
+  public Command runFeed() {
+    return runEnd(
+        () -> {
+          setVelocity(FEED_SPEED.get());
         },
         () -> {
           stop();
