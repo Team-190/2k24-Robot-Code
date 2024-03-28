@@ -83,7 +83,10 @@ public class CompositeCommands {
 
   public static final Command getAmpCommand(
       Shooter shooter, Hood hood, Amp amp, Accelerator accelerator, Kicker kicker) {
-    return shooter.runAmp().alongWith(hood.setAmp()).alongWith(amp.deployAmp());
+    return shooter
+        .runAmp()
+        .alongWith(hood.setAmp())
+        .alongWith(amp.deployAmp().alongWith(accelerator.runAccelerator()));
   }
 
   public static final Command getTrackNoteCenterCommand(

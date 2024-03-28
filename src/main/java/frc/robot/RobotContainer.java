@@ -302,6 +302,10 @@ public class RobotContainer {
             driver.rightBumper(),
             driver.start()));
     driver.y().onTrue(DriveCommands.resetHeading(drive));
+    driver
+        .rightTrigger()
+        .whileTrue(CompositeCommands.getAmpCommand(shooter, hood, amp, accelerator, kicker))
+        .onFalse(amp.retractAmp());
     driver.leftTrigger().whileTrue(CompositeCommands.getOuttakeCommand(intake, serializer, kicker));
     driver
         .leftBumper()

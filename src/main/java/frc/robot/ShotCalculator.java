@@ -33,8 +33,8 @@ public class ShotCalculator {
     shooterAngleMap.put(2.45, 0.05 + Units.degreesToRadians(-1));
     shooterAngleMap.put(2.69, 0.16);
     shooterAngleMap.put(2.84, 0.32);
-    shooterAngleMap.put(2.88, 0.35);
-    shooterAngleMap.put(3.52, 0.43);
+    shooterAngleMap.put(3.19, 0.39);
+    shooterAngleMap.put(3.52, 0.45);
     shooterAngleMap.put(3.85, 0.44);
     shooterAngleMap.put(4.29, 0.45);
 
