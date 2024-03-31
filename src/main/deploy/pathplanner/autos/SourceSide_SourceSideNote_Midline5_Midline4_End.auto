@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.44686721852076183,
-      "y": 6.712444649960525
+      "x": 0.6805767222645559,
+      "y": 4.428886913329382
     },
-    "rotation": -121.37300514010846
+    "rotation": 119.15279655236915
   },
   "command": {
     "type": "sequential",
@@ -14,7 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Amp Side to Amp Side Note"
+            "pathName": "Source Side to Source Side Note"
           }
         },
         {
@@ -50,7 +50,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Amp Side to Midline 1"
+            "pathName": "Source Side to Midline5"
           }
         },
         {
@@ -62,7 +62,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Midline 1 to Speaker Far"
+            "pathName": "Mideline 5 to Speaker Far"
           }
         },
         {
@@ -80,7 +80,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Speaker Far to Midline2 Note"
+            "pathName": "Source Side to Midline 4"
           }
         },
         {
@@ -92,7 +92,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Midline2 Note to Speaker Far"
+            "pathName": "Midline 4 to Speaker Far"
           }
         },
         {
