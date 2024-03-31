@@ -106,7 +106,7 @@ public class Shooter extends SubsystemBase {
         KD.initDefault(0.0);
         RATIO.initDefault(0.5);
         DEFAULT_SPEED.initDefault(600);
-        AMP_SPEED.initDefault(250);
+        AMP_SPEED.initDefault(200);
         break;
       case ROBOT_2K24_TEST:
         KP.initDefault(0.035);
@@ -354,8 +354,7 @@ public class Shooter extends SubsystemBase {
   public Command decreaseSpin() {
     return Commands.runOnce(
         () -> {
-          if (RATIO.get() + spinOffset > 0.1)
-            spinOffset -= 0.1;
+          if (RATIO.get() + spinOffset > 0.1) spinOffset -= 0.1;
         });
   }
 }
