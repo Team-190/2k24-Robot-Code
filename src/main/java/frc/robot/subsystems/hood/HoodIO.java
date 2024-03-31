@@ -16,4 +16,6 @@ public interface HoodIO {
   public default void updateInputs(HoodIOInputs inputs) {}
 
   public default void setVoltage(double volts) {}
+
+  public default void resetPosition() {}
 }

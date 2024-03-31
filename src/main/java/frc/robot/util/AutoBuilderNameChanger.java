@@ -42,12 +42,18 @@ public class AutoBuilderNameChanger {
         return "START: AMP \n -> AMP SIDE NOTE \n -> MIDLINE 1 \n -> MIDLINE 2";
       case "SourceSide_End":
         return "START: SOURCE \n -> GTFOOTW";
-      case "SourceSide_Midline5_Midline4_End":
-        return "START: SOURCE \n -> MIDLINE 5 \n -> MIDLINE 4";
       case "SourceSide_SourceSideNote_End":
         return "START: SOURCE \n -> SOURCE SIDE NOTE";
+      case "SourceSide_Midline5_Midline4_End":
+        return "START: SOURCE \n -> MIDLINE 5 \n -> MIDLINE 4";
+      case "SourceSide_Midline4_Midline3_End":
+        return "START: SOURCE \n -> MIDLINE 4 \n -> MIDLINE 3";
       case "SourceSide_SourceSideNote_Midline5_End":
         return "START: SOURCE \n -> SOURCE SIDE NOTE \n -> MIDLINE 5";
+      case "SourceSide_SourceSideNote_Midline5_Midline4_End":
+        return "START: SOURCE \n -> SOURCE SIDE NOTE \n -> MIDLINE 5 \n -> MIDLINE 4";
+      case "Leave":
+        return "START: OPPONENT SOURCE \n -> LEAVE";
     }
 
     return defaultName;

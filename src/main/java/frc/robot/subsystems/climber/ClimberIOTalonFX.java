@@ -149,4 +149,10 @@ public class ClimberIOTalonFX implements ClimberIO {
   public void setLock(boolean isLocked) {
     climberSolenoid.set(!isLocked);
   }
+
+  @Override
+  public void resetPosition() {
+    leftTalon.setPosition(0.0);
+    rightTalon.setPosition(0.0);
+  }
 }

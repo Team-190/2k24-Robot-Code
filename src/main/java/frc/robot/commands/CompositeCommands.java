@@ -32,9 +32,21 @@ public class CompositeCommands {
             });
   }
 
+  public static final Command getCollectCommand(Intake intake, Serializer serializer) {
+    return Commands.sequence(
+        intake.deployIntake(),
+        Commands.race(intake.runVoltage(), serializer.intake()),
+        intake.retractIntake());
+  }
+
   public static final Command getOuttakeCommand(
       Intake intake, Serializer serializer, Kicker kicker) {
     return Commands.parallel(intake.outtake(), serializer.outtake(), kicker.outtake());
+  }
+
+  public static final Command getFeedCommand(
+      Shooter shooter, Hood hood, Amp amp, Accelerator accelerator, Kicker kicker) {
+    return shooter.runFeed().alongWith(hood.setFeed(), accelerator.runAccelerator());
   }
 
   public static final Command getPosePrepShooterCommand(
@@ -64,8 +76,8 @@ public class CompositeCommands {
         .alongWith(accelerator.runAccelerator());
   }
 
-  public static final Command getShootCommand(Serializer serializer, Kicker kicker) {
-    return serializer.shoot().alongWith(kicker.shoot());
+  public static final Command getShootCommand(Intake intake, Serializer serializer, Kicker kicker) {
+    return serializer.shoot().alongWith(intake.runVoltage(), kicker.shoot());
   }
 
   public static final Command getFeedCommand(Intake intake, Serializer serializer, Kicker kicker) {
@@ -75,28 +87,27 @@ public class CompositeCommands {
   }
 
   public static final Command getAmpCommand(
-      Shooter shooter, Hood hood, Amp amp, Accelerator accelerator) {
+      Shooter shooter, Hood hood, Amp amp, Accelerator accelerator, Kicker kicker) {
     return shooter
         .runAmp()
         .alongWith(hood.setAmp())
-        .alongWith(amp.deployAmp())
-        .alongWith(accelerator.runAccelerator());
+        .alongWith(amp.deployAmp().alongWith(accelerator.runAccelerator()));
   }
 
   public static final Command getTrackNoteCenterCommand(
       Drive drive, Intake intake, Serializer serializer, Vision noteVision, Vision aprilTagVision) {
     return (DriveCommands.moveTowardsTarget(
-            drive, noteVision, (FieldConstants.fieldLength / 2.0) + 0.1, VisionMode.Notes)
-        .alongWith(
-            getCollectCommand(intake, serializer, noteVision, aprilTagVision).withTimeout(2)));
+                drive, noteVision, (FieldConstants.fieldLength / 2.0) + 0.1, VisionMode.Notes)
+            .alongWith(getCollectCommand(intake, serializer)))
+        .withTimeout(3);
   }
 
   public static final Command getTrackNoteSpikeCommand(
       Drive drive, Intake intake, Serializer serializer, Vision noteVision, Vision aprilTagVision) {
     return (DriveCommands.moveTowardsTarget(
-            drive, noteVision, FieldConstants.startingLineX + 1, VisionMode.Notes)
-        .alongWith(
-            getCollectCommand(intake, serializer, noteVision, aprilTagVision).withTimeout(2)));
+                drive, noteVision, FieldConstants.startingLineX + 1, VisionMode.Notes)
+            .alongWith(getCollectCommand(intake, serializer)))
+        .withTimeout(2);
   }
 
   public static final Command getTrackSpeakerFarCommand(
@@ -115,7 +126,7 @@ public class CompositeCommands {
   }
 
   public static final Command shootOnTheMove(
-      Drive drive, Serializer serializer, Kicker kicker, Vision vision) {
+      Drive drive, Intake intake, Serializer serializer, Kicker kicker, Vision vision) {
     return Commands.run(
             () -> {
               if (vision.getRobotPose().isPresent()) {
@@ -128,6 +139,6 @@ public class CompositeCommands {
                                 .robotAngle()));
               }
             })
-        .alongWith(getShootCommand(serializer, kicker));
+        .alongWith(getShootCommand(intake, serializer, kicker));
   }
 }

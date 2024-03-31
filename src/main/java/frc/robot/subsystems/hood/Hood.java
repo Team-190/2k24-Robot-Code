@@ -32,19 +32,26 @@ public class Hood extends SubsystemBase {
   private static final LoggedTunableNumber AMP_POSITION =
       new LoggedTunableNumber("Hood/Amp Position");
 
+  private static final LoggedTunableNumber FEED_POSITION =
+      new LoggedTunableNumber("Hood/Feed Position");
+
   private static final LoggedTunableNumber MIN_POSITION =
       new LoggedTunableNumber("Hood/Minimum Angle");
   private static final LoggedTunableNumber MAX_POSITION =
       new LoggedTunableNumber("Hood/Maximum Angle");
+
+  private static final LoggedTunableNumber GOAL_TOLERANCE =
+      new LoggedTunableNumber("Hood/Goal Tolerance");
 
   private final HoodIO io;
   private final HoodIOInputsAutoLogged inputs = new HoodIOInputsAutoLogged();
 
   private final ProfiledPIDController profiledFeedback;
 
-  private double angleOffset = 0;
+  private double angleOffset = Units.degreesToRadians(0);
 
   static {
+    GOAL_TOLERANCE.initDefault(0.017);
     switch (Constants.ROBOT) {
       case SNAPBACK:
         KP.initDefault(25.0);
@@ -53,6 +60,7 @@ public class Hood extends SubsystemBase {
         MAX_ACCELERATION.initDefault(40.0);
         STOWED_POSITION.initDefault(0.0);
         AMP_POSITION.initDefault(0.3);
+        FEED_POSITION.initDefault(0.3);
         MIN_POSITION.initDefault(0.0);
         MAX_POSITION.initDefault(0.75);
         break;
@@ -133,8 +141,17 @@ public class Hood extends SubsystemBase {
     return (double) Math.round(Units.radiansToDegrees(angleOffset) * 100) / 100;
   }
 
+  public boolean atGoal() {
+    return Math.abs(profiledFeedback.getGoal().position - profiledFeedback.getSetpoint().position)
+        <= GOAL_TOLERANCE.get();
+  }
+
   public Command setAmp() {
     return runEnd(() -> setPosition(AMP_POSITION.get()), () -> setPosition(STOWED_POSITION.get()));
+  }
+
+  public Command setFeed() {
+    return runEnd(() -> setPosition(FEED_POSITION.get()), () -> setPosition(STOWED_POSITION.get()));
   }
 
   public Command setPosePosition(
@@ -159,6 +176,17 @@ public class Hood extends SubsystemBase {
           setPosition(aimingParameters.shooterAngle().getRadians());
         },
         () -> setPosition(STOWED_POSITION.get()));
+  }
+
+  public Command zero() {
+    return Commands.sequence(
+        Commands.runEnd(() -> io.setVoltage(-1.0), () -> io.setVoltage(0.0))
+            .until(() -> inputs.currentAmps[0] >= 2.0),
+        Commands.runOnce(
+            () -> {
+              io.resetPosition();
+              profiledFeedback.reset(0.0, inputs.velocityRadPerSec);
+            }));
   }
 
   public Command increaseAngle() {

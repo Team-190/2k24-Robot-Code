@@ -18,6 +18,7 @@ import frc.robot.FieldConstants;
 import frc.robot.ShotCalculator;
 import frc.robot.ShotCalculator.AimingParameters;
 import frc.robot.util.AllianceFlipUtil;
+import frc.robot.util.LinearProfile;
 import frc.robot.util.LoggedTunableNumber;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -30,10 +31,27 @@ public class Shooter extends SubsystemBase {
   private static final LoggedTunableNumber KP = new LoggedTunableNumber("Shooter/Kp");
   private static final LoggedTunableNumber KD = new LoggedTunableNumber("Shooter/Kd");
 
+  private static final LoggedTunableNumber KS_LEFT = new LoggedTunableNumber("Shooter/Left Ks");
+  private static final LoggedTunableNumber KV_LEFT = new LoggedTunableNumber("Shooter/Left Kv");
+  private static final LoggedTunableNumber KA_LEFT = new LoggedTunableNumber("Shooter/Left Ka");
+
+  private static final LoggedTunableNumber KS_RIGHT = new LoggedTunableNumber("Shooter/Right Ks");
+  private static final LoggedTunableNumber KV_RIGHT = new LoggedTunableNumber("Shooter/Right Kv");
+  private static final LoggedTunableNumber KA_RIGHT = new LoggedTunableNumber("Shooter/Right Ka");
+
+  private static final LoggedTunableNumber MAX_ACCELERATION =
+      new LoggedTunableNumber("Shooter/Max Acceleration");
+
   private static final LoggedTunableNumber DEFAULT_SPEED =
       new LoggedTunableNumber("Shooter/Default Speed");
 
+  private static final LoggedTunableNumber FEED_SPEED =
+      new LoggedTunableNumber("Shooter/Feed Speed");
+
   private static final LoggedTunableNumber AMP_SPEED = new LoggedTunableNumber("Shooter/Amp Speed");
+
+  private static final LoggedTunableNumber GOAL_TOLERANCE =
+      new LoggedTunableNumber("Shooter/Goal Tolerance");
 
   private final ShooterIO io;
   private final ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
@@ -41,10 +59,15 @@ public class Shooter extends SubsystemBase {
   private static SimpleMotorFeedforward leftFeedforward;
   private static SimpleMotorFeedforward rightFeedforward;
 
-  private final PIDController leftFeedback;
-  private final PIDController rightFeedback;
+  private static LinearProfile leftProfile;
+  private static LinearProfile rightProfile;
+
+  private static PIDController leftFeedback;
+  private static PIDController rightFeedback;
+
   private boolean isOpenLoop = true;
   private double openLoopVoltage = 0.0;
+
   private final SysIdRoutine sysIdRoutine =
       new SysIdRoutine(
           new SysIdRoutine.Config(
@@ -68,15 +91,22 @@ public class Shooter extends SubsystemBase {
   private boolean isShooting = false;
 
   static {
+    GOAL_TOLERANCE.initDefault(10);
+    MAX_ACCELERATION.initDefault(425);
+    KS_LEFT.initDefault(0.13053);
+    KV_LEFT.initDefault(0.0072202);
+    KA_LEFT.initDefault(0.0010296);
+    KS_RIGHT.initDefault(0.15054);
+    KV_RIGHT.initDefault(0.0068511);
+    KA_RIGHT.initDefault(0.0011501);
+    FEED_SPEED.initDefault(550);
     switch (Constants.ROBOT) {
       case SNAPBACK:
-        KP.initDefault(0.035);
+        KP.initDefault(0.008);
         KD.initDefault(0.0);
         RATIO.initDefault(0.5);
         DEFAULT_SPEED.initDefault(600);
-        AMP_SPEED.initDefault(550);
-        leftFeedforward = new SimpleMotorFeedforward(0.38326, 0.007755);
-        rightFeedforward = new SimpleMotorFeedforward(0.18553, 0.0074688);
+        AMP_SPEED.initDefault(200);
         break;
       case ROBOT_2K24_TEST:
         KP.initDefault(0.035);
@@ -84,8 +114,6 @@ public class Shooter extends SubsystemBase {
         RATIO.initDefault(2.0 / 3.0);
         DEFAULT_SPEED.initDefault(400);
         AMP_SPEED.initDefault(0.0);
-        leftFeedforward = new SimpleMotorFeedforward(0.49147, 0.0069249);
-        rightFeedforward = new SimpleMotorFeedforward(0.72165, 0.0075142);
         break;
       case ROBOT_SIM:
         KP.initDefault(0.035);
@@ -93,8 +121,6 @@ public class Shooter extends SubsystemBase {
         RATIO.initDefault(2.0 / 3.0);
         DEFAULT_SPEED.initDefault(600);
         AMP_SPEED.initDefault(0.0);
-        leftFeedforward = new SimpleMotorFeedforward(0.49147, 0.0069249);
-        rightFeedforward = new SimpleMotorFeedforward(0.72165, 0.0075142);
         break;
       default:
         break;
@@ -105,6 +131,13 @@ public class Shooter extends SubsystemBase {
     this.io = io;
     leftFeedback = new PIDController(KP.get(), 0.0, KD.get(), Constants.LOOP_PERIOD_SECS);
     rightFeedback = new PIDController(KP.get(), 0.0, KD.get(), Constants.LOOP_PERIOD_SECS);
+
+    leftFeedforward = new SimpleMotorFeedforward(KS_LEFT.get(), KV_LEFT.get(), KA_LEFT.get());
+    rightFeedforward = new SimpleMotorFeedforward(KS_RIGHT.get(), KV_RIGHT.get(), KA_RIGHT.get());
+
+    leftProfile = new LinearProfile(MAX_ACCELERATION.get(), Constants.LOOP_PERIOD_SECS);
+    rightProfile = new LinearProfile(MAX_ACCELERATION.get(), Constants.LOOP_PERIOD_SECS);
+
     setDefaultCommand(runVelocity());
   }
 
@@ -120,34 +153,58 @@ public class Shooter extends SubsystemBase {
       leftFeedback.setD(KD.get());
       rightFeedback.setD(KD.get());
     }
+    if (MAX_ACCELERATION.hasChanged(hashCode())) {
+      leftProfile.setMaxAcceleration(MAX_ACCELERATION.get());
+      rightProfile.setMaxAcceleration(MAX_ACCELERATION.get());
+    }
+    if (KS_LEFT.hasChanged(hashCode())
+        || KV_LEFT.hasChanged(hashCode())
+        || KA_LEFT.hasChanged(hashCode())) {
+      leftFeedforward = new SimpleMotorFeedforward(KS_LEFT.get(), KV_LEFT.get(), KA_LEFT.get());
+    }
+    if (KS_RIGHT.hasChanged(hashCode())
+        || KV_RIGHT.hasChanged(hashCode())
+        || KA_RIGHT.hasChanged(hashCode())) {
+      rightFeedforward = new SimpleMotorFeedforward(KS_RIGHT.get(), KV_RIGHT.get(), KA_RIGHT.get());
+    }
 
     if (!isOpenLoop) {
+      double leftSetpoint = leftProfile.calculateSetpoint();
+      double rightSetpoint = rightProfile.calculateSetpoint();
+      leftFeedback.setSetpoint(leftSetpoint);
+      rightFeedback.setSetpoint(rightSetpoint);
       io.setLeftVoltage(
-          leftFeedforward.calculate(leftFeedback.getSetpoint())
+          leftFeedforward.calculate(leftSetpoint)
               + leftFeedback.calculate(inputs.leftVelocityRadPerSec));
       io.setRightVoltage(
-          rightFeedforward.calculate(rightFeedback.getSetpoint())
+          rightFeedforward.calculate(rightSetpoint)
               + rightFeedback.calculate(inputs.rightVelocityRadPerSec));
     } else {
       io.setLeftVoltage(openLoopVoltage);
       io.setRightVoltage(openLoopVoltage);
     }
 
-    Logger.recordOutput("Shooter/Setpoint", leftFeedback.getSetpoint());
+    Logger.recordOutput("Shooter/Left Goal", leftProfile.getGoal());
+    Logger.recordOutput("Shooter/Right Goal", rightProfile.getGoal());
+
+    Logger.recordOutput("Shooter/Left Setpoint", leftProfile.calculateSetpoint());
+    Logger.recordOutput("Shooter/Right Setpoint", rightProfile.calculateSetpoint());
+
+    Logger.recordOutput("Shooter/At Goal", atGoal());
   }
 
   private void setVelocity(double velocityRadPerSec) {
     isOpenLoop = false;
     if (spinDirection.equals(SpinDirection.COUNTERCLOCKWISE)) {
-      leftFeedback.setSetpoint((velocityRadPerSec + flywheelOffset) * (RATIO.get() + spinOffset));
-      rightFeedback.setSetpoint(velocityRadPerSec + flywheelOffset);
+      leftProfile.setGoal((velocityRadPerSec + flywheelOffset) * (RATIO.get() + spinOffset));
+      rightProfile.setGoal(velocityRadPerSec + flywheelOffset);
     } else if (spinDirection.equals(SpinDirection.CLOCKWISE)) {
-      leftFeedback.setSetpoint(velocityRadPerSec + flywheelOffset);
-      rightFeedback.setSetpoint((velocityRadPerSec + flywheelOffset) * (RATIO.get() + spinOffset));
+      leftProfile.setGoal(velocityRadPerSec + flywheelOffset);
+      rightProfile.setGoal((velocityRadPerSec + flywheelOffset) * (RATIO.get() + spinOffset));
     } else {
       // YEET MODE :)
-      leftFeedback.setSetpoint(velocityRadPerSec + flywheelOffset);
-      rightFeedback.setSetpoint(velocityRadPerSec + flywheelOffset);
+      leftProfile.setGoal(velocityRadPerSec + flywheelOffset);
+      rightProfile.setGoal(velocityRadPerSec + flywheelOffset);
     }
   }
 
@@ -177,6 +234,11 @@ public class Shooter extends SubsystemBase {
     return isShooting;
   }
 
+  public boolean atGoal() {
+    return (Math.abs(leftProfile.getGoal() - leftFeedback.getSetpoint()) <= GOAL_TOLERANCE.get())
+        && (Math.abs(rightProfile.getGoal() - rightFeedback.getSetpoint()) <= GOAL_TOLERANCE.get());
+  }
+
   public Command runVelocity() {
     return runEnd(
         () -> {
@@ -191,6 +253,16 @@ public class Shooter extends SubsystemBase {
     return runEnd(
         () -> {
           setVelocity(AMP_SPEED.get());
+        },
+        () -> {
+          stop();
+        });
+  }
+
+  public Command runFeed() {
+    return runEnd(
+        () -> {
+          setVelocity(FEED_SPEED.get());
         },
         () -> {
           stop();

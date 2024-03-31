@@ -15,12 +15,10 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.Mode;
 import frc.robot.commands.CompositeCommands;
@@ -101,6 +99,7 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    leds = Leds.getInstance();
     if (Constants.getMode() != Mode.REPLAY) {
       switch (Constants.ROBOT) {
         case SNAPBACK:
@@ -123,7 +122,6 @@ public class RobotContainer {
           aprilTagVision =
               new Vision("AprilTagVision", new VisionIOLimelight(VisionMode.AprilTags));
           noteVision = new Vision("NoteVision", new VisionIOLimelight(VisionMode.Notes));
-          leds = Leds.getInstance();
           break;
         case ROBOT_2K24_TEST:
           // Test robot, instantiate hardware IO implementations
@@ -211,8 +209,10 @@ public class RobotContainer {
     NamedCommands.registerCommand("Deploy", intake.deployIntake());
     NamedCommands.registerCommand(
         "Shoot",
-        (Commands.waitUntil(() -> ShotCalculator.shooterReady(drive, hood, shooter, aprilTagVision))
-                .andThen(CompositeCommands.getShootCommand(serializer, kicker).withTimeout(0.25)))
+        (Commands.waitUntil(() -> ShotCalculator.shooterReady(hood, shooter))
+                .andThen(
+                    CompositeCommands.getShootCommand(intake, serializer, kicker)
+                        .withTimeout(0.25)))
             .withTimeout(2));
     NamedCommands.registerCommand(
         "Feed", CompositeCommands.getFeedCommand(intake, serializer, kicker));
@@ -304,7 +304,7 @@ public class RobotContainer {
     driver.y().onTrue(DriveCommands.resetHeading(drive));
     driver
         .rightTrigger()
-        .whileTrue(CompositeCommands.getAmpCommand(shooter, hood, amp, accelerator))
+        .whileTrue(CompositeCommands.getFeedCommand(shooter, hood, amp, accelerator, kicker))
         .onFalse(amp.retractAmp());
     driver.leftTrigger().whileTrue(CompositeCommands.getOuttakeCommand(intake, serializer, kicker));
     driver
@@ -319,31 +319,25 @@ public class RobotContainer {
                 drive, hood, shooter, accelerator, aprilTagVision));
     driver
         .rightBumper()
-        .and(() -> ShotCalculator.shooterReady(drive, hood, shooter, aprilTagVision))
+        .and(() -> ShotCalculator.shooterReady(hood, shooter))
         .whileTrue(
-            CompositeCommands.getShootCommand(serializer, kicker)
-                .withTimeout(0.5)
-                .alongWith(
-                    Commands.startEnd(
-                        () -> driver.getHID().setRumble(RumbleType.kBothRumble, 1),
-                        () -> driver.getHID().setRumble(RumbleType.kBothRumble, 0)))
-                .withTimeout(1));
-    driver.b().whileTrue(CompositeCommands.getShootCommand(serializer, kicker));
+            Commands.waitSeconds(0.25)
+                .andThen(CompositeCommands.getShootCommand(intake, serializer, kicker))
+                .withTimeout(0.5));
+    driver.b().whileTrue(CompositeCommands.getShootCommand(intake, serializer, kicker));
     driver.a().whileTrue(intake.singleActuation());
 
     operator.leftBumper().whileTrue(hood.increaseAngle());
     operator.leftTrigger().whileTrue(hood.decreaseAngle());
-    operator.rightBumper().whileTrue(shooter.increaseVelocity());
-    operator.rightTrigger().whileTrue(shooter.decreaseVelocity());
-    operator.y().whileTrue(shooter.increaseSpin());
-    operator.a().whileTrue(shooter.decreaseSpin());
-    operator.povLeft().onTrue(climber.preClimb());
-    operator.povRight().onTrue(climber.preClimb());
+    operator.y().whileTrue(shooter.increaseVelocity());
+    operator.a().whileTrue(shooter.decreaseVelocity());
+    operator
+        .rightTrigger()
+        .whileTrue(CompositeCommands.getAmpCommand(shooter, hood, amp, accelerator, kicker))
+        .onFalse(amp.retractAmp());
     operator.povUp().onTrue(climber.preClimb());
     operator.povDown().onTrue(climber.climbAutomatic());
     operator.back().onTrue(climber.zero());
-    new Trigger(() -> operator.getLeftY() >= 0.25)
-        .whileTrue(climber.climbManual(() -> operator.getLeftY(), 0.25));
   }
 
   public void updateSnapbackMechanism3d() {
@@ -360,8 +354,7 @@ public class RobotContainer {
     if (aprilTagVision.getRobotPose().isPresent()) {
       ShotCalculator.poseCalculation(
           aprilTagVision.getRobotPose().get().getTranslation(), drive.getFieldRelativeVelocity());
-      Logger.recordOutput(
-          "Shooter Ready", ShotCalculator.shooterReady(drive, hood, shooter, aprilTagVision));
+      Logger.recordOutput("Shooter Ready", ShotCalculator.shooterReady(hood, shooter));
     }
   }
 
