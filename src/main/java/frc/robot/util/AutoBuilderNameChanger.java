@@ -59,7 +59,7 @@ public class AutoBuilderNameChanger {
       case "Center_AmpSideNote_CenterNote_SourceSideNote_End":
         return "START: CENTER \n -> AMP SIDE NOTE \n -> CENTER NOTE \n -> SOURCE SIDE NOTE";
       case "Center_SourceSideNote_CenterNote_AmpSideNote_End":
-        return "START: CENTER \n -> SOURCE SIDE NOTE \n CENTER NOTE \n -> AMP SIDE NOTE";
+        return "START: CENTER \n -> SOURCE SIDE NOTE \n -> CENTER NOTE \n -> AMP SIDE NOTE";
       case "Leave":
         return "START: OPPONENT SOURCE \n -> LEAVE";
     }
