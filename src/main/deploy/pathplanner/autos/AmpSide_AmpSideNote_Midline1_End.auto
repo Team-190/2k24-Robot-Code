@@ -12,6 +12,12 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "Set Leftmost"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Amp Side to Amp Side Note"

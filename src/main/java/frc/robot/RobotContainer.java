@@ -232,6 +232,9 @@ public class RobotContainer {
         CompositeCommands.getTrackSpeakerCloseCommand(drive, hood, shooter, aprilTagVision));
     NamedCommands.registerCommand(
         "Aim", CompositeCommands.getAimSpeakerCommand(drive, aprilTagVision));
+    NamedCommands.registerCommand("Set Rightmost", noteVision.setPipeline(1));
+    NamedCommands.registerCommand("Set Leftmost", noteVision.setPipeline(2));
+
 
     autoChooser =
         new LoggedDashboardChooser<>(
@@ -356,6 +359,10 @@ public class RobotContainer {
           aprilTagVision.getRobotPose().get().getTranslation(), drive.getFieldRelativeVelocity());
       Logger.recordOutput("Shooter Ready", ShotCalculator.shooterReady(hood, shooter));
     }
+  }
+
+  public void resetVisionPipelines() {
+    noteVision.setPipeline(0);
   }
 
   public LoggedDashboardChooser<Command> getAutoChooser() {

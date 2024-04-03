@@ -48,6 +48,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "Set Rightmost"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Source Side to Midline5"

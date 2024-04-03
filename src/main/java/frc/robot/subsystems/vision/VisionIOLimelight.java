@@ -63,4 +63,9 @@ public class VisionIOLimelight implements VisionIO {
   public void disableLEDs() {
     table.getEntry("ledMode").setNumber(1);
   }
+
+  @Override
+  public void setPipeline(double pipeline) {
+    table.getEntry("pipeline").setNumber(pipeline);
+  }
 }
