@@ -40,6 +40,8 @@ public class AutoBuilderNameChanger {
         return "START: AMP \n -> AMP SIDE NOTE \n -> MIDLINE 1";
       case "AmpSide_AmpSideNote_Midline1_Midline2_End":
         return "START: AMP \n -> AMP SIDE NOTE \n -> MIDLINE 1 \n -> MIDLINE 2";
+      case "AmpSide_AmpSideNote_CenterNote_SourceSideNote_End":
+        return "START: AMP \n -> AMP SIDE NOTE \n -> CENTER NOTE \n -> SOURCE SIDE NOTE";
       case "SourceSide_End":
         return "START: SOURCE \n -> GTFOOTW";
       case "SourceSide_SourceSideNote_End":
@@ -52,6 +54,12 @@ public class AutoBuilderNameChanger {
         return "START: SOURCE \n -> SOURCE SIDE NOTE \n -> MIDLINE 5";
       case "SourceSide_SourceSideNote_Midline5_Midline4_End":
         return "START: SOURCE \n -> SOURCE SIDE NOTE \n -> MIDLINE 5 \n -> MIDLINE 4";
+      case "SourceSide_SourceSideNote_CenterNote_AmpSideNote_End":
+        return "START: SOURCE \n -> SOURCE SIDE NOTE \n -> CENTER NOTE \n -> AMP SIDE NOTE";
+      case "Center_AmpSideNote_CenterNote_SourceSideNote_End":
+        return "START: CENTER \n -> AMP SIDE NOTE \n -> CENTER NOTE \n -> SOURCE SIDE NOTE";
+      case "Center_SourceSideNote_CenterNote_AmpSideNote_End":
+        return "START: CENTER \n -> SOURCE SIDE NOTE \n CENTER NOTE \n -> AMP SIDE NOTE";
       case "Leave":
         return "START: OPPONENT SOURCE \n -> LEAVE";
     }
