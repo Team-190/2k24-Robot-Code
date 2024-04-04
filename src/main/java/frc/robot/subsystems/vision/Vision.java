@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 public class Vision extends VirtualSubsystem {
-  
+
   private final double CAMERA_OFFSET = Units.inchesToMeters(12.75);
   private final double SPEAKER_TAG_HEIGHT = Units.inchesToMeters(57.13);
   private final double CAMERA_HEIGHT = Units.inchesToMeters(18);
@@ -32,7 +32,6 @@ public class Vision extends VirtualSubsystem {
   private final TimeInterpolatableBuffer<Pose2d> robotPoseBuffer =
       TimeInterpolatableBuffer.createBuffer(BUFFER_SECONDS);
   private Supplier<Pose2d> drivePoseSupplier = null;
-
 
   public Vision(String name, VisionIO io) {
     this.name = name;
@@ -100,16 +99,17 @@ public class Vision extends VirtualSubsystem {
       Pose2d capturePoseFromDrive = robotPoseBuffer.getSample(lastValidTimeStamp).get();
       Pose2d capturePoseFromCam = lastValidRobotPose;
 
-      Pose2d currentPoseFromCam = capturePoseFromCam.plus(currentPoseFromDrive.minus(capturePoseFromDrive));
+      Pose2d currentPoseFromCam =
+          capturePoseFromCam.plus(currentPoseFromDrive.minus(capturePoseFromDrive));
       return Optional.of(currentPoseFromCam);
     }
     return Optional.empty();
   }
-  
+
   public void disableLEDs() {
     io.disableLEDs();
   }
-  
+
   public Command setPipeline(double pipeline) {
     return Commands.runOnce(() -> io.setPipeline(pipeline));
   }

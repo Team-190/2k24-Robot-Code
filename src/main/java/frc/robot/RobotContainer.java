@@ -235,7 +235,6 @@ public class RobotContainer {
     NamedCommands.registerCommand("Set Rightmost", noteVision.setPipeline(1));
     NamedCommands.registerCommand("Set Leftmost", noteVision.setPipeline(2));
 
-
     autoChooser =
         new LoggedDashboardChooser<>(
             "Auto Choices", AutoBuilderNameChanger.buildNameChangedAutoChooser());

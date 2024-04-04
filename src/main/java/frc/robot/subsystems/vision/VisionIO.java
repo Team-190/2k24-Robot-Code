@@ -22,10 +22,7 @@ public interface VisionIO {
 
   public default void enableLEDs() {}
 
-  public default void disableLEDs() {
-  }
-  
-  public default void setPipeline(double pipeline) {
+  public default void disableLEDs() {}
 
-  }
+  public default void setPipeline(double pipeline) {}
 }
