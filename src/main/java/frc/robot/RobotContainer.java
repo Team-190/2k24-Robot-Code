@@ -227,6 +227,10 @@ public class RobotContainer {
         CompositeCommands.getTrackNoteSpikeCommand(
             drive, intake, serializer, noteVision, aprilTagVision));
     NamedCommands.registerCommand(
+        "Track Note Spike Slow",
+        CompositeCommands.getTrackNoteSpikeCommand(
+            drive, intake, serializer, noteVision, aprilTagVision, 0.5));
+    NamedCommands.registerCommand(
         "Track Speaker Far",
         CompositeCommands.getTrackSpeakerFarCommand(drive, hood, shooter, aprilTagVision));
     NamedCommands.registerCommand(

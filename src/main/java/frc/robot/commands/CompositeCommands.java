@@ -110,6 +110,19 @@ public class CompositeCommands {
         .withTimeout(2);
   }
 
+  public static final Command getTrackNoteSpikeCommand(
+      Drive drive,
+      Intake intake,
+      Serializer serializer,
+      Vision noteVision,
+      Vision aprilTagVision,
+      double maxSpeed) {
+    return (DriveCommands.moveTowardsTarget(
+                drive, noteVision, FieldConstants.startingLineX + 1, VisionMode.Notes, maxSpeed)
+            .alongWith(getCollectCommand(intake, serializer)))
+        .withTimeout(2);
+  }
+
   public static final Command getTrackSpeakerFarCommand(
       Drive drive, Hood hood, Shooter shooter, Vision aprilTagVision) {
     return DriveCommands.moveTowardsTarget(drive, aprilTagVision, 3.75, VisionMode.AprilTags);
