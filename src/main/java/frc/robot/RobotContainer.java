@@ -15,6 +15,8 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -225,6 +227,10 @@ public class RobotContainer {
         CompositeCommands.getTrackNoteSpikeCommand(
             drive, intake, serializer, noteVision, aprilTagVision));
     NamedCommands.registerCommand(
+        "Track Note Spike Slow",
+        CompositeCommands.getTrackNoteSpikeCommand(
+            drive, intake, serializer, noteVision, aprilTagVision, 0.5));
+    NamedCommands.registerCommand(
         "Track Speaker Far",
         CompositeCommands.getTrackSpeakerFarCommand(drive, hood, shooter, aprilTagVision));
     NamedCommands.registerCommand(
@@ -232,8 +238,20 @@ public class RobotContainer {
         CompositeCommands.getTrackSpeakerCloseCommand(drive, hood, shooter, aprilTagVision));
     NamedCommands.registerCommand(
         "Aim", CompositeCommands.getAimSpeakerCommand(drive, aprilTagVision));
-    NamedCommands.registerCommand("Set Rightmost", noteVision.setPipeline(1));
-    NamedCommands.registerCommand("Set Leftmost", noteVision.setPipeline(2));
+    NamedCommands.registerCommand(
+        "Set Rightmost",
+        DriverStation.getAlliance().isPresent()
+            ? (DriverStation.getAlliance().get().equals(Alliance.Red)
+                ? (noteVision.setPipeline(2))
+                : (noteVision.setPipeline(1)))
+            : (noteVision.setPipeline(0)));
+    NamedCommands.registerCommand(
+        "Set Leftmost",
+        DriverStation.getAlliance().isPresent()
+            ? (DriverStation.getAlliance().get().equals(Alliance.Red)
+                ? (noteVision.setPipeline(1))
+                : (noteVision.setPipeline(3)))
+            : (noteVision.setPipeline(0)));
 
     autoChooser =
         new LoggedDashboardChooser<>(
