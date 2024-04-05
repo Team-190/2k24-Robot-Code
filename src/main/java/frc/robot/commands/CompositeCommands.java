@@ -97,8 +97,8 @@ public class CompositeCommands {
   public static final Command getTrackNoteCenterCommand(
       Drive drive, Intake intake, Serializer serializer, Vision noteVision, Vision aprilTagVision) {
     return (DriveCommands.moveTowardsTarget(
-                drive, noteVision, (FieldConstants.fieldLength / 2.0) + 0.1, VisionMode.Notes)
-            .alongWith(getCollectCommand(intake, serializer)))
+                drive, noteVision, (FieldConstants.fieldLength / 2.0) + 1, VisionMode.Notes)
+            .raceWith(getCollectCommand(intake, serializer)))
         .withTimeout(3);
   }
 
@@ -106,7 +106,7 @@ public class CompositeCommands {
       Drive drive, Intake intake, Serializer serializer, Vision noteVision, Vision aprilTagVision) {
     return (DriveCommands.moveTowardsTarget(
                 drive, noteVision, FieldConstants.startingLineX + 1, VisionMode.Notes)
-            .alongWith(getCollectCommand(intake, serializer)))
+            .raceWith(getCollectCommand(intake, serializer)))
         .withTimeout(2);
   }
 
