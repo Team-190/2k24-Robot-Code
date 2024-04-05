@@ -38,7 +38,6 @@ public class LinearProfile {
 
   public void setGoal(double goal) {
     this.goal = goal;
-    System.out.println(goal);
   }
 
   /**
