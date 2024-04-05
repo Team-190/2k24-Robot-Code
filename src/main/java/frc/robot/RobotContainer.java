@@ -99,6 +99,9 @@ public class RobotContainer {
   // Tunable Numbers
   private final LoggedDashboardNumber autoDelay = new LoggedDashboardNumber("Auto Delay");
 
+  // Note tracking
+  private static boolean isNoteTracking = true;
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     leds = Leds.getInstance();
@@ -320,7 +323,7 @@ public class RobotContainer {
             () -> -driver.getLeftX(),
             () -> -driver.getRightX(),
             driver.rightBumper(),
-            driver.start()));
+            driver.start())); // change to () -> isNoteTracking for note tracking
     driver.y().onTrue(DriveCommands.resetHeading(drive));
     driver
         .rightTrigger()
@@ -358,6 +361,11 @@ public class RobotContainer {
     operator.povUp().onTrue(climber.preClimb());
     operator.povDown().onTrue(climber.climbAutomatic());
     operator.back().onTrue(climber.zero());
+    operator
+        .rightBumper()
+        .onTrue(
+            Commands.runOnce(() -> isNoteTracking = !isNoteTracking
+            ));
   }
 
   public void updateSnapbackMechanism3d() {
