@@ -35,23 +35,33 @@ public class AutoBuilderNameChanger {
   public static String getUpdatedAutoName(String defaultName) {
     switch (defaultName) {
       case "AmpSide_AmpSideNote_End":
-        return "START: AMP \n -> AMP SIDE NOTE";
+        return "START: AMP \n -> TWO PIECE";
       case "AmpSide_AmpSideNote_Midline1_End":
-        return "START: AMP \n -> AMP SIDE NOTE \n -> MIDLINE 1";
+        return "START: AMP \n -> THREE PIECE";
       case "AmpSide_AmpSideNote_Midline1_Midline2_End":
-        return "START: AMP \n -> AMP SIDE NOTE \n -> MIDLINE 1 \n -> MIDLINE 2";
+        return "START: AMP \n -> FOUR PIECE, AMP NOTE AND MIDLINE";
+      case "AmpSide_AmpSideNote_CenterNote_SourceSideNote_End":
+        return "START: AMP \n -> FULL WING AUTO";
       case "SourceSide_End":
         return "START: SOURCE \n -> GTFOOTW";
       case "SourceSide_SourceSideNote_End":
-        return "START: SOURCE \n -> SOURCE SIDE NOTE";
+        return "START: SOURCE \n -> TWO PIECE";
       case "SourceSide_Midline5_Midline4_End":
-        return "START: SOURCE \n -> MIDLINE 5 \n -> MIDLINE 4";
+        return "START: SOURCE \n -> MIDLINE 5, 4";
+      case "SourceSide_Midline4_Midline5_End":
+        return "START: SOURCE \n -> MIDLINE 4, 5";
       case "SourceSide_Midline4_Midline3_End":
-        return "START: SOURCE \n -> MIDLINE 4 \n -> MIDLINE 3";
+        return "START: SOURCE \n -> ANTI-NASHOBA THREE PIECE";
       case "SourceSide_SourceSideNote_Midline5_End":
-        return "START: SOURCE \n -> SOURCE SIDE NOTE \n -> MIDLINE 5";
+        return "START: SOURCE \n -> URI AUTO";
       case "SourceSide_SourceSideNote_Midline5_Midline4_End":
-        return "START: SOURCE \n -> SOURCE SIDE NOTE \n -> MIDLINE 5 \n -> MIDLINE 4";
+        return "START: SOURCE \n -> URI + 1";
+      case "SourceSide_SourceSideNote_CenterNote_AmpSideNote_End":
+        return "START: SOURCE \n -> FULL WING AUTO";
+      case "Center_AmpSideNote_CenterNote_SourceSideNote_End":
+        return "START: CENTER \n -> START AMP, FULL WING AUTO";
+      case "Center_SourceSideNote_CenterNote_AmpSideNote_End":
+        return "START: CENTER \n -> START SOURCE, FULL WING AUTO";
       case "Leave":
         return "START: OPPONENT SOURCE \n -> LEAVE";
     }

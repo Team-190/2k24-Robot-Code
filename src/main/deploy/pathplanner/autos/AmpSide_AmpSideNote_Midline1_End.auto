@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.6062989112929598,
-      "y": 6.612232821144172
+      "x": 0.44686721852076183,
+      "y": 6.712444649960525
     },
     "rotation": -121.37300514010846
   },
@@ -11,6 +11,12 @@
     "type": "sequential",
     "data": {
       "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "Set Leftmost"
+          }
+        },
         {
           "type": "path",
           "data": {

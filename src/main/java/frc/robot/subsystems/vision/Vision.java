@@ -14,22 +14,24 @@ import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 public class Vision extends VirtualSubsystem {
-  private final String name;
-  private final VisionIO io;
-  private final VisionIOInputsAutoLogged inputs;
+
   private final double CAMERA_OFFSET = Units.inchesToMeters(12.75);
   private final double SPEAKER_TAG_HEIGHT = Units.inchesToMeters(57.13);
   private final double CAMERA_HEIGHT = Units.inchesToMeters(18);
+  private static final double BUFFER_SECONDS = 3;
+  private static final double BLINK_TIME = 0.067;
+
+  private final String name;
+  private final VisionIO io;
+  private final VisionIOInputsAutoLogged inputs;
+
   private final LoggedTunableNumber CAMERA_ANGLE = new LoggedTunableNumber("Vision/Camera Angle");
   private double lastValidTimeStamp = Double.NEGATIVE_INFINITY;
   private Pose2d lastValidRobotPose = new Pose2d();
-  private static final double BUFFER_SECONDS = 3;
 
   private final TimeInterpolatableBuffer<Pose2d> robotPoseBuffer =
       TimeInterpolatableBuffer.createBuffer(BUFFER_SECONDS);
   private Supplier<Pose2d> drivePoseSupplier = null;
-
-  private static final double BLINK_TIME = 0.067;
 
   public Vision(String name, VisionIO io) {
     this.name = name;
@@ -104,6 +106,14 @@ public class Vision extends VirtualSubsystem {
     return Optional.empty();
   }
 
+  public void disableLEDs() {
+    io.disableLEDs();
+  }
+
+  public Command setPipeline(double pipeline) {
+    return Commands.runOnce(() -> io.setPipeline(pipeline));
+  }
+
   public Command blinkLEDs() {
     return Commands.sequence(
         Commands.runOnce(() -> io.enableLEDs()),
@@ -118,9 +128,5 @@ public class Vision extends VirtualSubsystem {
         Commands.waitSeconds(BLINK_TIME),
         Commands.runOnce(() -> io.disableLEDs()),
         Commands.waitSeconds(BLINK_TIME));
-  }
-
-  public void disableLEDs() {
-    io.disableLEDs();
   }
 }

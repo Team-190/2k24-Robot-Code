@@ -48,6 +48,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "Set Leftmost"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Amp Side to Midline 1"

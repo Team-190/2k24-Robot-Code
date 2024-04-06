@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.DoubleSubscriber;
+import edu.wpi.first.networktables.IntegerSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.FieldConstants;
@@ -16,6 +17,7 @@ public class VisionIOLimelight implements VisionIO {
   private final DoubleSubscriber ty;
   private final DoubleSubscriber tv;
   private final DoubleArraySubscriber botpose;
+  private final IntegerSubscriber pipeline;
 
   public VisionIOLimelight(VisionMode mode) {
     table = NetworkTableInstance.getDefault().getTable(mode.name);
@@ -26,6 +28,7 @@ public class VisionIOLimelight implements VisionIO {
         table
             .getDoubleArrayTopic("botpose")
             .subscribe(new double[] {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0});
+    pipeline = table.getIntegerTopic("pipeline").subscribe(0);
   }
 
   @Override
@@ -47,6 +50,7 @@ public class VisionIOLimelight implements VisionIO {
                 Units.degreesToRadians(botpose.get()[3]),
                 Units.degreesToRadians(botpose.get()[4]),
                 Units.degreesToRadians(botpose.get()[5])));
+    inputs.pipeline = pipeline.get();
   }
 
   @Override
@@ -62,5 +66,10 @@ public class VisionIOLimelight implements VisionIO {
   @Override
   public void disableLEDs() {
     table.getEntry("ledMode").setNumber(1);
+  }
+
+  @Override
+  public void setPipeline(double pipeline) {
+    table.getEntry("pipeline").setNumber(pipeline);
   }
 }
