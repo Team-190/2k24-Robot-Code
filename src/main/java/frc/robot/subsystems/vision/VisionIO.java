@@ -12,6 +12,7 @@ public interface VisionIO {
     public boolean tv = false;
     public double timeStamp = 0.0;
     public Pose3d robotPose = new Pose3d();
+    public long pipeline = 0;
   }
 
   public default void updateInputs(VisionIOInputs inputs) {}

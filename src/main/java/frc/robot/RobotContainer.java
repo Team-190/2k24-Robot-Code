@@ -31,7 +31,6 @@ import frc.robot.subsystems.accelerator.AcceleratorIOSim;
 import frc.robot.subsystems.accelerator.AcceleratorIOTalonFX;
 import frc.robot.subsystems.amp.Amp;
 import frc.robot.subsystems.amp.AmpIO;
-import frc.robot.subsystems.amp.AmpIOTalonFX;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
 import frc.robot.subsystems.climber.ClimberIOSim;
@@ -99,6 +98,9 @@ public class RobotContainer {
   // Tunable Numbers
   private final LoggedDashboardNumber autoDelay = new LoggedDashboardNumber("Auto Delay");
 
+  // Note tracking
+  private static boolean isNoteTracking = true;
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     leds = Leds.getInstance();
@@ -119,7 +121,7 @@ public class RobotContainer {
           serializer = new Serializer(new SerializerIOTalonFX());
           kicker = new Kicker(new KickerIOTalonFX());
           accelerator = new Accelerator(new AcceleratorIOTalonFX());
-          amp = new Amp(new AmpIOTalonFX());
+          // amp = new Amp(new AmpIOTalonFX());
           climber = new Climber(new ClimberIOTalonFX());
           aprilTagVision =
               new Vision("AprilTagVision", new VisionIOLimelight(VisionMode.AprilTags));
@@ -227,6 +229,10 @@ public class RobotContainer {
         CompositeCommands.getTrackNoteSpikeCommand(
             drive, intake, serializer, noteVision, aprilTagVision));
     NamedCommands.registerCommand(
+        "Track Note Spike Medium",
+        CompositeCommands.getTrackNoteSpikeCommand(
+            drive, intake, serializer, noteVision, aprilTagVision, 1.5));
+    NamedCommands.registerCommand(
         "Track Note Spike Slow",
         CompositeCommands.getTrackNoteSpikeCommand(
             drive, intake, serializer, noteVision, aprilTagVision, 0.5));
@@ -320,11 +326,12 @@ public class RobotContainer {
             () -> -driver.getLeftX(),
             () -> -driver.getRightX(),
             driver.rightBumper(),
-            driver.start()));
+            driver.start())); // change to driver.leftBumper().and(() -> isNoteTracking) for note
+    // tracking
     driver.y().onTrue(DriveCommands.resetHeading(drive));
     driver
         .rightTrigger()
-        .whileTrue(CompositeCommands.getFeedCommand(shooter, hood, amp, accelerator, kicker))
+        .whileTrue(CompositeCommands.getSourceFeedCommand(shooter, hood, amp, accelerator, kicker))
         .onFalse(amp.retractAmp());
     driver.leftTrigger().whileTrue(CompositeCommands.getOuttakeCommand(intake, serializer, kicker));
     driver
@@ -347,8 +354,9 @@ public class RobotContainer {
     driver.b().whileTrue(CompositeCommands.getShootCommand(intake, serializer, kicker));
     driver.a().whileTrue(intake.singleActuation());
 
-    operator.leftBumper().whileTrue(hood.increaseAngle());
-    operator.leftTrigger().whileTrue(hood.decreaseAngle());
+    operator
+        .rightBumper()
+        .whileTrue(CompositeCommands.getAmpFeedCommand(shooter, hood, amp, accelerator, kicker));
     operator.y().whileTrue(shooter.increaseVelocity());
     operator.a().whileTrue(shooter.decreaseVelocity());
     operator
@@ -358,6 +366,7 @@ public class RobotContainer {
     operator.povUp().onTrue(climber.preClimb());
     operator.povDown().onTrue(climber.climbAutomatic());
     operator.back().onTrue(climber.zero());
+    operator.leftBumper().onTrue(Commands.runOnce(() -> isNoteTracking = !isNoteTracking));
   }
 
   public void updateSnapbackMechanism3d() {
