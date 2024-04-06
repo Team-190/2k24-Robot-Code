@@ -64,7 +64,7 @@ public class Hood extends SubsystemBase {
         STOWED_POSITION.initDefault(0.0);
         AMP_POSITION.initDefault(0.3);
         SOURCE_SIDE_FEED_POSITION.initDefault(0.3);
-        AMP_SIDE_FEED_POSITION.initDefault(0.45);
+        AMP_SIDE_FEED_POSITION.initDefault(0.5);
         MIN_POSITION.initDefault(0.0);
         MAX_POSITION.initDefault(0.75);
         break;

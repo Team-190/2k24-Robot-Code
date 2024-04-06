@@ -45,8 +45,11 @@ public class Shooter extends SubsystemBase {
   private static final LoggedTunableNumber DEFAULT_SPEED =
       new LoggedTunableNumber("Shooter/Default Speed");
 
-  private static final LoggedTunableNumber FEED_SPEED =
-      new LoggedTunableNumber("Shooter/Feed Speed");
+  private static final LoggedTunableNumber SOURCE_FEED_SPEED =
+      new LoggedTunableNumber("Shooter/Source Feed Speed");
+
+  private static final LoggedTunableNumber AMP_FEED_SPEED =
+      new LoggedTunableNumber("Shooter/Amp Feed Speed");
 
   private static final LoggedTunableNumber AMP_SPEED = new LoggedTunableNumber("Shooter/Amp Speed");
 
@@ -99,7 +102,8 @@ public class Shooter extends SubsystemBase {
     KS_RIGHT.initDefault(0.15054);
     KV_RIGHT.initDefault(0.0068511);
     KA_RIGHT.initDefault(0.0011501);
-    FEED_SPEED.initDefault(550);
+    SOURCE_FEED_SPEED.initDefault(550);
+    AMP_FEED_SPEED.initDefault(400);
     switch (Constants.ROBOT) {
       case SNAPBACK:
         KP.initDefault(0.008);
@@ -193,7 +197,7 @@ public class Shooter extends SubsystemBase {
     Logger.recordOutput("Shooter/At Goal", atGoal());
   }
 
-  private void setVelocity(double velocityRadPerSec) {
+  private void setSpinVelocity(double velocityRadPerSec) {
     isOpenLoop = false;
     if (spinDirection.equals(SpinDirection.COUNTERCLOCKWISE)) {
       leftProfile.setGoal((velocityRadPerSec + flywheelOffset) * (RATIO.get() + spinOffset));
@@ -207,6 +211,12 @@ public class Shooter extends SubsystemBase {
       rightProfile.setGoal(velocityRadPerSec + flywheelOffset);
     }
   }
+
+  // private void setYeetVelocity(double velocityRadPerSec) {
+  //   isOpenLoop = false;
+  //     leftProfile.setGoal(velocityRadPerSec + flywheelOffset);
+  //     rightProfile.setGoal(velocityRadPerSec + flywheelOffset);
+  // }
 
   private void stop() {
     isOpenLoop = true;
@@ -242,7 +252,7 @@ public class Shooter extends SubsystemBase {
   public Command runVelocity() {
     return runEnd(
         () -> {
-          setVelocity(DEFAULT_SPEED.get());
+          setSpinVelocity(DEFAULT_SPEED.get());
         },
         () -> {
           stop();
@@ -252,17 +262,27 @@ public class Shooter extends SubsystemBase {
   public Command runAmp() {
     return runEnd(
         () -> {
-          setVelocity(AMP_SPEED.get());
+          setSpinVelocity(AMP_SPEED.get());
         },
         () -> {
           stop();
         });
   }
 
-  public Command runFeed() {
+  public Command runSourceFeed() {
     return runEnd(
         () -> {
-          setVelocity(FEED_SPEED.get());
+          setSpinVelocity(SOURCE_FEED_SPEED.get());
+        },
+        () -> {
+          stop();
+        });
+  }
+
+  public Command runAmpFeed() {
+    return runEnd(
+        () -> {
+          setSpinVelocity(AMP_FEED_SPEED.get());
         },
         () -> {
           stop();
@@ -300,13 +320,13 @@ public class Shooter extends SubsystemBase {
               }
             }
 
-            setVelocity(
+            setSpinVelocity(
                 ShotCalculator.poseCalculation(
                         robotPoseSupplier.get().get(), velocitySupplier.get())
                     .shooterSpeed());
           } else {
             if (DriverStation.isAutonomous()) {
-              setVelocity(DEFAULT_SPEED.get());
+              setSpinVelocity(DEFAULT_SPEED.get());
             }
           }
         },
@@ -318,7 +338,7 @@ public class Shooter extends SubsystemBase {
   public Command runAngleDistance() {
     return runEnd(
         () -> {
-          setVelocity(ShotCalculator.angleCalculation().shooterSpeed());
+          setSpinVelocity(ShotCalculator.angleCalculation().shooterSpeed());
         },
         () -> {
           stop();

@@ -46,12 +46,12 @@ public class CompositeCommands {
 
   public static final Command getSourceFeedCommand(
       Shooter shooter, Hood hood, Amp amp, Accelerator accelerator, Kicker kicker) {
-    return shooter.runFeed().alongWith(hood.setSourceFeed(), accelerator.runAccelerator());
+    return shooter.runSourceFeed().alongWith(hood.setSourceFeed(), accelerator.runAccelerator());
   }
 
   public static final Command getAmpFeedCommand(
       Shooter shooter, Hood hood, Amp amp, Accelerator accelerator, Kicker kicker) {
-    return shooter.runFeed().alongWith(hood.setAmpFeed(), accelerator.runAccelerator());
+    return shooter.runAmpFeed().alongWith(hood.setAmpFeed(), accelerator.runAccelerator());
   }
 
   public static final Command getPosePrepShooterCommand(
