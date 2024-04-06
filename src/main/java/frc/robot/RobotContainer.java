@@ -355,7 +355,7 @@ public class RobotContainer {
     driver.a().whileTrue(intake.singleActuation());
 
     operator
-        .leftTrigger()
+        .rightBumper()
         .whileTrue(CompositeCommands.getAmpFeedCommand(shooter, hood, amp, accelerator, kicker));
     operator.y().whileTrue(shooter.increaseVelocity());
     operator.a().whileTrue(shooter.decreaseVelocity());
@@ -366,7 +366,7 @@ public class RobotContainer {
     operator.povUp().onTrue(climber.preClimb());
     operator.povDown().onTrue(climber.climbAutomatic());
     operator.back().onTrue(climber.zero());
-    operator.rightBumper().onTrue(Commands.runOnce(() -> isNoteTracking = !isNoteTracking));
+    operator.leftBumper().onTrue(Commands.runOnce(() -> isNoteTracking = !isNoteTracking));
   }
 
   public void updateSnapbackMechanism3d() {
