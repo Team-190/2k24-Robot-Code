@@ -160,10 +160,9 @@ public class DriveCommands {
                   isFlipped
                       ? drive.getRotation().plus(new Rotation2d(Math.PI))
                       : drive.getRotation());
-          // if (noteTracking.getAsBoolean()) {                           // comment back in for no
-          // Y movement on note tracking, or if something is wrong
-          //   chassisSpeeds.vyMetersPerSecond = 0;
-          // }
+          if (noteTracking.getAsBoolean()) {
+            chassisSpeeds.vyMetersPerSecond = 0;
+          }
 
           // Convert to field relative speeds & send command
           drive.runVelocity(chassisSpeeds);

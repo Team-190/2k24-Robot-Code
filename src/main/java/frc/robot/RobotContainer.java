@@ -99,7 +99,7 @@ public class RobotContainer {
   private final LoggedDashboardNumber autoDelay = new LoggedDashboardNumber("Auto Delay");
 
   // Note tracking
-  private static boolean isNoteTracking = true;
+  private static boolean isNoteTracking = false;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
