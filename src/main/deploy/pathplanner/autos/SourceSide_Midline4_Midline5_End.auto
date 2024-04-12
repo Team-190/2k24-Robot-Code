@@ -76,6 +76,24 @@
           "data": {
             "name": "Track Note Center"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Midline 5 to Speaker Far"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Aim"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
         }
       ]
     }
