@@ -256,7 +256,7 @@ public class RobotContainer {
         DriverStation.getAlliance().isPresent()
             ? (DriverStation.getAlliance().get().equals(Alliance.Red)
                 ? (noteVision.setPipeline(1))
-                : (noteVision.setPipeline(3)))
+                : (noteVision.setPipeline(2)))
             : (noteVision.setPipeline(0)));
 
     autoChooser =
