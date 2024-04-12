@@ -50,8 +50,10 @@ public class AutoBuilderNameChanger {
         return "START: SOURCE \n -> MIDLINE 5, 4";
       case "SourceSide_Midline4_Midline5_End":
         return "START: SOURCE \n -> MIDLINE 4, 5";
-      case "SourceSide_Midline4_Midline3_End":
-        return "START: SOURCE \n -> ANTI-NASHOBA THREE PIECE";
+      case "OpponentSource_Midline4_Midline3_End":
+        return "START: OPPONENT SOURCE \n -> MIDLINE 4, 3";
+      case "OpponentSource_Midline5_Midline4_Midline3_End":
+        return "START: OPPONENT SOURCE \n -> MIDLINE 5, 4, 3";
       case "SourceSide_SourceSideNote_Midline5_End":
         return "START: SOURCE \n -> URI AUTO";
       case "SourceSide_SourceSideNote_Midline5_Midline4_End":

@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.48194968184808146,
-      "y": 4.408696224799858
+      "x": 1.5591467248508268,
+      "y": 1.2970542880976474
     },
-    "rotation": 119.71979193133396
+    "rotation": 179.91138191103195
   },
   "command": {
     "type": "sequential",
@@ -20,7 +20,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Source Side to Shot"
+            "pathName": "Opponent Source to Midline 5"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Track Note Center"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Midline 5 to Speaker Far"
           }
         },
         {
@@ -38,7 +50,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Source Side to Midline 4"
+            "pathName": "Speaker Far to Midline 4"
           }
         },
         {
@@ -50,7 +62,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Mideline 4 to Speaker Far"
+            "pathName": "Midline 4 to Speaker Far"
           }
         },
         {
@@ -68,7 +80,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Speaker Far to Midline3 Note Alternate"
+            "pathName": "Source Side to Midline 3"
           }
         },
         {
@@ -80,7 +92,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Midline3 Note to End"
+            "pathName": "Midline 3 to Speaker Far"
           }
         },
         {

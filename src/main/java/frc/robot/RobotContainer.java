@@ -325,12 +325,9 @@ public class RobotContainer {
             () -> -driver.getLeftY(),
             () -> -driver.getLeftX(),
             () -> -driver.getRightX(),
+            driver.rightStick(),
             driver.rightBumper(),
-            driver
-                .leftBumper()
-                .and(() -> isNoteTracking))); // change to driver.leftBumper().and(() ->
-    // isNoteTracking) for note
-    // tracking
+            driver.leftBumper().and(() -> isNoteTracking)));
     driver.y().onTrue(DriveCommands.resetHeading(drive));
     driver
         .rightTrigger()

@@ -84,6 +84,7 @@ public class DriveCommands {
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
       DoubleSupplier omegaSupplier,
+      BooleanSupplier isFullRotationSpeed,
       BooleanSupplier aprilTagTracking,
       BooleanSupplier noteTracking) {
 
@@ -104,7 +105,7 @@ public class DriveCommands {
 
           // Square values
           linearMagnitude = linearMagnitude * linearMagnitude;
-          omega = Math.copySign(omega * omega, omega);
+          omega = isFullRotationSpeed.getAsBoolean() ? omega : Math.copySign(omega * omega, omega);
 
           if (aprilTagTracking.getAsBoolean()) {
             linearMagnitude =
