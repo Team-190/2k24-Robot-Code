@@ -366,7 +366,9 @@ public class RobotContainer {
     operator.povUp().onTrue(climber.preClimb());
     operator.povDown().onTrue(climber.climbAutomatic());
     operator.back().onTrue(climber.zero());
-    operator.leftBumper().onTrue(Commands.runOnce(() -> isNoteTracking = !isNoteTracking));
+    operator.leftBumper().onTrue(hood.decreaseAngle());
+    operator.leftTrigger().onTrue(hood.increaseAngle());
+    operator.start().onTrue(Commands.runOnce(() -> isNoteTracking = !isNoteTracking));
   }
 
   public void updateSnapbackMechanism3d() {
