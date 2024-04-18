@@ -216,10 +216,13 @@ public class RobotContainer {
         (Commands.waitUntil(() -> ShotCalculator.shooterReady(hood, shooter))
                 .andThen(
                     CompositeCommands.getShootCommand(intake, serializer, kicker)
-                        .withTimeout(0.25)))
+                        .withTimeout(0.25)
+                        .andThen(intake.retractIntake())))
             .withTimeout(2));
     NamedCommands.registerCommand(
         "Feed", CompositeCommands.getFeedCommand(intake, serializer, kicker));
+    NamedCommands.registerCommand(
+        "Intake", CompositeCommands.getCollectCommand(intake, serializer));
     NamedCommands.registerCommand(
         "Track Note Center",
         CompositeCommands.getTrackNoteCenterCommand(
@@ -246,18 +249,23 @@ public class RobotContainer {
         "Aim", CompositeCommands.getAimSpeakerCommand(drive, aprilTagVision));
     NamedCommands.registerCommand(
         "Set Rightmost",
-        DriverStation.getAlliance().isPresent()
-            ? (DriverStation.getAlliance().get().equals(Alliance.Red)
-                ? (noteVision.setPipeline(2))
-                : (noteVision.setPipeline(1)))
-            : (noteVision.setPipeline(0)));
+        Commands.either(
+            Commands.either(
+                noteVision.setPipeline(2),
+                noteVision.setPipeline(1),
+                () -> DriverStation.getAlliance().get().equals(Alliance.Red)),
+            noteVision.setPipeline(0),
+            () -> DriverStation.getAlliance().isPresent()));
     NamedCommands.registerCommand(
         "Set Leftmost",
-        DriverStation.getAlliance().isPresent()
-            ? (DriverStation.getAlliance().get().equals(Alliance.Red)
-                ? (noteVision.setPipeline(1))
-                : (noteVision.setPipeline(2)))
-            : (noteVision.setPipeline(0)));
+        Commands.either(
+            Commands.either(
+                noteVision.setPipeline(1),
+                noteVision.setPipeline(2),
+                () -> DriverStation.getAlliance().get().equals(Alliance.Red)),
+            noteVision.setPipeline(0),
+            () -> DriverStation.getAlliance().isPresent()));
+    NamedCommands.registerCommand("Set Centermost", noteVision.setPipeline(0));
 
     autoChooser =
         new LoggedDashboardChooser<>(
