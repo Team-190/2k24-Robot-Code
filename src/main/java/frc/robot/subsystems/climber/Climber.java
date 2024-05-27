@@ -184,14 +184,14 @@ public class Climber extends SubsystemBase {
                 .until(() -> inputs.rightCurrentAmps[inputs.rightCurrentAmps.length - 1] >= 25)),
         Commands.race(
             Commands.runEnd(() -> io.setLeftVoltage(-8.0), () -> io.setLeftVoltage(0.0))
-                .until(() -> inputs.leftPositionMeters < 0.5),
+                .until(() -> inputs.leftPositionMeters < 0.25),
             Commands.runEnd(() -> io.setRightVoltage(-8.0), () -> io.setRightVoltage(0.0))
-                .until(() -> inputs.leftPositionMeters < 0.5)),
+                .until(() -> inputs.leftPositionMeters < 0.25)),
         Commands.parallel(
                 Commands.run(
                     () -> {
-                      io.setLeftVoltage(-1.1);
-                      io.setRightVoltage(-1.1);
+                      io.setLeftVoltage(-1.50);
+                      io.setRightVoltage(-1.50);
                     }),
                 Commands.runOnce(() -> io.setLock(true)))
             .withTimeout(0.25),
