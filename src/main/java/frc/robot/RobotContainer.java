@@ -362,6 +362,7 @@ public class RobotContainer {
     driver.b().whileTrue(CompositeCommands.getShootCommand(intake, serializer, kicker));
     driver.a().whileTrue(intake.singleActuation());
     driver.y().onTrue(DriveCommands.resetHeading(drive));
+    driver.x().onTrue(DriveCommands.XLock(drive));
 
     operator
         .rightBumper()
