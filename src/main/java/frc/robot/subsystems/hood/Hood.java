@@ -51,7 +51,7 @@ public class Hood extends SubsystemBase {
 
   private final ProfiledPIDController profiledFeedback;
 
-  private double angleOffset = Units.degreesToRadians(2.25);
+  private double angleOffset = Units.degreesToRadians(2.0);
 
   static {
     GOAL_TOLERANCE.initDefault(0.017);
