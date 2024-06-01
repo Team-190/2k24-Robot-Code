@@ -32,11 +32,11 @@
     },
     {
       "anchor": {
-        "x": 1.9904956049228335,
+        "x": 2.2243786937716323,
         "y": 4.420996820135716
       },
       "prevControl": {
-        "x": 1.3803947125899014,
+        "x": 1.6142778014387003,
         "y": 4.816432583684839
       },
       "nextControl": null,
@@ -46,7 +46,25 @@
   ],
   "rotationTargets": [],
   "constraintZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 1.15,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Intake"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 5.0,
     "maxAcceleration": 4.5,
