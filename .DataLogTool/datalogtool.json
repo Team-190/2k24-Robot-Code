@@ -1,0 +1,7 @@
+{
+  "download": {
+    "deleteAfter": false,
+    "remoteDir": "/U/logs",
+    "serverTeam": "10.1.90.2"
+  }
+}
