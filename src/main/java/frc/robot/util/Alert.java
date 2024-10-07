@@ -18,13 +18,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
+import lombok.Getter;
 
 /** Class for managing persistent alerts to be sent over NetworkTables. */
 public class Alert {
   private static Map<String, SendableAlerts> groups = new HashMap<String, SendableAlerts>();
 
   private final AlertType type;
-  private boolean active = false;
+  @Getter private boolean active = false;
   private double activeStartTime = 0.0;
   private String text;
 

@@ -1,18 +1,6 @@
-// Copyright 2021-2024 FRC 6328
-// http://github.com/Mechanical-Advantage
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// version 3 as published by the Free Software Foundation or
-// available in the root directory of this project.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-
 package frc.robot;
 
+import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
@@ -21,7 +9,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
-import frc.robot.util.VirtualSubsystem;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -53,7 +40,7 @@ public class Robot extends LoggedRobot {
   private RobotContainer robotContainer;
 
   public Robot() {
-    super(Constants.LOOP_PERIOD_SECS);
+    super(Constants.LOOP_PERIOD_SECONDS);
   }
 
   /**
@@ -104,6 +91,8 @@ public class Robot extends LoggedRobot {
 
     // Start AdvantageKit logger
     Logger.start();
+    SignalLogger.setPath("/U/logs/");
+    SignalLogger.start();
 
     // Start timers
     canErrorTimer.reset();
@@ -119,6 +108,9 @@ public class Robot extends LoggedRobot {
     robotContainer = new RobotContainer();
 
     Shuffleboard.selectTab("Autonomous");
+    if (!DriverStation.isFMSAttached()) {
+      DriverStation.silenceJoystickConnectionWarning(true);
+    }
   }
 
   /** This function is called periodically during all modes. */
@@ -129,7 +121,7 @@ public class Robot extends LoggedRobot {
     // finished or interrupted commands, and running subsystem periodic() methods.
     // This must be called from the robot's periodic block in order for anything in
     // the Command-based framework to work.
-    VirtualSubsystem.periodicAll();
+    robotContainer.robotPeriodic();
     CommandScheduler.getInstance().run();
 
     // Check logging fault
@@ -143,16 +135,11 @@ public class Robot extends LoggedRobot {
         && disabledTimer.hasElapsed(lowBatteryDisabledTime)) {
       lowBatteryAlert.set(true);
     }
-
-    robotContainer.updateSnapbackMechanism3d();
-    robotContainer.updatePoseCalculation();
   }
 
   /** This function is called once when the robot is disabled. */
   @Override
-  public void disabledInit() {
-    robotContainer.resetVisionPipelines();
-  }
+  public void disabledInit() {}
 
   /** This function is called periodically when disabled. */
   @Override
@@ -167,6 +154,8 @@ public class Robot extends LoggedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.schedule();
     }
+
+    Shuffleboard.selectTab("Autonomous");
   }
 
   /** This function is called periodically during autonomous. */
