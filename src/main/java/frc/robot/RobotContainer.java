@@ -8,14 +8,14 @@ import frc.robot.Constants.Mode;
 import frc.robot.commands.AutoRoutines;
 import frc.robot.commands.CompositeCommands;
 import frc.robot.commands.DriveCommands;
-import frc.robot.subsystems.drive.drive.Drive;
-import frc.robot.subsystems.drive.gyro.GyroIO;
-import frc.robot.subsystems.drive.gyro.GyroIOPigeon2;
-import frc.robot.subsystems.drive.module.ModuleConstants;
-import frc.robot.subsystems.drive.module.ModuleIO;
-import frc.robot.subsystems.drive.module.ModuleIOSim;
-import frc.robot.subsystems.drive.module.ModuleIOTalonFX;
-import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.shared.drive.drive.Drive;
+import frc.robot.subsystems.shared.drive.gyro.GyroIO;
+import frc.robot.subsystems.shared.drive.gyro.GyroIOPigeon2;
+import frc.robot.subsystems.shared.drive.module.ModuleConstants;
+import frc.robot.subsystems.shared.drive.module.ModuleIO;
+import frc.robot.subsystems.shared.drive.module.ModuleIOSim;
+import frc.robot.subsystems.shared.drive.module.ModuleIOTalonFX;
+import frc.robot.subsystems.shared.vision.Vision;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {
