@@ -1,13 +1,15 @@
 package frc.robot.subsystems.snapback.shooter;
 
-import org.littletonrobotics.junction.AutoLog;
-
 import edu.wpi.first.math.geometry.Rotation2d;
+import org.littletonrobotics.junction.AutoLog;
 
 /** Interface for Snapback's shooter subsystem. */
 public interface ShooterIO {
 
-  /** Inputs for Snapback's shooter subsystem. Positions and velocity are of the roller shafts, not the motor shafts */
+  /**
+   * Inputs for Snapback's shooter subsystem. Positions and velocity are of the roller shafts, not
+   * the motor shafts
+   */
   @AutoLog
   public static class ClimberIOInputs {
     public Rotation2d leftPosition;
@@ -23,11 +25,13 @@ public interface ShooterIO {
     public double rightTemperatureCelsius;
   }
 
+  public default void updateInputs(ClimberIOInputs inputs) {}
+
   public default void setLeftVoltage(double volts) {}
 
   public default void setRightVoltage(double volts) {}
 
-  public default void setLeftVelocity(double velocityRadiansPerSecond) {}
+  public default void setLeftVelocitySetpoint(double velocityRadiansPerSecond) {}
 
-  public default void setRightVelocity(double velocityRadiansPerSecond) {}
+  public default void setRightVelocitySetpoint(double velocityRadiansPerSecond) {}
 }

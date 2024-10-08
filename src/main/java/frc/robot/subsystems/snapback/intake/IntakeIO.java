@@ -6,7 +6,10 @@ import org.littletonrobotics.junction.AutoLog;
 /** Interface for Snapback's intake subsystem */
 public interface IntakeIO {
 
-  /** Inputs for Snapback's intake subsystem. Positions and velocities are of the roller shafts, not the motor shafts */
+  /**
+   * Inputs for Snapback's intake subsystem. Positions and velocities are of the roller shafts, not
+   * the motor shafts
+   */
   @AutoLog
   public static class IntakeIOInputs {
     public Rotation2d intakePosition = new Rotation2d();
@@ -29,6 +32,8 @@ public interface IntakeIO {
 
     public boolean sensorValue = false;
   }
+
+  public default void updateInputs(IntakeIOInputs inputs) {}
 
   public default void setIntakeVoltage(double volts) {}
 
