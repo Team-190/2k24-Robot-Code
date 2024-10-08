@@ -6,7 +6,7 @@ import org.littletonrobotics.junction.AutoLog;
 /** Interface for Snapback's climber subsystem. */
 public interface ClimberIO {
 
-  /** Inputs for Snapback's climber subsystem. Position and velocity are of the climber pullies, not the motor shafts */
+  /** Inputs for Snapback's climber subsystem. Positions and velocity are of the climber pulleys, not the motor shafts */
   @AutoLog
   public static class ClimberIOInputs {
     public Rotation2d leftPosition;
