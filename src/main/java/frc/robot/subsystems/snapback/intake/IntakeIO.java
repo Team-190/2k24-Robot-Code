@@ -3,7 +3,10 @@ package frc.robot.subsystems.snapback.intake;
 import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;
 
+/** Interface for Snapback's intake subsystem */
 public interface IntakeIO {
+
+  /** Inputs for Snapback's intake subsystem. Position and velocities are of the roller shafts, not the motor shafts */
   @AutoLog
   public static class IntakeIOInputs {
     public Rotation2d intakePosition = new Rotation2d();
