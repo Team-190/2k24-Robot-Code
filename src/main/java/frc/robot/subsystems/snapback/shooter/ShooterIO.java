@@ -7,8 +7,8 @@ import org.littletonrobotics.junction.AutoLog;
 public interface ShooterIO {
 
   /**
-   * Inputs for Snapback's shooter subsystem. Positions and velocity are of the roller shafts, not
-   * the motor shafts
+   * Inputs for Snapback's shooter subsystem. Positions and velocities are of the roller shafts, not
+   * the motor shafts.
    */
   @AutoLog
   public static class ClimberIOInputs {
@@ -25,13 +25,18 @@ public interface ShooterIO {
     public double rightTemperatureCelsius;
   }
 
+  /** Updates AdvantageKit inputs */
   public default void updateInputs(ClimberIOInputs inputs) {}
 
+  /** Sets motor voltage for left flywheel. */
   public default void setLeftVoltage(double volts) {}
 
+  /** Sets motor voltage for right flywheel. */
   public default void setRightVoltage(double volts) {}
 
+  /** Sets motor closed loop velocity setpoint for left flywheel. */
   public default void setLeftVelocitySetpoint(double velocityRadiansPerSecond) {}
 
+  /** Sets motor closed loop velocity setpoint for right flywheel. */
   public default void setRightVelocitySetpoint(double velocityRadiansPerSecond) {}
 }

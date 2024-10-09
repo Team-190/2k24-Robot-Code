@@ -7,8 +7,8 @@ import org.littletonrobotics.junction.AutoLog;
 public interface ClimberIO {
 
   /**
-   * Inputs for Snapback's climber subsystem. Positions and velocity are of the climber pulleys, not
-   * the motor shafts
+   * Inputs for Snapback's climber subsystem. Positions and velocities are of the climber pulleys,
+   * not the motor shafts.
    */
   @AutoLog
   public static class ClimberIOInputs {
@@ -25,17 +25,24 @@ public interface ClimberIO {
     public double rightTemperatureCelsius;
   }
 
+  /** Updates AdvantageKit inputs. */
   public default void updateInputs(ClimberIOInputs inputs) {}
 
+  /** Sets motor voltage for left climber. */
   public default void setLeftVoltage(double volts) {}
 
+  /** Sets motor voltage for right climber. */
   public default void setRightVoltage(double volts) {}
 
+  /** Sets motor closed loop position setpoint for left climber. */
   public default void setLeftPositionSetpoint(Rotation2d position) {}
 
+  /** Sets motor closed loop position setpoint for right climber. */
   public default void setRightPositionSetpoint(Rotation2d position) {}
 
+  /** Sets motor position for left climber. */
   public default void setLeftPosition(Rotation2d position) {}
 
+  /** Sets motor position for right climber. */
   public default void setRightPosition(Rotation2d position) {}
 }

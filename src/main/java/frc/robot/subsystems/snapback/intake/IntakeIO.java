@@ -3,12 +3,12 @@ package frc.robot.subsystems.snapback.intake;
 import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;
 
-/** Interface for Snapback's intake subsystem */
+/** Interface for Snapback's intake subsystem. */
 public interface IntakeIO {
 
   /**
    * Inputs for Snapback's intake subsystem. Positions and velocities are of the roller shafts, not
-   * the motor shafts
+   * the motor shafts.
    */
   @AutoLog
   public static class IntakeIOInputs {
@@ -33,11 +33,15 @@ public interface IntakeIO {
     public boolean sensorValue = false;
   }
 
+  /** Updates AdvantageKit inputs. */
   public default void updateInputs(IntakeIOInputs inputs) {}
 
+  /** Sets intake motor voltage. */
   public default void setIntakeVoltage(double volts) {}
 
+  /** Sets serializer motor voltage. */
   public default void setSerializerVoltage(double volts) {}
 
+  /** Sets kicker motor voltage. */
   public default void setKickerVoltage(double volts) {}
 }

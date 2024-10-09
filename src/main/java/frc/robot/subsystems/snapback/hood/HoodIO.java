@@ -6,8 +6,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 public interface HoodIO {
 
   /**
-   * Inputs for Snapback's hood subsystem. Positions and Velocities are of the output shaft, not the
-   * motor shaft
+   * Inputs for Snapback's hood subsystem. Positions and velocities are of the output shaft, not the
+   * motor shaft.
    */
   public static class HoodIOInputs {
     public Rotation2d position;
@@ -17,11 +17,15 @@ public interface HoodIO {
     public double temperatureCelsius;
   }
 
+  /** Updates AdvantageKit inputs. */
   public default void updateInputs(HoodIOInputs inputs) {}
 
+  /** Sets motor voltage. */
   public default void setVoltage(double volts) {}
 
+  /** Sets motor closed loop position setpoint. */
   public default void setPositionSetpoint(Rotation2d position) {}
 
+  /** Sets motor position. */
   public default void setPosition(Rotation2d position) {}
 }
