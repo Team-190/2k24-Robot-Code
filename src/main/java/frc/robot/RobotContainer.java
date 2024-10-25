@@ -335,6 +335,7 @@ public class RobotContainer {
             () -> -driver.getRightX(),
             driver.rightStick(),
             driver.rightBumper(),
+            operator.rightBumper(),
             driver.leftBumper().and(() -> isNoteTracking)));
     driver.y().onTrue(DriveCommands.resetHeading(drive));
     driver
@@ -362,21 +363,46 @@ public class RobotContainer {
     driver.b().whileTrue(CompositeCommands.getShootCommand(intake, serializer, kicker));
     driver.a().whileTrue(intake.singleActuation());
 
-    operator
-        .rightBumper()
-        .whileTrue(CompositeCommands.getAmpFeedCommand(shooter, hood, amp, accelerator, kicker));
+    // operator
+    //     .rightBumper()
+    //     .whileTrue(CompositeCommands.getAmpFeedCommand(shooter, hood, amp, accelerator, kicker));
     operator.y().whileTrue(shooter.increaseVelocity());
     operator.a().whileTrue(shooter.decreaseVelocity());
-    operator
-        .rightTrigger()
-        .whileTrue(CompositeCommands.getAmpCommand(shooter, hood, amp, accelerator, kicker))
-        .onFalse(amp.retractAmp());
+    // operator
+    //     .rightTrigger()
+    //     .whileTrue(CompositeCommands.getAmpCommand(shooter, hood, amp, accelerator, kicker))
+    //     .onFalse(amp.retractAmp());
     operator.povUp().onTrue(climber.preClimb());
     operator.povDown().onTrue(climber.climbAutomatic());
     operator.back().onTrue(climber.zero());
-    operator.leftBumper().onTrue(hood.decreaseAngle());
-    operator.leftTrigger().onTrue(hood.increaseAngle());
+    // operator.leftBumper().onTrue(hood.decreaseAngle());
+    // operator.leftTrigger().onTrue(hood.increaseAngle());
     operator.start().onTrue(Commands.runOnce(() -> isNoteTracking = !isNoteTracking));
+    operator
+        .rightTrigger()
+        .whileTrue(CompositeCommands.getSourceFeedCommand(shooter, hood, amp, accelerator, kicker))
+        .onFalse(amp.retractAmp());
+    operator
+        .leftTrigger()
+        .whileTrue(CompositeCommands.getOuttakeCommand(intake, serializer, kicker));
+    operator
+        .leftBumper()
+        .whileTrue(
+            CompositeCommands.getCollectCommand(intake, serializer, noteVision, aprilTagVision))
+        .onFalse(intake.retractIntake());
+    operator
+        .rightBumper()
+        .whileTrue(
+            CompositeCommands.getPosePrepShooterCommand(
+                drive, hood, shooter, accelerator, aprilTagVision));
+    operator
+        .rightBumper()
+        .and(() -> ShotCalculator.shooterReady(hood, shooter))
+        .whileTrue(
+            Commands.waitSeconds(0.25)
+                .andThen(CompositeCommands.getShootCommand(intake, serializer, kicker))
+                .withTimeout(0.5));
+    operator.b().whileTrue(CompositeCommands.getShootCommand(intake, serializer, kicker));
   }
 
   public void updateSnapbackMechanism3d() {

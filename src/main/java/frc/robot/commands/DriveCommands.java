@@ -86,6 +86,7 @@ public class DriveCommands {
       DoubleSupplier omegaSupplier,
       BooleanSupplier isFullRotationSpeed,
       BooleanSupplier aprilTagTracking,
+      BooleanSupplier aprilTagTracking2,
       BooleanSupplier noteTracking) {
 
     @SuppressWarnings({"resource"})
@@ -107,7 +108,7 @@ public class DriveCommands {
           linearMagnitude = linearMagnitude * linearMagnitude;
           omega = isFullRotationSpeed.getAsBoolean() ? omega : Math.copySign(omega * omega, omega);
 
-          if (aprilTagTracking.getAsBoolean()) {
+          if (aprilTagTracking.getAsBoolean() || aprilTagTracking2.getAsBoolean()) {
             linearMagnitude =
                 Math.min(linearMagnitude, 0.33); // change this to smaller for shoot on the move.
           }
@@ -152,7 +153,9 @@ public class DriveCommands {
               ChassisSpeeds.fromFieldRelativeSpeeds(
                   robotRelativeXVel,
                   robotRelativeYVel,
-                  (aprilTagTracking.getAsBoolean() || noteTracking.getAsBoolean())
+                  (aprilTagTracking.getAsBoolean()
+                              || aprilTagTracking2.getAsBoolean()
+                              || noteTracking.getAsBoolean())
                           && targetGyroAngle.isPresent()
                       ? feedForwardRadialVelocity
                           + aimController.calculate(
