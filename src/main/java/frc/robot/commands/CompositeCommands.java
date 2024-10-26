@@ -124,7 +124,7 @@ public class CompositeCommands {
       double maxSpeed) {
     return (DriveCommands.moveTowardsTarget(
                 drive, noteVision, FieldConstants.startingLineX + 1, VisionMode.Notes, maxSpeed)
-            .alongWith(getCollectCommand(intake, serializer)))
+            .raceWith(getCollectCommand(intake, serializer)))
         .withTimeout(2);
   }
 

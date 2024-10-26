@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.44686721852076183,
-      "y": 6.712444649960525
+      "x": 1.5591467248508268,
+      "y": 1.2970542880976474
     },
-    "rotation": -121.37300514010846
+    "rotation": -179.6575253944668
   },
   "command": {
     "type": "sequential",
@@ -14,49 +14,13 @@
         {
           "type": "named",
           "data": {
-            "name": "Set Leftmost"
+            "name": "Set Rightmost"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Amp Side to Amp Side Note"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Aim"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Track Note Spike Slow"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Aim"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Amp Side to Midline 1"
+            "pathName": "Opponent Source to Midline 4"
           }
         },
         {
@@ -68,7 +32,37 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Midline 1 to Speaker Far"
+            "pathName": "Midline 4 to Speaker Far"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Aim"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Source Side to Midline 3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Track Note Center"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Midline 3 to Speaker Far"
           }
         },
         {
@@ -86,6 +80,6 @@
       ]
     }
   },
-  "folder": "Three",
+  "folder": "Two",
   "choreoAuto": false
 }

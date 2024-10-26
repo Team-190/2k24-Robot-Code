@@ -99,7 +99,7 @@ public class RobotContainer {
   private final LoggedDashboardNumber autoDelay = new LoggedDashboardNumber("Auto Delay");
 
   // Note tracking
-  private static boolean isNoteTracking = true;
+  private static boolean isNoteTracking = false;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -216,10 +216,13 @@ public class RobotContainer {
         (Commands.waitUntil(() -> ShotCalculator.shooterReady(hood, shooter))
                 .andThen(
                     CompositeCommands.getShootCommand(intake, serializer, kicker)
-                        .withTimeout(0.25)))
+                        .withTimeout(0.25)
+                        .andThen(intake.retractIntake())))
             .withTimeout(2));
     NamedCommands.registerCommand(
         "Feed", CompositeCommands.getFeedCommand(intake, serializer, kicker));
+    NamedCommands.registerCommand(
+        "Intake", CompositeCommands.getCollectCommand(intake, serializer));
     NamedCommands.registerCommand(
         "Track Note Center",
         CompositeCommands.getTrackNoteCenterCommand(
@@ -246,18 +249,23 @@ public class RobotContainer {
         "Aim", CompositeCommands.getAimSpeakerCommand(drive, aprilTagVision));
     NamedCommands.registerCommand(
         "Set Rightmost",
-        DriverStation.getAlliance().isPresent()
-            ? (DriverStation.getAlliance().get().equals(Alliance.Red)
-                ? (noteVision.setPipeline(2))
-                : (noteVision.setPipeline(1)))
-            : (noteVision.setPipeline(0)));
+        Commands.either(
+            Commands.either(
+                noteVision.setPipeline(2),
+                noteVision.setPipeline(1),
+                () -> DriverStation.getAlliance().get().equals(Alliance.Red)),
+            noteVision.setPipeline(0),
+            () -> DriverStation.getAlliance().isPresent()));
     NamedCommands.registerCommand(
         "Set Leftmost",
-        DriverStation.getAlliance().isPresent()
-            ? (DriverStation.getAlliance().get().equals(Alliance.Red)
-                ? (noteVision.setPipeline(1))
-                : (noteVision.setPipeline(3)))
-            : (noteVision.setPipeline(0)));
+        Commands.either(
+            Commands.either(
+                noteVision.setPipeline(1),
+                noteVision.setPipeline(2),
+                () -> DriverStation.getAlliance().get().equals(Alliance.Red)),
+            noteVision.setPipeline(0),
+            () -> DriverStation.getAlliance().isPresent()));
+    NamedCommands.registerCommand("Set Centermost", noteVision.setPipeline(0));
 
     autoChooser =
         new LoggedDashboardChooser<>(
@@ -325,9 +333,10 @@ public class RobotContainer {
             () -> -driver.getLeftY(),
             () -> -driver.getLeftX(),
             () -> -driver.getRightX(),
+            driver.rightStick(),
             driver.rightBumper(),
-            driver.start())); // change to driver.leftBumper().and(() -> isNoteTracking) for note
-    // tracking
+            operator.rightBumper(),
+            driver.leftBumper().and(() -> isNoteTracking)));
     driver.y().onTrue(DriveCommands.resetHeading(drive));
     driver
         .rightTrigger()
@@ -354,19 +363,46 @@ public class RobotContainer {
     driver.b().whileTrue(CompositeCommands.getShootCommand(intake, serializer, kicker));
     driver.a().whileTrue(intake.singleActuation());
 
-    operator
-        .rightBumper()
-        .whileTrue(CompositeCommands.getAmpFeedCommand(shooter, hood, amp, accelerator, kicker));
+    // operator
+    //     .rightBumper()
+    //     .whileTrue(CompositeCommands.getAmpFeedCommand(shooter, hood, amp, accelerator, kicker));
     operator.y().whileTrue(shooter.increaseVelocity());
     operator.a().whileTrue(shooter.decreaseVelocity());
-    operator
-        .rightTrigger()
-        .whileTrue(CompositeCommands.getAmpCommand(shooter, hood, amp, accelerator, kicker))
-        .onFalse(amp.retractAmp());
+    // operator
+    //     .rightTrigger()
+    //     .whileTrue(CompositeCommands.getAmpCommand(shooter, hood, amp, accelerator, kicker))
+    //     .onFalse(amp.retractAmp());
     operator.povUp().onTrue(climber.preClimb());
     operator.povDown().onTrue(climber.climbAutomatic());
     operator.back().onTrue(climber.zero());
-    operator.leftBumper().onTrue(Commands.runOnce(() -> isNoteTracking = !isNoteTracking));
+    // operator.leftBumper().onTrue(hood.decreaseAngle());
+    // operator.leftTrigger().onTrue(hood.increaseAngle());
+    operator.start().onTrue(Commands.runOnce(() -> isNoteTracking = !isNoteTracking));
+    operator
+        .rightTrigger()
+        .whileTrue(CompositeCommands.getSourceFeedCommand(shooter, hood, amp, accelerator, kicker))
+        .onFalse(amp.retractAmp());
+    operator
+        .leftTrigger()
+        .whileTrue(CompositeCommands.getOuttakeCommand(intake, serializer, kicker));
+    operator
+        .leftBumper()
+        .whileTrue(
+            CompositeCommands.getCollectCommand(intake, serializer, noteVision, aprilTagVision))
+        .onFalse(intake.retractIntake());
+    operator
+        .rightBumper()
+        .whileTrue(
+            CompositeCommands.getPosePrepShooterCommand(
+                drive, hood, shooter, accelerator, aprilTagVision));
+    operator
+        .rightBumper()
+        .and(() -> ShotCalculator.shooterReady(hood, shooter))
+        .whileTrue(
+            Commands.waitSeconds(0.25)
+                .andThen(CompositeCommands.getShootCommand(intake, serializer, kicker))
+                .withTimeout(0.5));
+    operator.b().whileTrue(CompositeCommands.getShootCommand(intake, serializer, kicker));
   }
 
   public void updateSnapbackMechanism3d() {

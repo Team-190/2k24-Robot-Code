@@ -50,8 +50,10 @@ public class AutoBuilderNameChanger {
         return "START: SOURCE \n -> MIDLINE 5, 4";
       case "SourceSide_Midline4_Midline5_End":
         return "START: SOURCE \n -> MIDLINE 4, 5";
-      case "SourceSide_Midline4_Midline3_End":
-        return "START: SOURCE \n -> ANTI-NASHOBA THREE PIECE";
+      case "OpponentSource_Midline4_Midline3_End":
+        return "START: OPPONENT SOURCE \n -> MIDLINE 4, 3";
+      case "OpponentSource_Midline5_Midline4_Midline3_End":
+        return "START: OPPONENT SOURCE \n -> MIDLINE 5, 4, 3";
       case "SourceSide_SourceSideNote_Midline5_End":
         return "START: SOURCE \n -> URI AUTO";
       case "SourceSide_SourceSideNote_Midline5_Midline4_End":
@@ -62,6 +64,10 @@ public class AutoBuilderNameChanger {
         return "START: CENTER \n -> START AMP, FULL WING AUTO";
       case "Center_SourceSideNote_CenterNote_AmpSideNote_End":
         return "START: CENTER \n -> START SOURCE, FULL WING AUTO";
+      case "Center_CenterNote_Midline3_SourceSideNote_End":
+        return "START: CENTER \n ROBOTEERS COMPLEMENT";
+      case "Center_CenterNote_Midline3_End":
+        return "START: CENTER \n ROBOTEERS COMPLEMENT - 1";
       case "Leave":
         return "START: OPPONENT SOURCE \n -> LEAVE";
     }
