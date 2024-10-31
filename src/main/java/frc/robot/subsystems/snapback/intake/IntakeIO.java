@@ -1,6 +1,7 @@
 package frc.robot.subsystems.snapback.intake;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import org.littletonrobotics.junction.AutoLog;
 
 /** Interface for Snapback's intake subsystem. */
@@ -31,6 +32,7 @@ public interface IntakeIO {
     public double kickerTemperatureCelsius = 0.0;
 
     public boolean sensorValue = false;
+    public Value pneumaticValue = Value.kOff;
   }
 
   /** Updates AdvantageKit inputs. */
@@ -44,4 +46,6 @@ public interface IntakeIO {
 
   /** Sets kicker motor voltage. */
   public default void setKickerVoltage(double volts) {}
+
+  public default void setActuatorValue(Value value) {}
 }
