@@ -41,15 +41,15 @@ public class IntakeIOTalonFX implements IntakeIO {
   private VoltageOut voltageControl;
 
   public IntakeIOTalonFX() {
-    intakeMotor = new TalonFX(IntakeConstants.INTAKE_MOTOR_ID);
-    serializerMotor = new TalonFX(IntakeConstants.SERIALIZER_MOTOR_ID);
-    kickerMotor = new TalonFX(IntakeConstants.KICKER_MOTOR_ID);
-    sensor = new DigitalInput(IntakeConstants.SENSOR_ID);
+    intakeMotor = new TalonFX(IntakeConstants.INTAKE_MOTOR_CAN_ID);
+    serializerMotor = new TalonFX(IntakeConstants.SERIALIZER_MOTOR_CAN_ID);
+    kickerMotor = new TalonFX(IntakeConstants.KICKER_MOTOR_CAN_ID);
+    sensor = new DigitalInput(IntakeConstants.SENSOR_CHANNEL);
     pneumatic =
         new DoubleSolenoid(
             PneumaticsModuleType.CTREPCM,
-            IntakeConstants.PNEUMATIC_ID,
-            IntakeConstants.PNEUMATIC_ID + 1);
+            IntakeConstants.PNEUMATIC_FORWARD_CHANNEL,
+            IntakeConstants.PNEUMATIC_REVERSE_CHANNEL);
 
     TalonFXConfiguration config = new TalonFXConfiguration();
     config.CurrentLimits.SupplyCurrentLimit = 40.0;
@@ -57,15 +57,15 @@ public class IntakeIOTalonFX implements IntakeIO {
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
     TalonFXConfiguration intakeConfig = config;
-    intakeConfig.Feedback.SensorToMechanismRatio = IntakeConstants.INTAKE_GEAR_RATIO;
+    intakeConfig.Feedback.SensorToMechanismRatio = IntakeConstants.INTAKE_GEAR_REDUCTION;
     intakeMotor.getConfigurator().apply(intakeConfig);
 
     TalonFXConfiguration serializerConfig = config;
-    serializerConfig.Feedback.SensorToMechanismRatio = IntakeConstants.SERIALIZER_GEAR_RATIO;
+    serializerConfig.Feedback.SensorToMechanismRatio = IntakeConstants.SERIALIZER_GEAR_REDUCTION;
     serializerMotor.getConfigurator().apply(serializerConfig);
 
     TalonFXConfiguration kickerConfig = config;
-    kickerConfig.Feedback.SensorToMechanismRatio = IntakeConstants.KICKER_GEAR_RATIO;
+    kickerConfig.Feedback.SensorToMechanismRatio = IntakeConstants.KICKER_GEAR_REDUCTION;
     kickerMotor.getConfigurator().apply(kickerConfig);
 
     intakePosition = intakeMotor.getPosition();
