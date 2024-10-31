@@ -101,6 +101,10 @@ public class IntakeIOTalonFX implements IntakeIO {
         kickerTemperatureCelsius,
         kickerVelocityRadiansPerSecond);
 
+    intakeMotor.optimizeBusUtilization(50.0, 1.0);
+    serializerMotor.optimizeBusUtilization(50.0, 1.0);
+    kickerMotor.optimizeBusUtilization(50.0, 1.0);
+
     voltageControl = new VoltageOut(0.0);
   }
 
