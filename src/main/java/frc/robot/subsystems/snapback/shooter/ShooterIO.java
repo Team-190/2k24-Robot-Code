@@ -11,7 +11,7 @@ public interface ShooterIO {
    * the motor shafts.
    */
   @AutoLog
-  public static class ClimberIOInputs {
+  public static class ShooterIOInputs {
     public Rotation2d leftPosition;
     public double leftVelocityRadiansPerSecond;
     public double leftAppliedVolts;
@@ -23,10 +23,16 @@ public interface ShooterIO {
     public double rightAppliedVolts;
     public double rightCurrentAmps;
     public double rightTemperatureCelsius;
+
+    public Rotation2d acceleratorPosition;
+    public double acceleratorVelocityRadiansPerSecond;
+    public double acceleratorAppliedVolts;
+    public double acceleratorCurrentAmps;
+    public double acceleratorTemperatureCelsius;
   }
 
   /** Updates AdvantageKit inputs */
-  public default void updateInputs(ClimberIOInputs inputs) {}
+  public default void updateInputs(ShooterIOInputs inputs) {}
 
   /** Sets motor voltage for left flywheel. */
   public default void setLeftVoltage(double volts) {}
@@ -34,9 +40,15 @@ public interface ShooterIO {
   /** Sets motor voltage for right flywheel. */
   public default void setRightVoltage(double volts) {}
 
+  /** Sets motor voltage for accelerator motor */
+  public default void setAcceleratorVoltage(double volts) {}
+
   /** Sets motor closed loop velocity setpoint for left flywheel. */
   public default void setLeftVelocitySetpoint(double velocityRadiansPerSecond) {}
 
   /** Sets motor closed loop velocity setpoint for right flywheel. */
   public default void setRightVelocitySetpoint(double velocityRadiansPerSecond) {}
+
+  /** Sets motor closed loop velocity setpoint for accelerator motor */
+  public default void setAcceleratorVelocitySetpoint(double velocityRadiansPerSecond) {}
 }
