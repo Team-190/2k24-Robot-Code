@@ -16,10 +16,10 @@ public class ModuleConstants {
   public static final LoggedTunableNumber TURN_KP;
   public static final LoggedTunableNumber TURN_KD;
 
-  public static final ModuleConfig FRONT_LEFT;
-  public static final ModuleConfig FRONT_RIGHT;
-  public static final ModuleConfig REAR_LEFT;
-  public static final ModuleConfig REAR_RIGHT;
+  public static final ModuleConfiguration FRONT_LEFT;
+  public static final ModuleConfiguration FRONT_RIGHT;
+  public static final ModuleConfiguration REAR_LEFT;
+  public static final ModuleConfiguration REAR_RIGHT;
 
   public static final double ODOMETRY_FREQUENCY;
   public static final double OUT_OF_SYNC_THRESHOLD;
@@ -46,27 +46,26 @@ public class ModuleConstants {
     TURN_KD = new LoggedTunableNumber("Drive/Turn kD");
 
     switch (Constants.ROBOT) {
-      case SNAPBACK:
       case WHIPLASH:
         WHEEL_RADIUS.initDefault(Units.inchesToMeters(2.0));
         DRIVE_KP.initDefault(2.0);
         DRIVE_KD.initDefault(0.0);
-        DRIVE_KS.initDefault(0.13333);
-        DRIVE_KV.initDefault(0.10108);
-        TURN_KP.initDefault(50.0);
-        TURN_KD.initDefault(0.05);
+        DRIVE_KS.initDefault(0.21831);
+        DRIVE_KV.initDefault(0.095366);
+        TURN_KP.initDefault(80.0);
+        TURN_KD.initDefault(0.8);
 
         FRONT_LEFT =
-            new ModuleConfig(
+            new ModuleConfiguration(
                 1, 2, 20, Rotation2d.fromRadians(2.405281875404685 - 0.015339807878856172));
         FRONT_RIGHT =
-            new ModuleConfig(
+            new ModuleConfiguration(
                 3, 4, 21, Rotation2d.fromRadians(2.4221556640714272 - 0.0030679615757711457));
         REAR_LEFT =
-            new ModuleConfig(
+            new ModuleConfiguration(
                 5, 6, 22, Rotation2d.fromRadians(1.6582332317043784 + 0.024543692606169964));
         REAR_RIGHT =
-            new ModuleConfig(
+            new ModuleConfiguration(
                 7, 8, 23, Rotation2d.fromRadians(2.6875343403756435 - 0.015339807878856726));
 
         ODOMETRY_FREQUENCY = 250.0;
@@ -146,5 +145,6 @@ public class ModuleConstants {
   }
 
   @Builder
-  public record ModuleConfig(int drive, int turn, int encoder, Rotation2d absoluteEncoderOffset) {}
+  public record ModuleConfiguration(
+      int drive, int turn, int encoder, Rotation2d absoluteEncoderOffset) {}
 }

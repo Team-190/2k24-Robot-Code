@@ -19,6 +19,7 @@ import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTablesJNI;
 import frc.robot.subsystems.shared.drive.drive.DriveConstants;
 import frc.robot.subsystems.shared.drive.drive.PhoenixOdometryThread;
 import frc.robot.subsystems.shared.drive.module.ModuleConstants;
@@ -67,6 +68,8 @@ public class GyroIOPigeon2 implements GyroIO {
         yawPositionQueue.stream()
             .map((Double value) -> Rotation2d.fromDegrees(value))
             .toArray(Rotation2d[]::new);
+    inputs.odometryNTJNITimestamps = NetworkTablesJNI.now();
+    inputs.yawPositionCANLatency = yaw.getTimestamp().getLatency();
     yawTimestampQueue.clear();
     yawPositionQueue.clear();
   }

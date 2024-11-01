@@ -3,7 +3,7 @@ package frc.robot.subsystems.snapback.shooter;
 import frc.robot.Constants;
 
 public class ShooterConstants {
-  private static final Gains GAINS;
+  public static final Gains GAINS;
 
   static {
     switch (Constants.ROBOT) {

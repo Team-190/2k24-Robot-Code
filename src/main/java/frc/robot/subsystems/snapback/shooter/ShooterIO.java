@@ -11,7 +11,7 @@ public interface ShooterIO {
    * the motor shafts.
    */
   @AutoLog
-  public static class ClimberIOInputs {
+  public static class ShooterIOInputs {
     public Rotation2d leftPosition;
     public double leftVelocityRadiansPerSecond;
     public double leftAppliedVolts;
@@ -26,7 +26,7 @@ public interface ShooterIO {
   }
 
   /** Updates AdvantageKit inputs */
-  public default void updateInputs(ClimberIOInputs inputs) {}
+  public default void updateInputs(ShooterIOInputs inputs) {}
 
   /** Sets motor voltage for left flywheel. */
   public default void setLeftVoltage(double volts) {}

@@ -37,13 +37,14 @@ public class Drive extends SubsystemBase {
   private final LinearFilter yFilter;
   private double filteredX;
   private double filteredY = 0;
-  private Rotation2d rawGyroRotation;
+  @Getter private Rotation2d gyroRotation;
 
   @Getter private SwerveDriveKinematics kinematics;
   private SwerveModulePosition[] lastModulePositions;
 
   private final GyroIOInputsAutoLogged gyroInputs;
   private final GyroIO gyroIO;
+  @Getter private long latestRobotHeadingTimestamp;
 
   private final Module[] modules; // FL, FR, BL, BR
 
@@ -57,7 +58,7 @@ public class Drive extends SubsystemBase {
     yFilter = LinearFilter.movingAverage(10);
     filteredX = 0;
     filteredY = 0;
-    rawGyroRotation = new Rotation2d();
+    gyroRotation = new Rotation2d();
 
     kinematics = new SwerveDriveKinematics(getModuleTranslations());
     lastModulePositions =
@@ -79,32 +80,35 @@ public class Drive extends SubsystemBase {
 
     // Start threads (no-op for each if no signals have been created)
     PhoenixOdometryThread.getInstance().start();
+    latestRobotHeadingTimestamp =
+        gyroInputs.odometryNTJNITimestamps - (long) (gyroInputs.yawPositionCANLatency * 1e6);
   }
 
   public void periodic() {
+    double startTime = System.currentTimeMillis();
     DriveConstants.ODOMETRY_LOCK.lock(); // Prevents odometry updates while reading data
     gyroIO.updateInputs(gyroInputs);
     for (var module : modules) {
       module.updateInputs();
     }
+    double startModulePeriodic = System.currentTimeMillis();
     DriveConstants.ODOMETRY_LOCK.unlock();
     Logger.processInputs("Drive/Gyro", gyroInputs);
     for (var module : modules) {
       module.periodic();
     }
 
+    double startDisabledChecks = System.currentTimeMillis();
     // Stop moving when disabled
     if (DriverStation.isDisabled()) {
       for (var module : modules) {
         module.stop();
       }
-    }
-    // Log empty setpoint states when disabled
-    if (DriverStation.isDisabled()) {
       Logger.recordOutput("SwerveStates/Setpoints", new SwerveModuleState[] {});
       Logger.recordOutput("SwerveStates/Setpoints Optimized", new SwerveModuleState[] {});
     }
 
+    double startOdomUpdate = System.currentTimeMillis();
     // Update odometry
     double[] sampleTimestamps =
         modules[0].getOdometryTimestamps(); // All signals are sampled together
@@ -126,23 +130,32 @@ public class Drive extends SubsystemBase {
       // Update gyro angle
       if (gyroInputs.connected) {
         // Use the real gyro angle
-        rawGyroRotation = gyroInputs.odometryYawPositions[i];
+        gyroRotation = gyroInputs.odometryYawPositions[i];
       } else {
         // Use the angle delta from the kinematics and module deltas
         Twist2d twist = kinematics.toTwist2d(moduleDeltas);
-        rawGyroRotation = rawGyroRotation.plus(new Rotation2d(twist.dtheta));
+        gyroRotation = gyroRotation.plus(new Rotation2d(twist.dtheta));
       }
+      latestRobotHeadingTimestamp =
+          gyroInputs.odometryNTJNITimestamps - (long) (gyroInputs.yawPositionCANLatency * 1e6);
 
       // Apply update
-
       ChassisSpeeds chassisSpeeds = kinematics.toChassisSpeeds(getModuleStates());
       Translation2d rawFieldRelativeVelocity =
           new Translation2d(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond)
-              .rotateBy(getRotation());
+              .rotateBy(getGyroRotation());
 
       filteredX = xFilter.calculate(rawFieldRelativeVelocity.getX());
       filteredY = yFilter.calculate(rawFieldRelativeVelocity.getY());
     }
+    double endOdomUpdate = System.currentTimeMillis();
+
+    double endTime = System.currentTimeMillis();
+    Logger.recordOutput("Drive/Time/Update Module Inputs", startModulePeriodic - startTime);
+    Logger.recordOutput("Drive/Time/Module Periodic", startDisabledChecks - startModulePeriodic);
+    Logger.recordOutput("Drive/Time/Disabled Tasks", startOdomUpdate - startDisabledChecks);
+    Logger.recordOutput("Drive/Time/Update Odometry", endOdomUpdate - startOdomUpdate);
+    Logger.recordOutput("Drive/Time/Drive Periodic", endTime - startTime);
   }
 
   /**
@@ -226,11 +239,6 @@ public class Drive extends SubsystemBase {
   @AutoLogOutput
   public Translation2d getFieldRelativeVelocity() {
     return new Translation2d(filteredX, filteredY);
-  }
-
-  /** Returns the current odometry rotation. */
-  public Rotation2d getRotation() {
-    return rawGyroRotation;
   }
 
   /** Returns the current yaw velocity */

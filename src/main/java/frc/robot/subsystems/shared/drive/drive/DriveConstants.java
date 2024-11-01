@@ -24,6 +24,9 @@ public final class DriveConstants {
   public static final Matrix<N3, N1> ODOMETRY_STANDARD_DEVIATIONS;
   public static final double DRIVER_DEADBAND;
   public static final Lock ODOMETRY_LOCK;
+  public static final double AUTO_AIM_FIELD_VELOCITY_DEADBAND;
+  public static final double ROBOT_MASS_KG;
+  public static final double ROBOT_MOMENT_OF_INERTIA;
 
   public static final LoggedTunableNumber AUTO_X_KP;
   public static final LoggedTunableNumber AUTO_Y_KP;
@@ -40,15 +43,14 @@ public final class DriveConstants {
     AUTO_Y_KD = new LoggedTunableNumber("Drive/Auto Y KD");
     AUTO_THETA_KD = new LoggedTunableNumber("Drive/Auto Theta KD");
     switch (Constants.ROBOT) {
-      case SNAPBACK:
       case WHIPLASH:
       case ROBOT_SIM:
       default:
         TRACK_WIDTH_X = Units.inchesToMeters(20.75);
         TRACK_WIDTH_Y = Units.inchesToMeters(20.75);
-        MAX_LINEAR_VELOCITY = Units.feetToMeters(19.5);
+        MAX_LINEAR_VELOCITY = Units.feetToMeters(15.0);
         DRIVE_BASE_RADIUS = Math.hypot(TRACK_WIDTH_X / 2, TRACK_WIDTH_Y / 2);
-        MAX_ANGULAR_VELOCITY = MAX_LINEAR_VELOCITY / DRIVE_BASE_RADIUS;
+        MAX_ANGULAR_VELOCITY = (MAX_LINEAR_VELOCITY / DRIVE_BASE_RADIUS) * 0.6;
         KINEMATICS =
             new SwerveDriveKinematics(
                 new Translation2d[] {
@@ -59,17 +61,21 @@ public final class DriveConstants {
                 });
         CANIVORE = "drive";
         PIGEON_2_DEVICE_ID = 1;
-        ODOMETRY_STANDARD_DEVIATIONS = VecBuilder.fill(0.0, 0.0, 0.0);
+        ODOMETRY_STANDARD_DEVIATIONS = VecBuilder.fill(0.1, 0.1, 0.1);
         DRIVER_DEADBAND = 0.025;
         ODOMETRY_LOCK = new ReentrantLock();
+        AUTO_AIM_FIELD_VELOCITY_DEADBAND = 0.1;
 
-        AUTO_X_KP.initDefault(1.0);
-        AUTO_Y_KP.initDefault(1.0);
-        AUTO_THETA_KP.initDefault(0.0);
+        AUTO_X_KP.initDefault(4.0);
+        AUTO_Y_KP.initDefault(4.0);
+        AUTO_THETA_KP.initDefault(5.0);
 
         AUTO_X_KD.initDefault(0.0);
         AUTO_Y_KD.initDefault(0.0);
-        AUTO_THETA_KD.initDefault(0.0);
+        AUTO_THETA_KD.initDefault(0.05);
+
+        ROBOT_MASS_KG = 51.2559;
+        ROBOT_MOMENT_OF_INERTIA = 3.72559543;
         break;
     }
   }

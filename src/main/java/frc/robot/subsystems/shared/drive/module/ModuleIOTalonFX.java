@@ -1,3 +1,16 @@
+// Copyright 2021-2024 FRC 6328
+// http://github.com/Mechanical-Advantage
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// version 3 as published by the Free Software Foundation or
+// available in the root directory of this project.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+
 package frc.robot.subsystems.shared.drive.module;
 
 import com.ctre.phoenix6.BaseStatusSignal;
@@ -10,12 +23,13 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.shared.drive.drive.DriveConstants;
 import frc.robot.subsystems.shared.drive.drive.PhoenixOdometryThread;
-import frc.robot.subsystems.shared.drive.module.ModuleConstants.ModuleConfig;
+import frc.robot.subsystems.shared.drive.module.ModuleConstants.ModuleConfiguration;
 import java.util.Queue;
 
 public class ModuleIOTalonFX implements ModuleIO {
@@ -56,7 +70,7 @@ public class ModuleIOTalonFX implements ModuleIO {
   private final VelocityVoltage velocityControl;
   private final PositionVoltage positionControl;
 
-  public ModuleIOTalonFX(ModuleConfig moduleConfig) {
+  public ModuleIOTalonFX(ModuleConfiguration moduleConfig) {
     driveTalon = new TalonFX(moduleConfig.drive(), DriveConstants.CANIVORE);
     turnTalon = new TalonFX(moduleConfig.turn(), DriveConstants.CANIVORE);
     cancoder = new CANcoder(moduleConfig.encoder(), DriveConstants.CANIVORE);
@@ -65,6 +79,9 @@ public class ModuleIOTalonFX implements ModuleIO {
     driveConfig = new TalonFXConfiguration();
     driveConfig.CurrentLimits.SupplyCurrentLimit = ModuleConstants.DRIVE_CURRENT_LIMIT;
     driveConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    driveConfig.CurrentLimits.StatorCurrentLimit = ModuleConstants.DRIVE_CURRENT_LIMIT;
+    driveConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+    driveConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     driveConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     driveConfig.Feedback.SensorToMechanismRatio = ModuleConstants.DRIVE_GEAR_RATIO;
     driveConfig.Slot0.kS = ModuleConstants.DRIVE_KS.get();
@@ -75,16 +92,19 @@ public class ModuleIOTalonFX implements ModuleIO {
     turnConfig = new TalonFXConfiguration();
     turnConfig.CurrentLimits.SupplyCurrentLimit = ModuleConstants.TURN_CURRENT_LIMIT;
     turnConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    turnConfig.CurrentLimits.StatorCurrentLimit = ModuleConstants.TURN_CURRENT_LIMIT;
+    turnConfig.CurrentLimits.StatorCurrentLimitEnable = true;
     turnConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     turnConfig.ClosedLoopGeneral.ContinuousWrap = true;
+    turnConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     turnConfig.Feedback.SensorToMechanismRatio = ModuleConstants.TURN_GEAR_RATIO;
     turnConfig.Slot0.kP = ModuleConstants.TURN_KP.get();
     turnConfig.Slot0.kD = ModuleConstants.TURN_KD.get();
 
     for (int i = 0; i < 4; i++) {
-      boolean error = cancoder.getConfigurator().apply(new CANcoderConfiguration(), 0.1).isOK();
-      error = error || driveTalon.getConfigurator().apply(driveConfig, 0.1).isOK();
-      error = error || (turnTalon.getConfigurator().apply(turnConfig, 0.1).isOK());
+      boolean error = cancoder.getConfigurator().apply(new CANcoderConfiguration(), 1.0).isOK();
+      error = error || driveTalon.getConfigurator().apply(driveConfig, 1.0).isOK();
+      error = error || (turnTalon.getConfigurator().apply(turnConfig, 1.0).isOK());
       if (!error) break;
     }
 
@@ -211,22 +231,29 @@ public class ModuleIOTalonFX implements ModuleIO {
   public void setDriveVelocitySetpoint(
       double currentVelocityRadPerSec, double setpointVelocityRadsPerSec) {
     driveTalon.setControl(
-        velocityControl.withVelocity(Units.radiansToRotations(setpointVelocityRadsPerSec)));
+        velocityControl
+            .withVelocity(Units.radiansToRotations(setpointVelocityRadsPerSec))
+            .withUpdateFreqHz(1000)
+            .withEnableFOC(false));
   }
 
   @Override
   public void setTurnPositionSetpoint(Rotation2d currentPosition, Rotation2d setpointPosition) {
-    turnTalon.setControl(positionControl.withPosition(setpointPosition.getRotations()));
+    turnTalon.setControl(
+        positionControl
+            .withPosition(setpointPosition.getRotations())
+            .withUpdateFreqHz(1000)
+            .withEnableFOC(false));
   }
 
   @Override
   public void setDriveVoltage(double volts) {
-    driveTalon.setControl(voltageControl.withOutput(volts));
+    driveTalon.setControl(voltageControl.withOutput(volts).withEnableFOC(false));
   }
 
   @Override
   public void setTurnVoltage(double volts) {
-    turnTalon.setControl(voltageControl.withOutput(volts));
+    turnTalon.setControl(voltageControl.withOutput(volts).withEnableFOC(false));
   }
 
   @Override

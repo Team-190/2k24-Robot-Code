@@ -1,7 +1,8 @@
 package frc.robot.subsystems.shared.vision;
 
-import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.networktables.DoubleArrayPublisher;
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 
@@ -15,13 +16,15 @@ public class Camera {
   @Getter private final double verticalFOV;
   @Getter private final double primaryXYStandardDeviationCoefficient;
   @Getter private final double secondaryXYStandardDeviationCoefficient;
+  @Getter private final DoubleArrayPublisher robotHeadingPublisher;
 
   public Camera(
       CameraIO io,
       double horizontalFOV,
       double verticalFOV,
       double primaryXYStandardDeviationCoefficient,
-      double secondaryXYStandardDeviationCoefficient) {
+      double secondaryXYStandardDeviationCoefficient,
+      DoubleArrayPublisher robotHeadingPublisher) {
     inputs = new CameraIOInputsAutoLogged();
 
     this.io = io;
@@ -31,11 +34,32 @@ public class Camera {
     this.verticalFOV = verticalFOV;
     this.primaryXYStandardDeviationCoefficient = primaryXYStandardDeviationCoefficient;
     this.secondaryXYStandardDeviationCoefficient = secondaryXYStandardDeviationCoefficient;
+    this.robotHeadingPublisher = robotHeadingPublisher;
+  }
+
+  public Camera(
+      CameraIO io,
+      String name,
+      double horizontalFOV,
+      double verticalFOV,
+      double primaryXYStandardDeviationCoefficient,
+      double secondaryXYStandardDeviationCoefficient,
+      DoubleArrayPublisher robotHeadingPublisher) {
+    inputs = new CameraIOInputsAutoLogged();
+
+    this.io = io;
+    this.name = name;
+    this.cameraType = io.getCameraType();
+    this.horizontalFOV = horizontalFOV;
+    this.verticalFOV = verticalFOV;
+    this.primaryXYStandardDeviationCoefficient = primaryXYStandardDeviationCoefficient;
+    this.secondaryXYStandardDeviationCoefficient = secondaryXYStandardDeviationCoefficient;
+    this.robotHeadingPublisher = robotHeadingPublisher;
   }
 
   public void periodic() {
     io.updateInputs(inputs);
-    Logger.processInputs("Vision/Cameras/" + io.toString(), inputs);
+    Logger.processInputs("Vision/Cameras/" + name, inputs);
   }
 
   public Rotation2d getXOffset() {
@@ -62,11 +86,11 @@ public class Camera {
     return inputs.frameTimestamp;
   }
 
-  public Pose3d getPrimaryPose() {
+  public Pose2d getPrimaryPose() {
     return inputs.primaryPose;
   }
 
-  public Pose3d getSecondaryPose() {
+  public Pose2d getSecondaryPose() {
     return inputs.secondaryPose;
   }
 
