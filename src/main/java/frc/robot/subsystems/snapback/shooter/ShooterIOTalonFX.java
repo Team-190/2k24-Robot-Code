@@ -49,6 +49,7 @@ public class ShooterIOTalonFX implements ShooterIO {
   private VoltageOut voltageControl;
 
   public ShooterIOTalonFX() {
+    // Left flywheel is the right one when looking at the robot from the front (shooter side); right flywheel is the left one
     leftFlywheel = new TalonFX(ShooterConstants.LEFT_FLYWHEEL_MOTOR_CAN_ID);
     rightFlywheel = new TalonFX(ShooterConstants.RIGHT_FLYWHEEL_MOTOR_CAN_ID);
     accelerator = new TalonFX(ShooterConstants.ACCELERATOR_MOTOR_CAN_ID);
