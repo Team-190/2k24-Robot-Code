@@ -20,21 +20,21 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 public class IntakeIOTalonFX implements IntakeIO {
   private final TalonFX intakeMotor;
   public StatusSignal<Angle> intakePosition;
-  public StatusSignal<AngularVelocity> intakeVelocityRadiansPerSecond;
+  public StatusSignal<AngularVelocity> intakeVelocityRotationsPerSecond;
   public StatusSignal<Voltage> intakeAppliedVolts;
   public StatusSignal<Current> intakeCurrentAmps;
   public StatusSignal<Temperature> intakeTemperatureCelsius;
 
   private final TalonFX serializerMotor;
   public StatusSignal<Angle> serializerPosition;
-  public StatusSignal<AngularVelocity> serializerVelocityRadiansPerSecond;
+  public StatusSignal<AngularVelocity> serializerVelocityRotationsPerSecond;
   public StatusSignal<Voltage> serializerAppliedVolts;
   public StatusSignal<Current> serializerCurrentAmps;
   public StatusSignal<Temperature> serializerTemperatureCelsius;
 
   private final TalonFX kickerMotor;
   public StatusSignal<Angle> kickerPosition;
-  public StatusSignal<AngularVelocity> kickerVelocityRadiansPerSecond;
+  public StatusSignal<AngularVelocity> kickerVelocityRotationsPerSecond;
   public StatusSignal<Voltage> kickerAppliedVolts;
   public StatusSignal<Current> kickerCurrentAmps;
   public StatusSignal<Temperature> kickerTemperatureCelsius;
@@ -74,19 +74,19 @@ public class IntakeIOTalonFX implements IntakeIO {
     kickerMotor.getConfigurator().apply(kickerConfig);
 
     intakePosition = intakeMotor.getPosition();
-    intakeVelocityRadiansPerSecond = intakeMotor.getVelocity();
+    intakeVelocityRotationsPerSecond = intakeMotor.getVelocity();
     intakeAppliedVolts = intakeMotor.getMotorVoltage();
     intakeCurrentAmps = intakeMotor.getSupplyCurrent();
     intakeTemperatureCelsius = intakeMotor.getDeviceTemp();
 
     serializerPosition = serializerMotor.getPosition();
-    serializerVelocityRadiansPerSecond = serializerMotor.getVelocity();
+    serializerVelocityRotationsPerSecond = serializerMotor.getVelocity();
     serializerAppliedVolts = serializerMotor.getMotorVoltage();
     serializerCurrentAmps = serializerMotor.getSupplyCurrent();
     serializerTemperatureCelsius = serializerMotor.getDeviceTemp();
 
     kickerPosition = kickerMotor.getPosition();
-    kickerVelocityRadiansPerSecond = kickerMotor.getVelocity();
+    kickerVelocityRotationsPerSecond = kickerMotor.getVelocity();
     kickerAppliedVolts = kickerMotor.getMotorVoltage();
     kickerCurrentAmps = kickerMotor.getSupplyCurrent();
     kickerTemperatureCelsius = kickerMotor.getDeviceTemp();
@@ -96,15 +96,15 @@ public class IntakeIOTalonFX implements IntakeIO {
         intakeAppliedVolts,
         intakeCurrentAmps,
         intakeTemperatureCelsius,
-        intakeVelocityRadiansPerSecond,
+        intakeVelocityRotationsPerSecond,
         serializerAppliedVolts,
         serializerCurrentAmps,
         serializerTemperatureCelsius,
-        serializerVelocityRadiansPerSecond,
+        serializerVelocityRotationsPerSecond,
         kickerAppliedVolts,
         kickerCurrentAmps,
         kickerTemperatureCelsius,
-        kickerVelocityRadiansPerSecond);
+        kickerVelocityRotationsPerSecond);
 
     intakeMotor.optimizeBusUtilization(50.0, 1.0);
     serializerMotor.optimizeBusUtilization(50.0, 1.0);
@@ -120,34 +120,34 @@ public class IntakeIOTalonFX implements IntakeIO {
         intakeAppliedVolts,
         intakeCurrentAmps,
         intakeTemperatureCelsius,
-        intakeVelocityRadiansPerSecond,
+        intakeVelocityRotationsPerSecond,
         serializerPosition,
         serializerAppliedVolts,
         serializerCurrentAmps,
         serializerTemperatureCelsius,
-        serializerVelocityRadiansPerSecond,
+        serializerVelocityRotationsPerSecond,
         kickerPosition,
         kickerAppliedVolts,
         kickerCurrentAmps,
         kickerTemperatureCelsius,
-        kickerVelocityRadiansPerSecond);
+        kickerVelocityRotationsPerSecond);
 
     inputs.intakePosition = Rotation2d.fromRotations(intakePosition.getValueAsDouble());
     inputs.intakeVelocityRadiansPerSecond =
-        Units.rotationsToRadians(intakeVelocityRadiansPerSecond.getValueAsDouble());
+        Units.rotationsToRadians(intakeVelocityRotationsPerSecond.getValueAsDouble());
     inputs.intakeAppliedVolts = intakeAppliedVolts.getValueAsDouble();
     inputs.intakeCurrentAmps = intakeCurrentAmps.getValueAsDouble();
     inputs.intakeTemperatureCelsius = intakeTemperatureCelsius.getValueAsDouble();
 
     inputs.serializerPosition = Rotation2d.fromRotations(serializerPosition.getValueAsDouble());
     inputs.serializerVelocityRadiansPerSecond =
-        serializerVelocityRadiansPerSecond.getValueAsDouble();
+        serializerVelocityRotationsPerSecond.getValueAsDouble();
     inputs.serializerAppliedVolts = serializerAppliedVolts.getValueAsDouble();
     inputs.serializerCurrentAmps = serializerCurrentAmps.getValueAsDouble();
     inputs.serializerTemperatureCelsius = serializerTemperatureCelsius.getValueAsDouble();
 
     inputs.kickerPosition = Rotation2d.fromRotations(kickerPosition.getValueAsDouble());
-    inputs.kickerVelocityRadiansPerSecond = kickerVelocityRadiansPerSecond.getValueAsDouble();
+    inputs.kickerVelocityRadiansPerSecond = kickerVelocityRotationsPerSecond.getValueAsDouble();
     inputs.kickerAppliedVolts = kickerAppliedVolts.getValueAsDouble();
     inputs.kickerCurrentAmps = kickerCurrentAmps.getValueAsDouble();
     inputs.kickerTemperatureCelsius = kickerTemperatureCelsius.getValueAsDouble();
