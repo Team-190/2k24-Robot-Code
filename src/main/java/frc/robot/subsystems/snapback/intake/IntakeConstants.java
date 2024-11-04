@@ -1,7 +1,7 @@
 package frc.robot.subsystems.snapback.intake;
 
 import edu.wpi.first.math.system.plant.DCMotor;
-import frc.robot.Constants;
+import frc.robot.constants.Constants;
 
 public class IntakeConstants {
   public static final int INTAKE_MOTOR_CAN_ID;

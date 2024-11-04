@@ -1,6 +1,5 @@
 package frc.robot.subsystems.shared.vision;
 
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.util.LimelightHelpers;
 import lombok.Getter;
@@ -30,9 +29,8 @@ public class CameraIOLimelight implements CameraIO {
     inputs.targetAquired = LimelightHelpers.getTV(name);
     inputs.totalTargets = LimelightHelpers.getTargetCount(name);
     inputs.averageDistance = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name).avgTagDist;
-    inputs.primaryPose =
-        new Pose3d(LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name).pose);
-    inputs.secondaryPose = new Pose3d(LimelightHelpers.getBotPoseEstimate_wpiBlue(name).pose);
+    inputs.primaryPose = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name).pose;
+    inputs.secondaryPose = LimelightHelpers.getBotPoseEstimate_wpiBlue(name).pose;
     inputs.frameTimestamp = LimelightHelpers.getBotPoseEstimate_wpiBlue(name).timestampSeconds;
   }
 

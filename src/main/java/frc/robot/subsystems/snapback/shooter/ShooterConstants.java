@@ -17,6 +17,7 @@ public class ShooterConstants {
         ACCELERATOR_MOTOR_CAN_ID = 15;
         FLYWHEEL_GEAR_RATIO = 68.0 / 24.0;
         ACCELERATOR_GEAR_RATIO = 2.0;
+        GAINS = new Gains(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
         break;
       default:
         LEFT_FLYWHEEL_MOTOR_CAN_ID = 0;
@@ -24,8 +25,7 @@ public class ShooterConstants {
         ACCELERATOR_MOTOR_CAN_ID = 2;
         FLYWHEEL_GEAR_RATIO = 1.0;
         ACCELERATOR_GEAR_RATIO = 1.0;
-    }
-  }
+        GAINS = new Gains(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);}}
 
   public record Gains(double kp, double ki, double kd, double ks, double kv, double ka) {}
 }

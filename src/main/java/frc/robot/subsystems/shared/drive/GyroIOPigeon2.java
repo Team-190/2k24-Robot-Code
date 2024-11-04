@@ -11,53 +11,40 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-package frc.robot.subsystems.shared.drive.gyro;
+package frc.robot.subsystems.shared.drive;
 
 import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
-import frc.robot.subsystems.shared.drive.drive.DriveConstants;
-import frc.robot.subsystems.shared.drive.drive.PhoenixOdometryThread;
-import frc.robot.subsystems.shared.drive.module.ModuleConstants;
-import frc.robot.util.Alert;
-import frc.robot.util.Alert.AlertType;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
 import java.util.Queue;
 
-/** IO implementation for Pigeon2 */
+/** IO implementation for Pigeon 2. */
 public class GyroIOPigeon2 implements GyroIO {
-  private final Pigeon2 pigeon =
-      new Pigeon2(DriveConstants.PIGEON_2_DEVICE_ID, DriveConstants.CANIVORE);
-
-  private final StatusSignal<Double> yaw;
+  private final Pigeon2 pigeon = new Pigeon2(DriveConstants.GYRO_CAN_ID);
+  private final StatusSignal<Angle> yaw = pigeon.getYaw();
   private final Queue<Double> yawPositionQueue;
   private final Queue<Double> yawTimestampQueue;
-  private final StatusSignal<Double> yawVelocity;
-
-  private final Alert disconnectedAlert =
-      new Alert("Pigeon is disconnected, check CAN bus.", AlertType.ERROR);
+  private final StatusSignal<AngularVelocity> yawVelocity = pigeon.getAngularVelocityZWorld();
 
   public GyroIOPigeon2() {
-    yaw = pigeon.getYaw();
-    yawVelocity = pigeon.getAngularVelocityZWorld();
     pigeon.getConfigurator().apply(new Pigeon2Configuration());
     pigeon.getConfigurator().setYaw(0.0);
-    yaw.setUpdateFrequency(ModuleConstants.ODOMETRY_FREQUENCY);
+    yaw.setUpdateFrequency(DriveConstants.ODOMETRY_FREQUENCY);
     yawVelocity.setUpdateFrequency(100.0);
     pigeon.optimizeBusUtilization();
-
     yawTimestampQueue = PhoenixOdometryThread.getInstance().makeTimestampQueue();
-    yawPositionQueue = PhoenixOdometryThread.getInstance().registerSignal(pigeon, pigeon.getYaw());
+    yawPositionQueue = PhoenixOdometryThread.getInstance().registerSignal(pigeon.getYaw());
   }
 
   @Override
   public void updateInputs(GyroIOInputs inputs) {
-    boolean connected = BaseStatusSignal.refreshAll(yaw, yawVelocity).isOK();
-    disconnectedAlert.set(!connected);
-
-    inputs.connected = connected;
+    inputs.connected = BaseStatusSignal.refreshAll(yaw, yawVelocity).equals(StatusCode.OK);
     inputs.yawPosition = Rotation2d.fromDegrees(yaw.getValueAsDouble());
     inputs.yawVelocityRadPerSec = Units.degreesToRadians(yawVelocity.getValueAsDouble());
 

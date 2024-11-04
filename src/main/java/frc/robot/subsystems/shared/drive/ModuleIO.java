@@ -11,7 +11,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-package frc.robot.subsystems.shared.drive.module;
+package frc.robot.subsystems.shared.drive;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;
@@ -19,51 +19,37 @@ import org.littletonrobotics.junction.AutoLog;
 public interface ModuleIO {
   @AutoLog
   public static class ModuleIOInputs {
-    public Rotation2d drivePosition = new Rotation2d();
+    public boolean driveConnected = false;
+    public double drivePositionRad = 0.0;
     public double driveVelocityRadPerSec = 0.0;
     public double driveAppliedVolts = 0.0;
     public double driveCurrentAmps = 0.0;
-    public double driveTempCelcius = 0.0;
 
+    public boolean turnConnected = false;
+    public boolean turnEncoderConnected = false;
     public Rotation2d turnAbsolutePosition = new Rotation2d();
     public Rotation2d turnPosition = new Rotation2d();
     public double turnVelocityRadPerSec = 0.0;
     public double turnAppliedVolts = 0.0;
     public double turnCurrentAmps = 0.0;
-    public double turnTempCelcius = 0.0;
-
-    public double driveVelocitySetpointRadPerSec = 0.0;
-    public Rotation2d turnPositionSetpoint = new Rotation2d();
-
-    public double driveVelocityErrorRadPerSec = 0.0;
-    public Rotation2d turnPositionError;
 
     public double[] odometryTimestamps = new double[] {};
-    public Rotation2d[] odometryDrivePositionsRad = new Rotation2d[] {};
+    public double[] odometryDrivePositionsRad = new double[] {};
     public Rotation2d[] odometryTurnPositions = new Rotation2d[] {};
   }
 
+  /** Updates the set of loggable inputs. */
   public default void updateInputs(ModuleIOInputs inputs) {}
 
-  public default void setDriveVelocitySetpoint(
-      double currentVelocityRadPerSec, double setpointVelocityRadsPerSec) {}
+  /** Run the drive motor at the specified open loop value. */
+  public default void setDriveOpenLoop(double output) {}
 
-  public default void setTurnPositionSetpoint(
-      Rotation2d currentPosition, Rotation2d setpointPosition) {}
+  /** Run the turn motor at the specified open loop value. */
+  public default void setTurnOpenLoop(double output) {}
 
-  public default void setDriveVoltage(double volts) {}
+  /** Run the drive motor at the specified velocity. */
+  public default void setDriveVelocity(double velocityRadPerSec) {}
 
-  public default void setTurnVoltage(double volts) {}
-
-  public default void setDrivePID(double kP, double kI, double kD) {}
-
-  public default void setTurnPID(double kP, double kI, double kD) {}
-
-  public default void setDriveFeedforward(double kS, double kV, double kA) {}
-
-  public default void setDrivePosition(double position) {}
-
-  public default void setTurnPosition(Rotation2d position) {}
-
-  public default void stop() {}
+  /** Run the turn motor to the specified rotation. */
+  public default void setTurnPosition(Rotation2d rotation) {}
 }

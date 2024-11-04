@@ -1,6 +1,5 @@
 package frc.robot.subsystems.shared.vision;
 
-import frc.robot.subsystems.shared.vision.CameraConstants.ArducamOV9281;
 import frc.robot.subsystems.shared.vision.CameraConstants.Limelight3Constants;
 import frc.robot.subsystems.shared.vision.CameraConstants.Limelight3GConstants;
 
@@ -15,11 +14,6 @@ public enum CameraType {
       Limelight3GConstants.VERTICAL_FOV,
       Limelight3GConstants.MEGATAG_2_XY_STANDARD_DEVIATION_COEFFICIENT,
       Limelight3GConstants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT),
-  ARDUCAM_OV9281(
-      ArducamOV9281.HORIZONTAL_FOV,
-      ArducamOV9281.VERTICAL_FOV,
-      ArducamOV9281.MULTITAG_XY_STANDARD_DEVIATION_COEFFICIENT,
-      ArducamOV9281.AVERAGE_BEST_XY_STANDARD_DEVIATION_COEFFICIENT),
   DEFAULT();
 
   public final double horizontalFOV;

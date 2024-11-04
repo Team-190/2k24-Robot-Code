@@ -1,6 +1,6 @@
 package frc.robot.subsystems.shared.vision;
 
-import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;
 
@@ -13,8 +13,8 @@ public interface CameraIO {
     public int totalTargets = 0;
     public double averageDistance = 0.0;
     public double frameTimestamp = 0.0;
-    public Pose3d primaryPose = new Pose3d();
-    public Pose3d secondaryPose = new Pose3d();
+    public Pose2d primaryPose = new Pose2d();
+    public Pose2d secondaryPose = new Pose2d();
   }
 
   public default void updateInputs(CameraIOInputs inputs) {}
@@ -43,12 +43,12 @@ public interface CameraIO {
     return 0.0;
   }
 
-  public default Pose3d getPrimaryPose() {
-    return new Pose3d();
+  public default Pose2d getPrimaryPose() {
+    return new Pose2d();
   }
 
-  public default Pose3d getSecondaryPose() {
-    return new Pose3d();
+  public default Pose2d getSecondaryPose() {
+    return new Pose2d();
   }
 
   public default long getPipeline() {
