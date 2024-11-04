@@ -158,17 +158,17 @@ public class IntakeIOTalonFX implements IntakeIO {
 
   @Override
   public void setIntakeVoltage(double volts) {
-    intakeMotor.setControl(voltageControl.withOutput(volts));
+    intakeMotor.setControl(voltageControl.withOutput(volts).withEnableFOC(true));
   }
 
   @Override
   public void setSerializerVoltage(double volts) {
-    serializerMotor.setControl(voltageControl.withOutput(volts));
+    serializerMotor.setControl(voltageControl.withOutput(volts).withEnableFOC(true));
   }
 
   @Override
   public void setKickerVoltage(double volts) {
-    kickerMotor.setControl(voltageControl.withOutput(volts));
+    kickerMotor.setControl(voltageControl.withOutput(volts).withEnableFOC(true));
   }
 
   @Override
