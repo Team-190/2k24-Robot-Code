@@ -17,7 +17,9 @@ public class IntakeConstants {
   public static final int PNEUMATIC_FORWARD_CHANNEL;
   public static final int PNEUMATIC_REVERSE_CHANNEL;
 
-  public static final DCMotor MOTOR_CONFIG;
+  public static final DCMotor INTAKE_GEARBOX;
+  public static final DCMotor SERIALIZER_GEARBOX;
+  public static final DCMotor KICKER_GEARBOX;
 
   static {
     switch (Constants.ROBOT) {
@@ -35,7 +37,9 @@ public class IntakeConstants {
         PNEUMATIC_FORWARD_CHANNEL = 5;
         PNEUMATIC_REVERSE_CHANNEL = 6;
 
-        MOTOR_CONFIG = DCMotor.getKrakenX60(1);
+        INTAKE_GEARBOX = DCMotor.getKrakenX60(1);
+        SERIALIZER_GEARBOX = DCMotor.getKrakenX60(1);
+        KICKER_GEARBOX = DCMotor.getKrakenX60(1);
 
         break;
       default:
@@ -52,7 +56,9 @@ public class IntakeConstants {
         PNEUMATIC_FORWARD_CHANNEL = 5;
         PNEUMATIC_REVERSE_CHANNEL = 6;
 
-        MOTOR_CONFIG = DCMotor.getKrakenX60(1);
+        INTAKE_GEARBOX = DCMotor.getKrakenX60(1);
+        SERIALIZER_GEARBOX = DCMotor.getKrakenX60(1);
+        KICKER_GEARBOX = DCMotor.getKrakenX60(1);
     }
   }
 }
