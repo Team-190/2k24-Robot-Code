@@ -17,11 +17,11 @@ public class IntakeConstants {
   // Beam Break sensor parameters
   public static final int SENSOR_CHANNEL;
 
-  //Pneumatic parameters
+  // Pneumatic parameters
   public static final int PNEUMATIC_FORWARD_CHANNEL;
   public static final int PNEUMATIC_REVERSE_CHANNEL;
 
-  //Simulations parameters
+  // Simulations parameters
   public static final DCMotor INTAKE_GEARBOX;
   public static final DCMotor SERIALIZER_GEARBOX;
   public static final DCMotor KICKER_GEARBOX;
@@ -56,7 +56,6 @@ public class IntakeConstants {
 
         PNEUMATIC_FORWARD_CHANNEL = 5;
         PNEUMATIC_REVERSE_CHANNEL = 6;
-
     }
 
     INTAKE_GEARBOX = DCMotor.getKrakenX60(1);

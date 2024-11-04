@@ -31,10 +31,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.constants.Constants;
 import frc.robot.constants.Constants.RobotType;
-import lombok.Getter;
 import frc.robot.constants.WhiplashTunerConstants;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import lombok.Getter;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -150,7 +150,6 @@ public class Drive extends SubsystemBase {
 
       filteredX = xFilter.calculate(rawFieldRelativeVelocity.getX());
       filteredY = yFilter.calculate(rawFieldRelativeVelocity.getY());
-
     }
 
     // Update gyro alert
@@ -166,7 +165,8 @@ public class Drive extends SubsystemBase {
     // Calculate module setpoints
     ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
     SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds);
-    SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, WhiplashTunerConstants.kSpeedAt12Volts);
+    SwerveDriveKinematics.desaturateWheelSpeeds(
+        setpointStates, WhiplashTunerConstants.kSpeedAt12Volts);
 
     // Log unoptimized setpoints and setpoint speeds
     Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
@@ -269,23 +269,27 @@ public class Drive extends SubsystemBase {
     return getMaxLinearSpeedMetersPerSec() / DriveConstants.DRIVE_BASE_RADIUS;
   }
 
-    /** Returns the field relative velocity in X and Y. */
-    public Translation2d getFieldRelativeVelocity() {
-      return new Translation2d(filteredX, filteredY);
-    }
-  
-    /** Returns the current yaw velocity */
-    public double getYawVelocity() {
-      return gyroInputs.yawVelocityRadPerSec;
-    }
+  /** Returns the field relative velocity in X and Y. */
+  public Translation2d getFieldRelativeVelocity() {
+    return new Translation2d(filteredX, filteredY);
+  }
+
+  /** Returns the current yaw velocity */
+  public double getYawVelocity() {
+    return gyroInputs.yawVelocityRadPerSec;
+  }
 
   /** Returns an array of module translations. */
   public static Translation2d[] getModuleTranslations() {
     return new Translation2d[] {
-      new Translation2d(WhiplashTunerConstants.FrontLeft.LocationX, WhiplashTunerConstants.FrontLeft.LocationY),
-      new Translation2d(WhiplashTunerConstants.FrontRight.LocationX, WhiplashTunerConstants.FrontRight.LocationY),
-      new Translation2d(WhiplashTunerConstants.BackLeft.LocationX, WhiplashTunerConstants.BackLeft.LocationY),
-      new Translation2d(WhiplashTunerConstants.BackRight.LocationX, WhiplashTunerConstants.BackRight.LocationY)
+      new Translation2d(
+          WhiplashTunerConstants.FrontLeft.LocationX, WhiplashTunerConstants.FrontLeft.LocationY),
+      new Translation2d(
+          WhiplashTunerConstants.FrontRight.LocationX, WhiplashTunerConstants.FrontRight.LocationY),
+      new Translation2d(
+          WhiplashTunerConstants.BackLeft.LocationX, WhiplashTunerConstants.BackLeft.LocationY),
+      new Translation2d(
+          WhiplashTunerConstants.BackRight.LocationX, WhiplashTunerConstants.BackRight.LocationY)
     };
   }
 }

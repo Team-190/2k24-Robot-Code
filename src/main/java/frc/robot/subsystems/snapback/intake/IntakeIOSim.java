@@ -11,12 +11,24 @@ import frc.robot.constants.Constants;
 
 public class IntakeIOSim implements IntakeIO {
   private DCMotorSim intakeMotorSim =
-      new DCMotorSim(LinearSystemId.createDCMotorSystem(IntakeConstants.INTAKE_GEARBOX, 0.004, IntakeConstants.INTAKE_GEAR_REDUCTION),IntakeConstants.INTAKE_GEARBOX, 0.004);
+      new DCMotorSim(
+          LinearSystemId.createDCMotorSystem(
+              IntakeConstants.INTAKE_GEARBOX, 0.004, IntakeConstants.INTAKE_GEAR_REDUCTION),
+          IntakeConstants.INTAKE_GEARBOX,
+          0.004);
   private DCMotorSim serializerMotorSim =
-  new DCMotorSim(LinearSystemId.createDCMotorSystem(IntakeConstants.SERIALIZER_GEARBOX, 0.004, IntakeConstants.SERIALIZER_GEAR_REDUCTION),IntakeConstants.INTAKE_GEARBOX, 0.004);
-  
-  private DCMotorSim kickerMotorSim =new DCMotorSim(LinearSystemId.createDCMotorSystem(IntakeConstants.KICKER_GEARBOX, 0.004, IntakeConstants.KICKER_GEAR_REDUCTION),IntakeConstants.INTAKE_GEARBOX, 0.004);
-  
+      new DCMotorSim(
+          LinearSystemId.createDCMotorSystem(
+              IntakeConstants.SERIALIZER_GEARBOX, 0.004, IntakeConstants.SERIALIZER_GEAR_REDUCTION),
+          IntakeConstants.INTAKE_GEARBOX,
+          0.004);
+
+  private DCMotorSim kickerMotorSim =
+      new DCMotorSim(
+          LinearSystemId.createDCMotorSystem(
+              IntakeConstants.KICKER_GEARBOX, 0.004, IntakeConstants.KICKER_GEAR_REDUCTION),
+          IntakeConstants.INTAKE_GEARBOX,
+          0.004);
 
   private DoubleSolenoidSim SOLENOID_SIM =
       new DoubleSolenoidSim(PneumaticsModuleType.CTREPCM, 5, 6);
