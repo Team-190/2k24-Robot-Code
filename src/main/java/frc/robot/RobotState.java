@@ -16,6 +16,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.constants.Constants;
+import frc.robot.constants.FieldConstants;
 import frc.robot.subsystems.shared.drive.drive.DriveConstants;
 import frc.robot.subsystems.shared.vision.Camera;
 import frc.robot.util.AllianceFlipUtil;
@@ -286,13 +288,6 @@ public class RobotState {
     Logger.recordOutput(
         "RobotState/Control Data/AmpFeed/AmpFeed Radial Velocity",
         controlData.ampFeedRadialVelocity());
-
-    Logger.recordOutput(
-        "RobotState/Signal Data/Rio Bus Utilization",
-        RobotController.getCANStatus().percentBusUtilization);
-    Logger.recordOutput(
-        "RobotState/Signal Data/CANivore Bus Utilization",
-        CANBus.getStatus(DriveConstants.CANIVORE).BusUtilization);
   }
 
   public static Pose2d getRobotPose() {

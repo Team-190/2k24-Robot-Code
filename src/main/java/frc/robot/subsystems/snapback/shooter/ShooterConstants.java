@@ -1,6 +1,6 @@
 package frc.robot.subsystems.snapback.shooter;
 
-import frc.robot.Constants;
+import frc.robot.constants.Constants;
 
 public class ShooterConstants {
   public static final Gains GAINS;

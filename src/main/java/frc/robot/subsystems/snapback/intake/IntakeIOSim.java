@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.simulation.DoubleSolenoidSim;
-import frc.robot.Constants;
+import frc.robot.constants.Constants;
 
 public class IntakeIOSim implements IntakeIO {
   private DCMotorSim intakeMotorSim =

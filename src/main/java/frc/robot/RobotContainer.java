@@ -2,12 +2,13 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.robot.Constants.Mode;
-import frc.robot.commands.AutoRoutines;
 import frc.robot.commands.CompositeCommands;
 import frc.robot.commands.DriveCommands;
+import frc.robot.constants.Constants;
+import frc.robot.constants.Constants.Mode;
 import frc.robot.subsystems.shared.drive.drive.Drive;
 import frc.robot.subsystems.shared.drive.gyro.GyroIO;
 import frc.robot.subsystems.shared.drive.gyro.GyroIOPigeon2;
@@ -70,7 +71,7 @@ public class RobotContainer {
 
     // Configure auto choices.
     autoChooser = new LoggedDashboardChooser<>("Auto Routines");
-    autoChooser.addDefaultOption("None", AutoRoutines.none());
+    autoChooser.addDefaultOption("None", Commands.none());
     if (Constants.TUNING_MODE) {
       autoChooser.addOption(
           "Drive Quasistatic Forward",

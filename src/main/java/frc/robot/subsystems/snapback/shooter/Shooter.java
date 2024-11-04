@@ -13,7 +13,7 @@ public class Shooter {
         () -> RobotState.getControlData().speakerShooterSpeed().f1Speed(),
         () -> RobotState.getControlData().speakerShooterSpeed().f2Speed()),
     FEED(
-        () -> RobotState.getControlData().ampFeedShooterSpeed().f2Speed(),
+        () -> RobotState.getControlData().ampFeedShooterSpeed().f1Speed(),
         () -> RobotState.getControlData().ampFeedShooterSpeed().f2Speed());
 
     private final DoubleSupplier leftGoal;
