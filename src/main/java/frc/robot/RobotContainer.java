@@ -1,5 +1,7 @@
 package frc.robot;
 
+import edu.wpi.first.networktables.NetworkTablesJNI;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -9,13 +11,13 @@ import frc.robot.commands.CompositeCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.constants.Constants;
 import frc.robot.constants.Constants.Mode;
-import frc.robot.subsystems.shared.drive.drive.Drive;
-import frc.robot.subsystems.shared.drive.gyro.GyroIO;
-import frc.robot.subsystems.shared.drive.gyro.GyroIOPigeon2;
-import frc.robot.subsystems.shared.drive.module.ModuleConstants;
-import frc.robot.subsystems.shared.drive.module.ModuleIO;
-import frc.robot.subsystems.shared.drive.module.ModuleIOSim;
-import frc.robot.subsystems.shared.drive.module.ModuleIOTalonFX;
+import frc.robot.subsystems.shared.drive.Drive;
+import frc.robot.subsystems.shared.drive.DriveConstants;
+import frc.robot.subsystems.shared.drive.GyroIO;
+import frc.robot.subsystems.shared.drive.GyroIOPigeon2;
+import frc.robot.subsystems.shared.drive.ModuleIO;
+import frc.robot.subsystems.shared.drive.ModuleIOSim;
+import frc.robot.subsystems.shared.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.shared.vision.Vision;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -39,20 +41,20 @@ public class RobotContainer {
           drive =
               new Drive(
                   new GyroIOPigeon2(),
-                  new ModuleIOTalonFX(ModuleConstants.FRONT_LEFT),
-                  new ModuleIOTalonFX(ModuleConstants.FRONT_RIGHT),
-                  new ModuleIOTalonFX(ModuleConstants.REAR_LEFT),
-                  new ModuleIOTalonFX(ModuleConstants.REAR_RIGHT));
+                  new ModuleIOTalonFX(DriveConstants.FRONT_LEFT),
+                  new ModuleIOTalonFX(DriveConstants.FRONT_RIGHT),
+                  new ModuleIOTalonFX(DriveConstants.BACK_LEFT),
+                  new ModuleIOTalonFX(DriveConstants.BACK_RIGHT));
           vision = new Vision();
           break;
         case ROBOT_SIM:
           drive =
               new Drive(
                   new GyroIO() {},
-                  new ModuleIOSim(),
-                  new ModuleIOSim(),
-                  new ModuleIOSim(),
-                  new ModuleIOSim());
+                  new ModuleIOSim(DriveConstants.FRONT_LEFT),
+                  new ModuleIOSim(DriveConstants.FRONT_RIGHT),
+                  new ModuleIOSim(DriveConstants.BACK_LEFT),
+                  new ModuleIOSim(DriveConstants.BACK_RIGHT));
           vision = new Vision();
           break;
       }
@@ -102,16 +104,19 @@ public class RobotContainer {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> Math.copySign(Math.pow(-driver.getLeftY(), 2), -driver.getLeftY()),
-            () -> Math.copySign(Math.pow(-driver.getLeftX(), 2), -driver.getLeftX()),
-            () -> Math.copySign(Math.pow(driver.getRightX(), 2), driver.getRightX())));
-    driver.y().onTrue(CompositeCommands.resetHeading(drive));
+            () -> -driver.getLeftY(),
+            () -> -driver.getLeftX(),
+            () -> -driver.getRightX(),
+            driver.rightBumper(),
+            driver.axisGreaterThan(XboxController.Axis.kRightTrigger.value, 0.05),
+            driver.b()));
+    driver.y().onTrue(CompositeCommands.resetHeading());
   }
 
   public void robotPeriodic() {
     RobotState.periodic(
-        drive.getGyroRotation(),
-        drive.getLatestRobotHeadingTimestamp(),
+        drive.getRawGyroRotation(),
+        NetworkTablesJNI.now(),
         drive.getYawVelocity(),
         drive.getFieldRelativeVelocity(),
         drive.getModulePositions(),
