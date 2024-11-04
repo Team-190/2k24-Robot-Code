@@ -1,6 +1,6 @@
 package frc.robot.subsystems.snapback.shooter;
 
-import frc.robot.Constants;
+import frc.robot.constants.Constants;
 
 public class ShooterConstants {
   public static final int LEFT_FLYWHEEL_MOTOR_CAN_ID;
@@ -8,6 +8,7 @@ public class ShooterConstants {
   public static final int ACCELERATOR_MOTOR_CAN_ID;
   public static final double FLYWHEEL_GEAR_RATIO;
   public static final double ACCELERATOR_GEAR_RATIO;
+  public static final Gains GAINS;
 
   static {
     switch (Constants.ROBOT) {
@@ -25,7 +26,9 @@ public class ShooterConstants {
         ACCELERATOR_MOTOR_CAN_ID = 2;
         FLYWHEEL_GEAR_RATIO = 1.0;
         ACCELERATOR_GEAR_RATIO = 1.0;
-        GAINS = new Gains(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);}}
+        GAINS = new Gains(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+    }
+  }
 
   public record Gains(double kp, double ki, double kd, double ks, double kv, double ka) {}
 }
