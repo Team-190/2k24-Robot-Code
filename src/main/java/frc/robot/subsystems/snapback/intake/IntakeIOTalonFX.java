@@ -8,31 +8,36 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Temperature;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
 public class IntakeIOTalonFX implements IntakeIO {
   private final TalonFX intakeMotor;
-  public StatusSignal<Double> intakePosition;
-  public StatusSignal<Double> intakeVelocityRadiansPerSecond;
-  public StatusSignal<Double> intakeAppliedVolts;
-  public StatusSignal<Double> intakeCurrentAmps;
-  public StatusSignal<Double> intakeTemperatureCelsius;
+  public StatusSignal<Angle> intakePosition;
+  public StatusSignal<AngularVelocity> intakeVelocityRadiansPerSecond;
+  public StatusSignal<Voltage> intakeAppliedVolts;
+  public StatusSignal<Current> intakeCurrentAmps;
+  public StatusSignal<Temperature> intakeTemperatureCelsius;
 
   private final TalonFX serializerMotor;
-  public StatusSignal<Double> serializerPosition;
-  public StatusSignal<Double> serializerVelocityRadiansPerSecond;
-  public StatusSignal<Double> serializerAppliedVolts;
-  public StatusSignal<Double> serializerCurrentAmps;
-  public StatusSignal<Double> serializerTemperatureCelsius;
+  public StatusSignal<Angle> serializerPosition;
+  public StatusSignal<AngularVelocity> serializerVelocityRadiansPerSecond;
+  public StatusSignal<Voltage> serializerAppliedVolts;
+  public StatusSignal<Current> serializerCurrentAmps;
+  public StatusSignal<Temperature> serializerTemperatureCelsius;
 
   private final TalonFX kickerMotor;
-  public StatusSignal<Double> kickerPosition;
-  public StatusSignal<Double> kickerVelocityRadiansPerSecond;
-  public StatusSignal<Double> kickerAppliedVolts;
-  public StatusSignal<Double> kickerCurrentAmps;
-  public StatusSignal<Double> kickerTemperatureCelsius;
+  public StatusSignal<Angle> kickerPosition;
+  public StatusSignal<AngularVelocity> kickerVelocityRadiansPerSecond;
+  public StatusSignal<Voltage> kickerAppliedVolts;
+  public StatusSignal<Current> kickerCurrentAmps;
+  public StatusSignal<Temperature> kickerTemperatureCelsius;
 
   private final DigitalInput sensor;
 
