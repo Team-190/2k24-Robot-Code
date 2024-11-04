@@ -40,7 +40,7 @@ public class ShooterIOTalonFX implements ShooterIO {
   private final Alert acceleratorDisconnectedAlert =
       new Alert("Shooter accelerator Talon is disconnected, check CAN bus.", AlertType.ERROR);
 
-      private VoltageOut voltageControl;
+  private VoltageOut voltageControl;
 
   public ShooterIOTalonFX() {
     leftFlywheel = new TalonFX(ShooterConstants.LEFT_FLYWHEEL_MOTOR_CAN_ID);
@@ -156,25 +156,21 @@ public class ShooterIOTalonFX implements ShooterIO {
     inputs.acceleratorTemperatureCelsius = acceleratorTemperatureCelsius.getValueAsDouble();
   }
 
-    @Override
-    public void setLeftVoltage(double volts) {
-        leftFlywheel.setControl(voltageControl.withOutput(volts));
-    }
+  @Override
+  public void setLeftVoltage(double volts) {
+    leftFlywheel.setControl(voltageControl.withOutput(volts));
+  }
 
-    @Override
-    public void setRightVoltage(double volts) {
-        rightFlywheel.setControl(voltageControl.withOutput(volts));
-    }
+  @Override
+  public void setRightVoltage(double volts) {
+    rightFlywheel.setControl(voltageControl.withOutput(volts));
+  }
 
-    @Override
-    public void setAcceleratorVoltage(double volts) {
-        accelerator.setControl(voltageControl.withOutput(volts));
-    }
+  @Override
+  public void setAcceleratorVoltage(double volts) {
+    accelerator.setControl(voltageControl.withOutput(volts));
+  }
 
-    @Override
-    public void setLeftVelocitySetpoint(double velocityRadiansPerSecond) {
-        
-    }
-
-    
+  @Override
+  public void setLeftVelocitySetpoint(double velocityRadiansPerSecond) {}
 }
