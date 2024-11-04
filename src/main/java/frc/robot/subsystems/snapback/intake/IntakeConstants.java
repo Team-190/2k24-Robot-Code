@@ -4,20 +4,27 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import frc.robot.constants.Constants;
 
 public class IntakeConstants {
+  // Motor parameters
   public static final int INTAKE_MOTOR_CAN_ID;
   public static final int SERIALIZER_MOTOR_CAN_ID;
   public static final int KICKER_MOTOR_CAN_ID;
 
+  // Gear reduction parameters
   public static final double INTAKE_GEAR_REDUCTION;
   public static final double SERIALIZER_GEAR_REDUCTION;
   public static final double KICKER_GEAR_REDUCTION;
 
+  // Beam Break sensor parameters
   public static final int SENSOR_CHANNEL;
 
+  // Pneumatic parameters
   public static final int PNEUMATIC_FORWARD_CHANNEL;
   public static final int PNEUMATIC_REVERSE_CHANNEL;
 
-  public static final DCMotor MOTOR_CONFIG;
+  // Simulations parameters
+  public static final DCMotor INTAKE_GEARBOX;
+  public static final DCMotor SERIALIZER_GEARBOX;
+  public static final DCMotor KICKER_GEARBOX;
 
   static {
     switch (Constants.ROBOT) {
@@ -35,8 +42,6 @@ public class IntakeConstants {
         PNEUMATIC_FORWARD_CHANNEL = 5;
         PNEUMATIC_REVERSE_CHANNEL = 6;
 
-        MOTOR_CONFIG = DCMotor.getKrakenX60(1);
-
         break;
       default:
         INTAKE_MOTOR_CAN_ID = 0;
@@ -51,8 +56,10 @@ public class IntakeConstants {
 
         PNEUMATIC_FORWARD_CHANNEL = 5;
         PNEUMATIC_REVERSE_CHANNEL = 6;
-
-        MOTOR_CONFIG = DCMotor.getKrakenX60(1);
     }
+
+    INTAKE_GEARBOX = DCMotor.getKrakenX60(1);
+    SERIALIZER_GEARBOX = DCMotor.getKrakenX60(1);
+    KICKER_GEARBOX = DCMotor.getKrakenX60(1);
   }
 }

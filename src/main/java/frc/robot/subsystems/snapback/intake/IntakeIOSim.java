@@ -2,6 +2,7 @@ package frc.robot.subsystems.snapback.intake;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
@@ -10,12 +11,24 @@ import frc.robot.constants.Constants;
 
 public class IntakeIOSim implements IntakeIO {
   private DCMotorSim intakeMotorSim =
-      new DCMotorSim(IntakeConstants.MOTOR_CONFIG, IntakeConstants.INTAKE_GEAR_REDUCTION, 0.004);
+      new DCMotorSim(
+          LinearSystemId.createDCMotorSystem(
+              IntakeConstants.INTAKE_GEARBOX, 0.004, IntakeConstants.INTAKE_GEAR_REDUCTION),
+          IntakeConstants.INTAKE_GEARBOX,
+          0.004);
   private DCMotorSim serializerMotorSim =
       new DCMotorSim(
-          IntakeConstants.MOTOR_CONFIG, IntakeConstants.SERIALIZER_GEAR_REDUCTION, 0.004);
+          LinearSystemId.createDCMotorSystem(
+              IntakeConstants.SERIALIZER_GEARBOX, 0.004, IntakeConstants.SERIALIZER_GEAR_REDUCTION),
+          IntakeConstants.INTAKE_GEARBOX,
+          0.004);
+
   private DCMotorSim kickerMotorSim =
-      new DCMotorSim(IntakeConstants.MOTOR_CONFIG, IntakeConstants.KICKER_GEAR_REDUCTION, 0.004);
+      new DCMotorSim(
+          LinearSystemId.createDCMotorSystem(
+              IntakeConstants.KICKER_GEARBOX, 0.004, IntakeConstants.KICKER_GEAR_REDUCTION),
+          IntakeConstants.INTAKE_GEARBOX,
+          0.004);
 
   private DoubleSolenoidSim SOLENOID_SIM =
       new DoubleSolenoidSim(PneumaticsModuleType.CTREPCM, 5, 6);
