@@ -1,5 +1,6 @@
 package frc.robot.subsystems.snapback.shooter;
 
+import edu.wpi.first.math.system.plant.DCMotor;
 import frc.robot.constants.Constants;
 
 public class ShooterConstants {
@@ -9,6 +10,8 @@ public class ShooterConstants {
   public static final double FLYWHEEL_GEAR_RATIO;
   public static final double ACCELERATOR_GEAR_RATIO;
   public static final Gains GAINS;
+  public static final DCMotor FLYWHEEL_MOTOR;
+  public static final DCMotor ACCELERATOR_MOTOR;
 
   static {
     switch (Constants.ROBOT) {
@@ -28,6 +31,8 @@ public class ShooterConstants {
         ACCELERATOR_GEAR_RATIO = 1.0;
         GAINS = new Gains(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
     }
+    FLYWHEEL_MOTOR = DCMotor.getKrakenX60Foc(1);
+    ACCELERATOR_MOTOR = DCMotor.getKrakenX60Foc(1);
   }
 
   public record Gains(double kp, double ki, double kd, double ks, double kv, double ka) {}

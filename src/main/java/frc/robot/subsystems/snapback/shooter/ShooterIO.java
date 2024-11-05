@@ -17,12 +17,16 @@ public interface ShooterIO {
     public double leftAppliedVolts;
     public double leftCurrentAmps;
     public double leftTemperatureCelsius;
+    public double leftVelocitySetpointRadiansPerSecond;
+    public double leftVelocityErrorRadiansPerSecond;
 
     public Rotation2d rightPosition;
     public double rightVelocityRadiansPerSecond;
     public double rightAppliedVolts;
     public double rightCurrentAmps;
     public double rightTemperatureCelsius;
+    public double rightVelocitySetpointRadiansPerSecond;
+    public double rightVelocityErrorRadiansPerSecond;
 
     public Rotation2d acceleratorPosition;
     public double acceleratorVelocityRadiansPerSecond;
@@ -49,6 +53,4 @@ public interface ShooterIO {
   /** Sets motor closed loop velocity setpoint for right flywheel. */
   public default void setRightVelocitySetpoint(double velocityRadiansPerSecond) {}
 
-  /** Sets motor closed loop velocity setpoint for accelerator motor */
-  public default void setAcceleratorVelocitySetpoint(double velocityRadiansPerSecond) {}
 }
