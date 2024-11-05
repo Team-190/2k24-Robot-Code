@@ -10,32 +10,39 @@ import edu.wpi.first.wpilibj.simulation.DoubleSolenoidSim;
 import frc.robot.constants.Constants;
 
 public class IntakeIOSim implements IntakeIO {
-  private DCMotorSim intakeMotorSim =
-      new DCMotorSim(
-          LinearSystemId.createDCMotorSystem(
-              IntakeConstants.INTAKE_GEARBOX, 0.004, IntakeConstants.INTAKE_GEAR_REDUCTION),
-          IntakeConstants.INTAKE_GEARBOX,
-          0.004);
-  private DCMotorSim serializerMotorSim =
-      new DCMotorSim(
-          LinearSystemId.createDCMotorSystem(
-              IntakeConstants.SERIALIZER_GEARBOX, 0.004, IntakeConstants.SERIALIZER_GEAR_REDUCTION),
-          IntakeConstants.INTAKE_GEARBOX,
-          0.004);
 
-  private DCMotorSim kickerMotorSim =
-      new DCMotorSim(
-          LinearSystemId.createDCMotorSystem(
-              IntakeConstants.KICKER_GEARBOX, 0.004, IntakeConstants.KICKER_GEAR_REDUCTION),
-          IntakeConstants.INTAKE_GEARBOX,
-          0.004);
+  private DCMotorSim intakeMotorSim;
+  private DCMotorSim serializerMotorSim;
+  private DCMotorSim kickerMotorSim;
 
-  private DoubleSolenoidSim SOLENOID_SIM =
-      new DoubleSolenoidSim(PneumaticsModuleType.CTREPCM, 5, 6);
+  private DoubleSolenoidSim SOLENOID_SIM;
 
   private double intakeMotorAppliedVolts = 0.0;
   private double serializerMotorAppliedVolts = 0.0;
   private double kickerMotorAppliedVolts = 0.0;
+
+  public IntakeIOSim() {
+    intakeMotorSim = new DCMotorSim(
+        LinearSystemId.createDCMotorSystem(
+            IntakeConstants.INTAKE_GEARBOX, 0.004, IntakeConstants.INTAKE_GEAR_REDUCTION),
+        IntakeConstants.INTAKE_GEARBOX,
+        0.004);
+
+    serializerMotorSim = new DCMotorSim(
+        LinearSystemId.createDCMotorSystem(
+            IntakeConstants.SERIALIZER_GEARBOX, 0.004, IntakeConstants.SERIALIZER_GEAR_REDUCTION),
+        IntakeConstants.SERIALIZER_GEARBOX,
+        0.004);
+
+    kickerMotorSim = new DCMotorSim(
+        LinearSystemId.createDCMotorSystem(
+            IntakeConstants.KICKER_GEARBOX, 0.004, IntakeConstants.KICKER_GEAR_REDUCTION),
+        IntakeConstants.KICKER_GEARBOX,
+        0.004);
+
+    SOLENOID_SIM = new DoubleSolenoidSim(PneumaticsModuleType.CTREPCM, 5, 6);
+
+  }
 
   @Override
   public void updateInputs(IntakeIOInputs inputs) {
