@@ -24,16 +24,15 @@ public class WhiplashTunerConstants {
   // The steer motor uses any SwerveModule.SteerRequestType control request with the
   // output type specified by SwerveModuleConstants.SteerMotorClosedLoopOutput
   public static final Slot0Configs steerGains =
-      new Slot0Configs().withKP(100).withKI(0).withKD(2.0).withKS(0.2).withKV(1.5).withKA(0);
+      new Slot0Configs().withKP(100).withKI(0).withKD(0.5).withKS(0.2).withKV(1.5).withKA(0);
   // When using closed-loop control, the drive motor uses the control
   // output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
   public static final Slot0Configs driveGains =
-      new Slot0Configs().withKP(0.1).withKI(0).withKD(0).withKS(0).withKV(0.12);
+      new Slot0Configs().withKP(0.5).withKI(0).withKD(0).withKS(0.12341).withKV(0.67195);
 
   // The closed-loop output type to use for the steer motors;
   // This affects the PID/FF gains for the steer motors
-  public static final ClosedLoopOutputType kSteerClosedLoopOutput =
-      ClosedLoopOutputType.TorqueCurrentFOC;
+  public static final ClosedLoopOutputType kSteerClosedLoopOutput = ClosedLoopOutputType.Voltage;
   // The closed-loop output type to use for the drive motors;
   // This affects the PID/FF gains for the drive motors
   public static final ClosedLoopOutputType kDriveClosedLoopOutput = ClosedLoopOutputType.Voltage;
@@ -44,7 +43,7 @@ public class WhiplashTunerConstants {
 
   // The stator current at which the wheels start to slip;
   // This needs to be tuned to your individual robot
-  public static final Current kSlipCurrent = Amps.of(120.0);
+  public static final Current kSlipCurrent = Amps.of(48.84);
 
   // Initial configs for the drive and steer motors and the CANcoder; these cannot be null.
   // Some configs will be overwritten; check the `with*InitialConfigs()` API documentation.
@@ -64,25 +63,25 @@ public class WhiplashTunerConstants {
 
   // Theoretical free speed (m/s) at 12 V applied output;
   // This needs to be tuned to your individual robot
-  public static final LinearVelocity kSpeedAt12Volts = MetersPerSecond.of(4.70);
+  public static final LinearVelocity kSpeedAt12Volts = MetersPerSecond.of(5.763493039050549);
 
   // Every 1 rotation of the azimuth results in kCoupleRatio drive motor turns;
   // This may need to be tuned to your individual robot
-  public static final double kCoupleRatio = 3.5;
+  public static final double kCoupleRatio = 3.125;
 
-  public static final double kDriveGearRatio = 7.363636364;
-  public static final double kSteerGearRatio = 12.8;
-  public static final Distance kWheelRadius = Inches.of(2.167);
+  public static final double kDriveGearRatio = 5.357142857142857;
+  public static final double kSteerGearRatio = 21.428571428571427;
+  public static final Distance kWheelRadius = Inches.of(1.997);
 
   public static final boolean kInvertLeftSide = false;
   public static final boolean kInvertRightSide = true;
 
-  public static final CANBus kCANBus = new CANBus("rio", "./logs/example.hoot");
+  public static final CANBus kCANBus = new CANBus("drive", "./logs/example.hoot");
   public static final int kPigeonId = 1;
 
   // These are only used for simulation
-  public static final double kSteerInertia = 0.00001;
-  public static final double kDriveInertia = 0.001;
+  public static final double kSteerInertia = 0.004;
+  public static final double kDriveInertia = 0.025;
   // Simulated voltage necessary to overcome friction
   public static final Voltage kSteerFrictionVoltage = Volts.of(0.25);
   public static final Voltage kDriveFrictionVoltage = Volts.of(0.25);
@@ -115,40 +114,40 @@ public class WhiplashTunerConstants {
           .withDriveFrictionVoltage(kDriveFrictionVoltage);
 
   // Front Left
-  public static final int kFrontLeftDriveMotorId = 5;
-  public static final int kFrontLeftSteerMotorId = 4;
-  public static final int kFrontLeftEncoderId = 2;
-  public static final Angle kFrontLeftEncoderOffset = Rotations.of(-0.83544921875);
+  public static final int kFrontLeftDriveMotorId = 1;
+  public static final int kFrontLeftSteerMotorId = 2;
+  public static final int kFrontLeftEncoderId = 20;
+  public static final Angle kFrontLeftEncoderOffset = Rotations.of(0.187744140625);
   public static final boolean kFrontLeftSteerMotorInverted = true;
 
   public static final Distance kFrontLeftXPos = Inches.of(10.5);
   public static final Distance kFrontLeftYPos = Inches.of(10.5);
 
   // Front Right
-  public static final int kFrontRightDriveMotorId = 7;
-  public static final int kFrontRightSteerMotorId = 6;
-  public static final int kFrontRightEncoderId = 3;
-  public static final Angle kFrontRightEncoderOffset = Rotations.of(-0.15234375);
+  public static final int kFrontRightDriveMotorId = 3;
+  public static final int kFrontRightSteerMotorId = 4;
+  public static final int kFrontRightEncoderId = 21;
+  public static final Angle kFrontRightEncoderOffset = Rotations.of(-0.063720703125);
   public static final boolean kFrontRightSteerMotorInverted = true;
 
   public static final Distance kFrontRightXPos = Inches.of(10.5);
   public static final Distance kFrontRightYPos = Inches.of(-10.5);
 
   // Back Left
-  public static final int kBackLeftDriveMotorId = 1;
-  public static final int kBackLeftSteerMotorId = 0;
-  public static final int kBackLeftEncoderId = 0;
-  public static final Angle kBackLeftEncoderOffset = Rotations.of(-0.4794921875);
+  public static final int kBackLeftDriveMotorId = 5;
+  public static final int kBackLeftSteerMotorId = 6;
+  public static final int kBackLeftEncoderId = 22;
+  public static final Angle kBackLeftEncoderOffset = Rotations.of(-0.2109375);
   public static final boolean kBackLeftSteerMotorInverted = true;
 
   public static final Distance kBackLeftXPos = Inches.of(-10.5);
   public static final Distance kBackLeftYPos = Inches.of(10.5);
 
   // Back Right
-  public static final int kBackRightDriveMotorId = 3;
-  public static final int kBackRightSteerMotorId = 2;
-  public static final int kBackRightEncoderId = 1;
-  public static final Angle kBackRightEncoderOffset = Rotations.of(-0.84130859375);
+  public static final int kBackRightDriveMotorId = 7;
+  public static final int kBackRightSteerMotorId = 8;
+  public static final int kBackRightEncoderId = 23;
+  public static final Angle kBackRightEncoderOffset = Rotations.of(-0.234619140625);
   public static final boolean kBackRightSteerMotorInverted = true;
 
   public static final Distance kBackRightXPos = Inches.of(-10.5);
@@ -195,13 +194,12 @@ public class WhiplashTunerConstants {
           kInvertRightSide,
           kBackRightSteerMotorInverted);
 
-  // /**
-  //  * Creates a CommandSwerveDrivetrain instance.
-  //  * This should only be called once in your robot program,.
-  //  */
-  // public static CommandSwerveDrivetrain createDrivetrain() {
+  //   /**
+  //    * Creates a CommandSwerveDrivetrain instance. This should only be called once in your robot
+  //    * program,.
+  //    */
+  //   public static CommandSwerveDrivetrain createDrivetrain() {
   //     return new CommandSwerveDrivetrain(
-  //         DrivetrainConstants, FrontLeft, FrontRight, BackLeft, BackRight
-  //     );
-  // }
+  //         DrivetrainConstants, FrontLeft, FrontRight, BackLeft, BackRight);
+  //   }
 }
