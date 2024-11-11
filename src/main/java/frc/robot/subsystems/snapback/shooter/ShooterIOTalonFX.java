@@ -65,7 +65,7 @@ public class ShooterIOTalonFX implements ShooterIO {
     rightFlywheelConfig.CurrentLimits.SupplyCurrentLimit = 60.0;
     rightFlywheelConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     rightFlywheelConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-    rightFlywheelConfig.Feedback.SensorToMechanismRatio = ShooterConstants.FLYWHEEL_GEAR_RATIO;
+    rightFlywheelConfig.Feedback.SensorToMechanismRatio = ShooterConstants.FLYWHEEL_GEAR_REDUCTION;
     rightFlywheelConfig.Slot0.kP = ShooterConstants.GAINS.kp();
     rightFlywheelConfig.Slot0.kI = ShooterConstants.GAINS.ki();
     rightFlywheelConfig.Slot0.kD = ShooterConstants.GAINS.kd();
@@ -80,7 +80,7 @@ public class ShooterIOTalonFX implements ShooterIO {
 
     TalonFXConfiguration acceleratorConfig = rightFlywheelConfig;
     acceleratorConfig.CurrentLimits.SupplyCurrentLimit = 40.0;
-    acceleratorConfig.Feedback.SensorToMechanismRatio = ShooterConstants.ACCELERATOR_GEAR_RATIO;
+    acceleratorConfig.Feedback.SensorToMechanismRatio = ShooterConstants.ACCELERATOR_GEAR_REDUCTION;
     accelerator.getConfigurator().apply(acceleratorConfig);
 
     leftPosition = leftFlywheel.getPosition();

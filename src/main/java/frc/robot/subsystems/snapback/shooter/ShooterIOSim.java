@@ -23,20 +23,20 @@ public class ShooterIOSim implements ShooterIO {
     leftFlywheelMotorSim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(
-                ShooterConstants.FLYWHEEL_MOTOR, 0.004, ShooterConstants.FLYWHEEL_GEAR_RATIO),
-            ShooterConstants.FLYWHEEL_MOTOR,
+                ShooterConstants.FLYWHEEL_GEARBOX, 0.004, ShooterConstants.FLYWHEEL_GEAR_REDUCTION),
+            ShooterConstants.FLYWHEEL_GEARBOX,
             0.004);
     rightFlywheelMotorSim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(
-                ShooterConstants.FLYWHEEL_MOTOR, 0.004, ShooterConstants.FLYWHEEL_GEAR_RATIO),
-            ShooterConstants.FLYWHEEL_MOTOR,
+                ShooterConstants.FLYWHEEL_GEARBOX, 0.004, ShooterConstants.FLYWHEEL_GEAR_REDUCTION),
+            ShooterConstants.FLYWHEEL_GEARBOX,
             0.004);
     acceleratorMotorSim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(
-                ShooterConstants.ACCELERATOR_MOTOR, 0.004, ShooterConstants.ACCELERATOR_GEAR_RATIO),
-            ShooterConstants.ACCELERATOR_MOTOR,
+                ShooterConstants.ACCELERATOR_GEARBOX, 0.004, ShooterConstants.ACCELERATOR_GEAR_REDUCTION),
+            ShooterConstants.ACCELERATOR_GEARBOX,
             0.004);
   }
 
