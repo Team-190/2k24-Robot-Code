@@ -1,5 +1,8 @@
 package frc.robot.subsystems.shared.drive;
 
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -70,8 +73,8 @@ public class DriveConstants {
         TRACK_WIDTH_Y =
             Math.abs(WhiplashTunerConstants.FrontLeft.LocationY)
                 + Math.abs(WhiplashTunerConstants.BackLeft.LocationY);
-        WHEEL_RADIUS = Units.inchesToMeters(2.0);
-        MAX_LINEAR_VELOCITY = Units.feetToMeters(15.0);
+        WHEEL_RADIUS = WhiplashTunerConstants.kWheelRadius.in(Meters);
+        MAX_LINEAR_VELOCITY = WhiplashTunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
         DRIVE_BASE_RADIUS =
             Math.max(
                 Math.max(
@@ -88,7 +91,7 @@ public class DriveConstants {
                     Math.hypot(
                         WhiplashTunerConstants.BackRight.LocationX,
                         WhiplashTunerConstants.BackRight.LocationY)));
-        MAX_ANGULAR_VELOCITY = (MAX_LINEAR_VELOCITY / DRIVE_BASE_RADIUS) * 0.6;
+        MAX_ANGULAR_VELOCITY = (MAX_LINEAR_VELOCITY / DRIVE_BASE_RADIUS);
         KINEMATICS =
             new SwerveDriveKinematics(
                 new Translation2d[] {
@@ -133,8 +136,8 @@ public class DriveConstants {
         TRACK_WIDTH_Y =
             Math.abs(SnapbackTunerConstants.FrontLeft.LocationY)
                 + Math.abs(SnapbackTunerConstants.BackLeft.LocationY);
-        WHEEL_RADIUS = Units.inchesToMeters(2.0);
-        MAX_LINEAR_VELOCITY = Units.feetToMeters(15.0);
+        WHEEL_RADIUS = SnapbackTunerConstants.kWheelRadius.in(Meters);
+        MAX_LINEAR_VELOCITY = SnapbackTunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
         DRIVE_BASE_RADIUS =
             Math.max(
                 Math.max(
@@ -151,7 +154,7 @@ public class DriveConstants {
                     Math.hypot(
                         SnapbackTunerConstants.BackRight.LocationX,
                         SnapbackTunerConstants.BackRight.LocationY)));
-        MAX_ANGULAR_VELOCITY = (MAX_LINEAR_VELOCITY / DRIVE_BASE_RADIUS) * 0.6;
+        MAX_ANGULAR_VELOCITY = (MAX_LINEAR_VELOCITY / DRIVE_BASE_RADIUS);
         KINEMATICS =
             new SwerveDriveKinematics(
                 new Translation2d[] {
