@@ -2,9 +2,21 @@ package frc.robot.subsystems.snapback.shooter;
 
 import frc.robot.RobotState;
 import java.util.function.DoubleSupplier;
+
+import org.littletonrobotics.junction.Logger;
+
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import lombok.RequiredArgsConstructor;
 
-public class Shooter {
+public class Shooter extends SubsystemBase {
+
+  private final ShooterIO io;
+  private final ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
+
+  public Shooter(ShooterIO io) {
+    this.io = io;
+  }
 
   @RequiredArgsConstructor
   public enum Goal {
@@ -26,5 +38,28 @@ public class Shooter {
     private double getRightGoal() {
       return rightGoal.getAsDouble();
     }
+  }
+
+  Goal goal = Goal.IDLE;
+
+  public Command setGoal(Goal goal) {
+    return runOnce(() -> this.goal = goal);
+  }
+
+  public Goal getGoal() {
+    return goal;
+  }
+
+  public Command shoot(Goal goal) {
+    return setGoal(goal).andThen(runOnce(() -> io.setAcceleratorVoltage(12.0)));
+  }
+
+  @Override
+  public void periodic() {
+    io.updateInputs(inputs);
+    Logger.processInputs("Intake", inputs);
+
+    io.setLeftVelocitySetpoint(goal.getLeftGoal());
+    io.setRightVelocitySetpoint(goal.getRightGoal());
   }
 }
