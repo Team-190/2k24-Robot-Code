@@ -20,7 +20,6 @@ import frc.robot.RobotState;
 import frc.robot.constants.Constants;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
-import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
@@ -40,80 +39,45 @@ public final class DriveCommands {
   /**
    * Field relative drive command using two joysticks (controlling linear and angular velocities).
    */
-  public static final Command joystickDrive(
+  public static Command joystickDrive(
       Drive drive,
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
-      DoubleSupplier omegaSupplier,
-      BooleanSupplier speakerAim,
-      BooleanSupplier ampAim,
-      BooleanSupplier feedAim) {
+      DoubleSupplier omegaSupplier) {
     return Commands.run(
         () -> {
-          aimController.enableContinuousInput(-Math.PI, Math.PI);
-
           // Apply deadband
           double linearMagnitude =
               MathUtil.applyDeadband(
                   Math.hypot(xSupplier.getAsDouble(), ySupplier.getAsDouble()),
                   DriveConstants.DRIVER_DEADBAND);
           Rotation2d linearDirection =
-              new Rotation2d(xSupplier.getAsDouble(), ySupplier.getAsDouble());
+              new Rotation2d(Math.atan2(ySupplier.getAsDouble(), xSupplier.getAsDouble()));
           double omega =
               MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DriveConstants.DRIVER_DEADBAND);
 
           // Square values
           linearMagnitude = linearMagnitude * linearMagnitude;
+          omega = Math.copySign(omega * omega, omega);
 
-          // Calcaulate new linear velocity
+          // Calculate new linear velocity
           Translation2d linearVelocity =
               new Pose2d(new Translation2d(), linearDirection)
                   .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
                   .getTranslation();
 
-          // Get robot relative vel
+          // Convert to field relative speeds & send command
           boolean isFlipped =
               DriverStation.getAlliance().isPresent()
                   && DriverStation.getAlliance().get() == Alliance.Red;
-
-          double robotRelativeXVel = linearVelocity.getX() * DriveConstants.MAX_LINEAR_VELOCITY;
-          double robotRelativeYVel = linearVelocity.getY() * DriveConstants.MAX_LINEAR_VELOCITY;
-
-          double angular = 0.0;
-
-          if (speakerAim.getAsBoolean()) {
-            angular =
-                RobotState.getControlData().speakerRadialVelocity()
-                    + (aimController.calculate(
-                        RobotState.getRobotPose().getRotation().getRadians(),
-                        RobotState.getControlData().speakerRobotAngle().getRadians()));
-          } else if (ampAim.getAsBoolean()) {
-            angular =
-                RobotState.getControlData().speakerRadialVelocity()
-                    + (aimController.calculate(
-                        RobotState.getRobotPose().getRotation().getRadians(),
-                        Rotation2d.fromDegrees(90.0).getRadians()));
-          } else if (feedAim.getAsBoolean()) {
-            angular =
-                RobotState.getControlData().speakerRadialVelocity()
-                    + (aimController.calculate(
-                        RobotState.getRobotPose().getRotation().getRadians(),
-                        Rotation2d.fromDegrees(-35.5).getRadians()));
-          } else {
-            angular = omega * DriveConstants.MAX_ANGULAR_VELOCITY;
-          }
-
-          ChassisSpeeds chassisSpeeds =
+          drive.runVelocity(
               ChassisSpeeds.fromFieldRelativeSpeeds(
-                  robotRelativeXVel,
-                  robotRelativeYVel,
-                  angular,
+                  linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
+                  linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+                  omega * drive.getMaxAngularSpeedRadPerSec(),
                   isFlipped
-                      ? RobotState.getRobotPose().getRotation().plus(new Rotation2d(Math.PI))
-                      : RobotState.getRobotPose().getRotation());
-
-          // Convert to field relative speeds & send command
-          drive.runVelocity(chassisSpeeds);
+                      ? drive.getRawGyroRotation().plus(new Rotation2d(Math.PI))
+                      : drive.getRawGyroRotation()));
         },
         drive);
   }
