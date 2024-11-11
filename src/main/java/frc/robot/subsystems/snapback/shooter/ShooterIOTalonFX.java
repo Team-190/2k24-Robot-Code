@@ -55,7 +55,8 @@ public class ShooterIOTalonFX implements ShooterIO {
   private MotionMagicVelocityTorqueCurrentFOC velocityControl;
 
   public ShooterIOTalonFX() {
-    // Left flywheel is the right one when looking at the robot from the front (shooter side); right flywheel is the left one
+    // Left flywheel is the right one when looking at the robot from the front (shooter side); right
+    // flywheel is the left one
     leftFlywheel = new TalonFX(ShooterConstants.LEFT_FLYWHEEL_MOTOR_CAN_ID);
     rightFlywheel = new TalonFX(ShooterConstants.RIGHT_FLYWHEEL_MOTOR_CAN_ID);
     accelerator = new TalonFX(ShooterConstants.ACCELERATOR_MOTOR_CAN_ID);
@@ -213,13 +214,13 @@ public class ShooterIOTalonFX implements ShooterIO {
 
   @Override
   public void setLeftVelocitySetpoint(double velocityRadiansPerSecond) {
-    leftFlywheel.setControl(velocityControl.withVelocity(velocityRadiansPerSecond).withEnableFOC(true));
+    leftFlywheel.setControl(
+        velocityControl.withVelocity(velocityRadiansPerSecond).withEnableFOC(true));
   }
 
   @Override
   public void setRightVelocitySetpoint(double velocityRadiansPerSecond) {
-    rightFlywheel.setControl(velocityControl.withVelocity(velocityRadiansPerSecond).withEnableFOC(true));
+    rightFlywheel.setControl(
+        velocityControl.withVelocity(velocityRadiansPerSecond).withEnableFOC(true));
   }
-
-
 }

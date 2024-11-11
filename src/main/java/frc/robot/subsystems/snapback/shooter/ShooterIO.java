@@ -52,5 +52,4 @@ public interface ShooterIO {
 
   /** Sets motor closed loop velocity setpoint for right flywheel. */
   public default void setRightVelocitySetpoint(double velocityRadiansPerSecond) {}
-
 }
