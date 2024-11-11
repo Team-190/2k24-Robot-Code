@@ -1,6 +1,7 @@
 package frc.robot.subsystems.snapback.hood;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import org.littletonrobotics.junction.AutoLog;
 
 /** Interface for Snapback's hood subsystem. */
 public interface HoodIO {
@@ -9,6 +10,7 @@ public interface HoodIO {
    * Inputs for Snapback's hood subsystem. Positions and velocities are of the output shaft, not the
    * motor shaft.
    */
+  @AutoLog
   public static class HoodIOInputs {
     public Rotation2d position;
     public double velocityRadiansPerSecond;

@@ -1,60 +1,81 @@
 package frc.robot.subsystems.snapback.hood;
 
+import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Temperature;
+import frc.robot.util.Alert;
+import frc.robot.util.Alert.AlertType;
+
 public class HoodIOTalonFX implements HoodIO {
-    private final TalonFX hoodMotor;
-    public StatusSignal<Angle> positionRadians;
-    public StatusSignal<Velocity> velocityRadiansPerSecond;
-    public StatusSignal<Current> currentAmps;
-    public StatusSignal<Temprature> tempratureCelsius;
+  private final TalonFX hoodMotor;
+  public StatusSignal<Angle> positionRotations;
+  public StatusSignal<AngularVelocity> velocityRotationsPerSecond;
+  public StatusSignal<Current> currentAmps;
+  public StatusSignal<Temperature> tempratureCelsius;
 
-    private final Alert disconnectedAlert = new Alert("Hood Talon is disconnected, check CAN bus.", AlertType.ERROR);
+  private final Alert disconnectedAlert =
+      new Alert("Hood Talon is disconnected, check CAN bus.", AlertType.ERROR);
 
-    private VoltageOut voltageControl;
-    private MotionMagicVoltage positionControl = new MotionMagicVoltage(0);
+  private VoltageOut voltageControl;
+  private MotionMagicVoltage positionControl;
 
-    public HoodIOTalonFX() {
-        hoodMotor = new TalonFX(HoodConstants.HOOD_MOTOR_CAN_ID);
+  public HoodIOTalonFX() {
+    hoodMotor = new TalonFX(HoodConstants.HOOD_MOTOR_CAN_ID);
 
-        TalonFXConfiguration config = new TalonFXConfiguration();
-        config.CurrentLimits.SupplyCurrentLimit = 60.0;
-        config.CurrentLimits.SupplyCurrentLimitEnable = true;
-        config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        config.Feedback.SensorToMechanismRatio = HoodConstants.INTAKE_GEAR_REDUCTION;
-        config.Slot0.kP = HoodConstants.GAINS.kp();
-        config.Slot0.kI = HoodConstants.GAINS.ki();
-        config.Slot0.kD = HoodConstants.GAINS.kd();
-        config.Slot0.kS = HoodConstants.GAINS.ks();
-        config.Slot0.kV = HoodConstants.GAINS.kv();
-        config.Slot0.kA = HoodConstants.GAINS.ka();
-        hoodMotor.getConfigurator.apply(config);
+    TalonFXConfiguration config = new TalonFXConfiguration();
+    config.CurrentLimits.SupplyCurrentLimit = 60.0;
+    config.CurrentLimits.SupplyCurrentLimitEnable = true;
+    config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    config.Feedback.SensorToMechanismRatio = HoodConstants.GEAR_REDUCTION;
+    config.Slot0.kP = HoodConstants.GAINS.kp();
+    config.Slot0.kI = HoodConstants.GAINS.ki();
+    config.Slot0.kD = HoodConstants.GAINS.kd();
+    config.Slot0.kS = HoodConstants.GAINS.ks();
+    config.Slot0.kV = HoodConstants.GAINS.kv();
+    config.Slot0.kA = HoodConstants.GAINS.ka();
+    config.MotionMagic.MotionMagicAcceleration = HoodConstants.MAX_ACCELERATION.get();
+    config.MotionMagic.MotionMagicCruiseVelocity = HoodConstants.CRUISING_VELOCITY.get();
+    hoodMotor.getConfigurator().apply(config);
 
-        positionRadians = hoodMotor.getPosition();
-        velocityRadiansPerSecond = hoodMotor.getVelocity();
-        currentAmps = hoodMotor.getCurrent();
-        tempratureCelsius = hoodMotor.getTemprature();
+    positionRotations = hoodMotor.getPosition();
+    velocityRotationsPerSecond = hoodMotor.getVelocity();
+    currentAmps = hoodMotor.getSupplyCurrent();
+    tempratureCelsius = hoodMotor.getDeviceTemp();
 
-        BaseStatusSignal.setUpdateFrequencyAll(50, positionRadians, velocityRadiansPerSecond, currentAmps,
-                tempratureCelsius);
-        hoodMotor.optimizeBusUtilization();
-    }
+    BaseStatusSignal.setUpdateFrequencyForAll(
+        50, positionRotations, velocityRotationsPerSecond, currentAmps, tempratureCelsius);
+    hoodMotor.optimizeBusUtilization();
+  }
 
-    public void updateInputs(HoodIOInputs inputs) {
-        boolean isConnected = hoodMotor.refreshAll(
-                positionRadians, velocityRadiansPerSecond, currentAmps, tempratureCelsius).isOK();
-        disconnectedAlert.set(!isConnected);
+  public void updateInputs(HoodIOInputs inputs) {
+    boolean isConnected =
+        BaseStatusSignal.refreshAll(
+                positionRotations, velocityRotationsPerSecond, currentAmps, tempratureCelsius)
+            .isOK();
+    disconnectedAlert.set(!isConnected);
 
-        inputs.position = positionRadians.getValueAsDouble();
-        inputs.velocity = velocityRadiansPerSecond.getValueAsDouble();
-        inputs.current = currentAmps.getValueAsDouble();
-        inputs.temprature = tempratureCelsius.getValueAsDouble();
-    }
+    inputs.position = Rotation2d.fromRotations(positionRotations.getValueAsDouble());
+    inputs.velocityRadiansPerSecond =
+        Units.rotationsToRadians(velocityRotationsPerSecond.getValueAsDouble());
+    inputs.currentAmps = currentAmps.getValueAsDouble();
+    inputs.temperatureCelsius = tempratureCelsius.getValueAsDouble();
+  }
 
-    public void setVoltage(double voltage) {
-        hoodMotor.setControl(voltageControl.withOutput(volts).withEnableFOC(true));
-    }
+  public void setVoltage(double volts) {
+    hoodMotor.setControl(voltageControl.withOutput(volts).withEnableFOC(true));
+  }
 
-    public void setPosition(double position) { // position in rotations!!!
-        hoodMotor.setControl(positionControl.withPosition(position).withEnableFOC(true));
-    }
-
+  public void setPosition(double position) { // position in rotations!!!
+    hoodMotor.setControl(positionControl.withPosition(position).withEnableFOC(true));
+  }
 }
