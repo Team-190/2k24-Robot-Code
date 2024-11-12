@@ -12,7 +12,7 @@ public class HoodConstants {
   public static final double GEAR_REDUCTION;
   public static final DCMotor HOOD_GEARBOX;
   public static final LoggedTunableNumber CRUISING_VELOCITY =
-      new LoggedTunableNumber("Hood/Max Velocity");
+      new LoggedTunableNumber("Hood/Cruising Velocity");
   public static final LoggedTunableNumber MAX_ACCELERATION =
       new LoggedTunableNumber("Hood/Max Acceleration");
   public static final LoggedTunableNumber STOWED_POSITION =
@@ -29,6 +29,7 @@ public class HoodConstants {
       new LoggedTunableNumber("Hood/Maximum Angle");
   public static final LoggedTunableNumber GOAL_TOLERANCE =
       new LoggedTunableNumber("Hood/Goal Tolerance");
+  public static double angleOffset = Units.degreesToRadians(3.5);
 
   static {
     GOAL_TOLERANCE.initDefault(0.017);
@@ -55,7 +56,7 @@ public class HoodConstants {
         AMP_POSITION.initDefault(Units.degreesToRadians(15.0));
         MIN_POSITION.initDefault(0.0);
         MAX_POSITION.initDefault(0.75);
-        GAINS = new Gains(90.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+        GAINS = new Gains(90.0, 0.0, 0.01, 0.0, 0.0, 0.0);
         break;
     }
     HOOD_GEARBOX = DCMotor.getKrakenX60Foc(1);
