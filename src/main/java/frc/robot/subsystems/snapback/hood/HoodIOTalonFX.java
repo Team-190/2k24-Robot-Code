@@ -75,7 +75,11 @@ public class HoodIOTalonFX implements HoodIO {
     hoodMotor.setControl(voltageControl.withOutput(volts).withEnableFOC(true));
   }
 
-  public void setPosition(double position) { // position in rotations!!!
-    hoodMotor.setControl(positionControl.withPosition(position).withEnableFOC(true));
+  public void setPositionSetpoint(Rotation2d position) {
+    hoodMotor.setControl(positionControl.withPosition(position.getRotations()).withEnableFOC(true));
+  }
+
+  public void setPosition(Rotation2d position) {
+    hoodMotor.setPosition(position.getRotations());
   }
 }
