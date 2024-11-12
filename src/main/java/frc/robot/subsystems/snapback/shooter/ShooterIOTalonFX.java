@@ -213,7 +213,7 @@ public class ShooterIOTalonFX implements ShooterIO {
   }
 
   @Override
-  public void setLeftVelocitySetpoint(double velocityRadiansPerSecond) {
+  public void setLeftVelocityGoal(double velocityRadiansPerSecond) {
     leftFlywheel.setControl(
         velocityControl.withVelocity(velocityRadiansPerSecond).withEnableFOC(true));
   }

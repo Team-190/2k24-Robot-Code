@@ -92,7 +92,7 @@ public class ShooterIOSim implements ShooterIO {
   }
 
   @Override
-  public void setLeftVelocitySetpoint(double velocityRadiansPerSecond) {
+  public void setLeftVelocityGoal(double velocityRadiansPerSecond) {
     leftFlywheelVelocitySetpoint = velocityRadiansPerSecond;
     leftFlywheelMotorSim.setAngularVelocity(leftFlywheelMotorAppliedVolts);
   }
