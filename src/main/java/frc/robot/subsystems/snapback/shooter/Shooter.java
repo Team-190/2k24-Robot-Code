@@ -2,9 +2,7 @@ package frc.robot.subsystems.snapback.shooter;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.RobotState;
-import java.util.function.DoubleSupplier;
-import lombok.RequiredArgsConstructor;
+import frc.robot.subsystems.snapback.shooter.ShooterConstants.Goal;
 import org.littletonrobotics.junction.Logger;
 
 public class Shooter extends SubsystemBase {
@@ -18,26 +16,13 @@ public class Shooter extends SubsystemBase {
     inputs = new ShooterIOInputsAutoLogged();
   }
 
-  @RequiredArgsConstructor
-  public enum Goal {
-    IDLE(() -> 0.0, () -> 0.0),
-    SPEAKER(
-        () -> RobotState.getControlData().speakerShooterSpeed().f1Speed(),
-        () -> RobotState.getControlData().speakerShooterSpeed().f2Speed()),
-    FEED(
-        () -> RobotState.getControlData().ampFeedShooterSpeed().f1Speed(),
-        () -> RobotState.getControlData().ampFeedShooterSpeed().f2Speed());
+  @Override
+  public void periodic() {
+    io.updateInputs(inputs);
+    Logger.processInputs("Intake", inputs);
 
-    private final DoubleSupplier leftGoal;
-    private final DoubleSupplier rightGoal;
-
-    private double getLeftGoal() {
-      return leftGoal.getAsDouble();
-    }
-
-    private double getRightGoal() {
-      return rightGoal.getAsDouble();
-    }
+    io.setLeftVelocityGoal(goal.getLeftGoal());
+    io.setRightVelocityGoal(goal.getRightGoal());
   }
 
   public Command setGoal(Goal goal) {
@@ -54,14 +39,5 @@ public class Shooter extends SubsystemBase {
 
   public boolean atGoal() {
     return io.atGoal();
-  }
-
-  @Override
-  public void periodic() {
-    io.updateInputs(inputs);
-    Logger.processInputs("Intake", inputs);
-
-    io.setLeftVelocityGoal(goal.getLeftGoal());
-    io.setRightVelocityGoal(goal.getRightGoal());
   }
 }

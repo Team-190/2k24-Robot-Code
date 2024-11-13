@@ -17,9 +17,8 @@ public interface ShooterIO {
     public double leftAppliedVolts = 0.0;
     public double leftCurrentAmps = 0.0;
     public double leftTemperatureCelsius = 0.0;
-
     public double leftVelocityGoalRadiansPerSecond = 0.0;
-
+    public double leftVelocitySetpointRadiansPerSecond = 0.0;
     public double leftVelocityErrorRadiansPerSecond = 0.0;
 
     public Rotation2d rightPosition = Rotation2d.fromRadians(0);
@@ -27,9 +26,8 @@ public interface ShooterIO {
     public double rightAppliedVolts = 0.0;
     public double rightCurrentAmps = 0.0;
     public double rightTemperatureCelsius = 0.0;
-
     public double rightVelocityGoalRadiansPerSecond = 0.0;
-    
+    public double rightVelocitySetpointRadiansPerSecond = 0.0;
     public double rightVelocityErrorRadiansPerSecond = 0.0;
 
     public Rotation2d acceleratorPosition = Rotation2d.fromRadians(0);

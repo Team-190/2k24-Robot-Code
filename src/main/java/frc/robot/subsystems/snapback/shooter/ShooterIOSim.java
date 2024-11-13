@@ -45,8 +45,6 @@ public class ShooterIOSim implements ShooterIO {
     rightFlywheelMotorAppliedVolts = 0.0;
     acceleratorMotorAppliedVolts = 0.0;
 
-
-
     leftFlywheelVelocityGoal = 0.0;
     rightFlywheelVelocityGoal = 0.0;
   }
@@ -72,7 +70,7 @@ public class ShooterIOSim implements ShooterIO {
     inputs.rightAppliedVolts = rightFlywheelMotorAppliedVolts;
     inputs.rightCurrentAmps = rightFlywheelMotorSim.getCurrentDrawAmps();
     inputs.rightVelocityGoalRadiansPerSecond = rightFlywheelVelocityGoal;
-    
+
     inputs.rightVelocityErrorRadiansPerSecond =
         rightFlywheelVelocityGoal - rightFlywheelMotorSim.getAngularVelocityRadPerSec();
 

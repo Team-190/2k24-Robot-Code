@@ -28,7 +28,7 @@ public class ShooterIOTalonFX implements ShooterIO {
   public StatusSignal<Voltage> leftAppliedVolts;
   public StatusSignal<Current> leftCurrentAmps;
   public StatusSignal<Temperature> leftTemperatureCelsius;
-
+  public double leftVelocityGoalRadiansPerSecond;
   public StatusSignal<Double> leftVelocitySetpointRadiansPerSecond;
   public StatusSignal<Double> leftVelocityErrorRadiansPerSecond;
 
@@ -37,7 +37,7 @@ public class ShooterIOTalonFX implements ShooterIO {
   public StatusSignal<Voltage> rightAppliedVolts;
   public StatusSignal<Current> rightCurrentAmps;
   public StatusSignal<Temperature> rightTemperatureCelsius;
-
+  public double rightVelocityGoalRadiansPerSecond;
   public StatusSignal<Double> rightVelocitySetpointRadiansPerSecond;
   public StatusSignal<Double> rightVelocityErrorRadiansPerSecond;
 
@@ -144,21 +144,21 @@ public class ShooterIOTalonFX implements ShooterIO {
         BaseStatusSignal.refreshAll(
                 leftPosition,
                 leftVelocityRotationsPerSecond,
-                leftVelocitySetpointRadiansPerSecond,
-                leftVelocityErrorRadiansPerSecond,
                 leftAppliedVolts,
                 leftCurrentAmps,
-                leftTemperatureCelsius)
+                leftTemperatureCelsius,
+                leftVelocitySetpointRadiansPerSecond,
+                leftVelocityErrorRadiansPerSecond)
             .isOK();
     boolean rightConnected =
         BaseStatusSignal.refreshAll(
                 rightPosition,
                 rightVelocityRotationsPerSecond,
-                rightVelocitySetpointRadiansPerSecond,
-                rightVelocityErrorRadiansPerSecond,
                 rightAppliedVolts,
                 rightCurrentAmps,
-                rightTemperatureCelsius)
+                rightTemperatureCelsius,
+                rightVelocitySetpointRadiansPerSecond,
+                rightVelocityErrorRadiansPerSecond)
             .isOK();
     boolean acceleratorConnected =
         BaseStatusSignal.refreshAll(
@@ -178,8 +178,8 @@ public class ShooterIOTalonFX implements ShooterIO {
     inputs.leftAppliedVolts = leftAppliedVolts.getValueAsDouble();
     inputs.leftCurrentAmps = leftCurrentAmps.getValueAsDouble();
     inputs.leftTemperatureCelsius = leftTemperatureCelsius.getValueAsDouble();
-
-    inputs.leftVelocityGoalRadiansPerSecond =
+    inputs.leftVelocityGoalRadiansPerSecond = leftVelocityGoalRadiansPerSecond;
+    inputs.leftVelocitySetpointRadiansPerSecond =
         Units.rotationsToRadians(leftVelocitySetpointRadiansPerSecond.getValueAsDouble());
     inputs.leftVelocityErrorRadiansPerSecond =
         Units.rotationsToRadians(leftVelocityErrorRadiansPerSecond.getValueAsDouble());
@@ -190,8 +190,8 @@ public class ShooterIOTalonFX implements ShooterIO {
     inputs.rightAppliedVolts = rightAppliedVolts.getValueAsDouble();
     inputs.rightCurrentAmps = rightCurrentAmps.getValueAsDouble();
     inputs.rightTemperatureCelsius = rightTemperatureCelsius.getValueAsDouble();
-
-    inputs.rightVelocityGoalRadiansPerSecond =
+    inputs.rightVelocityGoalRadiansPerSecond = rightVelocityGoalRadiansPerSecond;
+    inputs.rightVelocitySetpointRadiansPerSecond =
         Units.rotationsToRadians(rightVelocitySetpointRadiansPerSecond.getValueAsDouble());
     inputs.rightVelocityErrorRadiansPerSecond =
         Units.rotationsToRadians(rightVelocityErrorRadiansPerSecond.getValueAsDouble());
@@ -209,10 +209,10 @@ public class ShooterIOTalonFX implements ShooterIO {
     leftFlywheel.setControl(voltageControlRequest.withOutput(volts).withEnableFOC(true));
   }
 
-    @Override
-    public void setRightVoltage(double volts) {
-        rightFlywheel.setControl(voltageControlRequest.withOutput(volts).withEnableFOC(true));
-    }
+  @Override
+  public void setRightVoltage(double volts) {
+    rightFlywheel.setControl(voltageControlRequest.withOutput(volts).withEnableFOC(true));
+  }
 
   @Override
   public void setAcceleratorVoltage(double volts) {
@@ -221,14 +221,14 @@ public class ShooterIOTalonFX implements ShooterIO {
 
   @Override
   public void setLeftVelocityGoal(double velocityRadiansPerSecond) {
-        
+    leftVelocityGoalRadiansPerSecond = velocityRadiansPerSecond;
     leftFlywheel.setControl(
         velocityControlRequest.withVelocity(velocityRadiansPerSecond).withEnableFOC(true));
   }
 
   @Override
   public void setRightVelocityGoal(double velocityRadiansPerSecond) {
-        
+    rightVelocityGoalRadiansPerSecond = velocityRadiansPerSecond;
     rightFlywheel.setControl(
         velocityControlRequest.withVelocity(velocityRadiansPerSecond).withEnableFOC(true));
   }

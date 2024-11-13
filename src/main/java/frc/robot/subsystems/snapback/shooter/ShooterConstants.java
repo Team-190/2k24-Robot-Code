@@ -1,7 +1,10 @@
 package frc.robot.subsystems.snapback.shooter;
 
 import edu.wpi.first.math.system.plant.DCMotor;
+import frc.robot.RobotState;
 import frc.robot.constants.Constants;
+import java.util.function.DoubleSupplier;
+import lombok.RequiredArgsConstructor;
 
 public class ShooterConstants {
   // Motor parameters
@@ -51,4 +54,26 @@ public class ShooterConstants {
   }
 
   public record Gains(double kp, double ki, double kd, double ks, double kv, double ka) {}
+
+  @RequiredArgsConstructor
+  public enum Goal {
+    IDLE(() -> 0.0, () -> 0.0),
+    SPEAKER(
+        () -> RobotState.getControlData().speakerShooterSpeed().f1Speed(),
+        () -> RobotState.getControlData().speakerShooterSpeed().f2Speed()),
+    FEED(
+        () -> RobotState.getControlData().ampFeedShooterSpeed().f1Speed(),
+        () -> RobotState.getControlData().ampFeedShooterSpeed().f2Speed());
+
+    private final DoubleSupplier leftGoal;
+    private final DoubleSupplier rightGoal;
+
+    public double getLeftGoal() {
+      return leftGoal.getAsDouble();
+    }
+
+    public double getRightGoal() {
+      return rightGoal.getAsDouble();
+    }
+  }
 }
