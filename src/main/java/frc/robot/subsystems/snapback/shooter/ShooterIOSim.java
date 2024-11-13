@@ -35,7 +35,9 @@ public class ShooterIOSim implements ShooterIO {
     acceleratorMotorSim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(
-                ShooterConstants.ACCELERATOR_GEARBOX, 0.004, ShooterConstants.ACCELERATOR_GEAR_REDUCTION),
+                ShooterConstants.ACCELERATOR_GEARBOX,
+                0.004,
+                ShooterConstants.ACCELERATOR_GEAR_REDUCTION),
             ShooterConstants.ACCELERATOR_GEARBOX,
             0.004);
 
@@ -53,7 +55,6 @@ public class ShooterIOSim implements ShooterIO {
     leftFlywheelMotorSim.update(Constants.LOOP_PERIOD_SECONDS);
     rightFlywheelMotorSim.update(Constants.LOOP_PERIOD_SECONDS);
     acceleratorMotorSim.update(Constants.LOOP_PERIOD_SECONDS);
-
 
     inputs.leftPosition = Rotation2d.fromRadians(leftFlywheelMotorSim.getAngularPositionRad());
     inputs.leftVelocityRadiansPerSecond = leftFlywheelMotorSim.getAngularVelocityRadPerSec();
@@ -106,5 +107,13 @@ public class ShooterIOSim implements ShooterIO {
   public void setRightVelocityGoal(double velocityRadiansPerSecond) {
     rightFlywheelVelocityGoal = velocityRadiansPerSecond;
     rightFlywheelMotorSim.setAngularVelocity(rightFlywheelMotorAppliedVolts);
+  }
+
+  @Override
+  public boolean atGoal() {
+    return Math.abs(leftFlywheelVelocityGoal - leftFlywheelMotorSim.getAngularVelocityRadPerSec())
+            < ShooterConstants.FLYWHEEL_TOLERANCE_RAD_PER_SEC
+        && Math.abs(rightFlywheelVelocityGoal - rightFlywheelMotorSim.getAngularVelocityRadPerSec())
+            < ShooterConstants.FLYWHEEL_TOLERANCE_RAD_PER_SEC;
   }
 }

@@ -54,4 +54,9 @@ public interface ShooterIO {
 
   /** Sets motor closed loop velocity setpoint for right flywheel. */
   public default void setRightVelocityGoal(double velocityRadiansPerSecond) {}
+
+  /** Returns true if the shooter is at the goal velocity. */
+  public default boolean atGoal() {
+    return false;
+  }
 }

@@ -13,6 +13,8 @@ public class ShooterConstants {
   public static final double FLYWHEEL_GEAR_REDUCTION;
   public static final double ACCELERATOR_GEAR_REDUCTION;
 
+  // Flywheel tolerance
+  public static final double FLYWHEEL_TOLERANCE_RAD_PER_SEC;
   // Gains
   public static final Gains GAINS;
 
@@ -30,6 +32,7 @@ public class ShooterConstants {
         FLYWHEEL_GEAR_REDUCTION = 68.0 / 24.0;
         ACCELERATOR_GEAR_REDUCTION = 2.0;
 
+        FLYWHEEL_TOLERANCE_RAD_PER_SEC = 0.1;
         GAINS = new Gains(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
         break;
       default:
@@ -39,7 +42,8 @@ public class ShooterConstants {
 
         FLYWHEEL_GEAR_REDUCTION = 1.0;
         ACCELERATOR_GEAR_REDUCTION = 1.0;
-        
+
+        FLYWHEEL_TOLERANCE_RAD_PER_SEC = 0.0;
         GAINS = new Gains(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
     }
     FLYWHEEL_GEARBOX = DCMotor.getKrakenX60Foc(1);

@@ -52,6 +52,10 @@ public class Shooter extends SubsystemBase {
     return setGoal(goal).andThen(runOnce(() -> io.setAcceleratorVoltage(12.0)));
   }
 
+  public boolean atGoal() {
+    return io.atGoal();
+  }
+
   @Override
   public void periodic() {
     io.updateInputs(inputs);
