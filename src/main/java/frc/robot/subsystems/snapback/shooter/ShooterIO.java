@@ -12,29 +12,29 @@ public interface ShooterIO {
    */
   @AutoLog
   public static class ShooterIOInputs {
-    public Rotation2d leftPosition;
-    public double leftVelocityRadiansPerSecond;
-    public double leftAppliedVolts;
-    public double leftCurrentAmps;
-    public double leftTemperatureCelsius;
+    public Rotation2d leftPosition = Rotation2d.fromRadians(0);
+    public double leftVelocityRadiansPerSecond = 0.0;
+    public double leftAppliedVolts = 0.0;
+    public double leftCurrentAmps = 0.0;
+    public double leftTemperatureCelsius = 0.0;
 
-    public double leftVelocitySetpointRadiansPerSecond;
-    public double leftVelocityErrorRadiansPerSecond;
+    public double leftVelocityGoalRadiansPerSecond = 0.0;
+    public double leftVelocityErrorRadiansPerSecond = 0.0;
 
-    public Rotation2d rightPosition;
-    public double rightVelocityRadiansPerSecond;
-    public double rightAppliedVolts;
-    public double rightCurrentAmps;
-    public double rightTemperatureCelsius;
+    public Rotation2d rightPosition = Rotation2d.fromRadians(0);
+    public double rightVelocityRadiansPerSecond = 0.0;
+    public double rightAppliedVolts = 0.0;
+    public double rightCurrentAmps = 0.0;
+    public double rightTemperatureCelsius = 0.0;
 
-    public double rightVelocitySetpointRadiansPerSecond;
-    public double rightVelocityErrorRadiansPerSecond;
+    public double rightVelocityGoalRadiansPerSecond = 0.0;
+    public double rightVelocityErrorRadiansPerSecond = 0.0;
 
-    public Rotation2d acceleratorPosition;
-    public double acceleratorVelocityRadiansPerSecond;
-    public double acceleratorAppliedVolts;
-    public double acceleratorCurrentAmps;
-    public double acceleratorTemperatureCelsius;
+    public Rotation2d acceleratorPosition = Rotation2d.fromRadians(0);
+    public double acceleratorVelocityRadiansPerSecond = 0.0;
+    public double acceleratorAppliedVolts = 0.0;
+    public double acceleratorCurrentAmps = 0.0;
+    public double acceleratorTemperatureCelsius = 0.0;
   }
 
   /** Updates AdvantageKit inputs */
@@ -53,5 +53,5 @@ public interface ShooterIO {
   public default void setLeftVelocityGoal(double velocityRadiansPerSecond) {}
 
   /** Sets motor closed loop velocity setpoint for right flywheel. */
-  public default void setRightVelocitySetpoint(double velocityRadiansPerSecond) {}
+  public default void setRightVelocityGoal(double velocityRadiansPerSecond) {}
 }

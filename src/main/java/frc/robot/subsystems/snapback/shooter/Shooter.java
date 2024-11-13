@@ -10,10 +10,12 @@ import org.littletonrobotics.junction.Logger;
 public class Shooter extends SubsystemBase {
 
   private final ShooterIO io;
-  private final ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
+  private final ShooterIOInputsAutoLogged inputs;
+  private Goal goal = Goal.IDLE;
 
   public Shooter(ShooterIO io) {
     this.io = io;
+    inputs = new ShooterIOInputsAutoLogged();
   }
 
   @RequiredArgsConstructor
@@ -38,8 +40,6 @@ public class Shooter extends SubsystemBase {
     }
   }
 
-  Goal goal = Goal.IDLE;
-
   public Command setGoal(Goal goal) {
     return runOnce(() -> this.goal = goal);
   }
@@ -57,7 +57,7 @@ public class Shooter extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Intake", inputs);
 
-    io.setLeftVelocitySetpoint(goal.getLeftGoal());
-    io.setRightVelocitySetpoint(goal.getRightGoal());
+    io.setLeftVelocityGoal(goal.getLeftGoal());
+    io.setRightVelocityGoal(goal.getRightGoal());
   }
 }

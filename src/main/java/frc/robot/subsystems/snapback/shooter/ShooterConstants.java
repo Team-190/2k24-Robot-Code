@@ -16,7 +16,7 @@ public class ShooterConstants {
   // Gains
   public static final Gains GAINS;
 
-  // Simulations parameters
+  // Simulation parameters
   public static final DCMotor FLYWHEEL_GEARBOX;
   public static final DCMotor ACCELERATOR_GEARBOX;
 
