@@ -209,10 +209,10 @@ public class ShooterIOTalonFX implements ShooterIO {
     leftFlywheel.setControl(voltageControlRequest.withOutput(volts).withEnableFOC(true));
   }
 
-  @Override
-  public void setRightVoltage(double volts) {
-    rightFlywheel.setControl(voltageControlRequest.withOutput(volts).withEnableFOC(true));
-  }
+    @Override
+    public void setRightVoltage(double volts) {
+        rightFlywheel.setControl(voltageControlRequest.withOutput(volts).withEnableFOC(true));
+    }
 
   @Override
   public void setAcceleratorVoltage(double volts) {
@@ -221,12 +221,14 @@ public class ShooterIOTalonFX implements ShooterIO {
 
   @Override
   public void setLeftVelocityGoal(double velocityRadiansPerSecond) {
+        
     leftFlywheel.setControl(
         velocityControlRequest.withVelocity(velocityRadiansPerSecond).withEnableFOC(true));
   }
 
   @Override
   public void setRightVelocityGoal(double velocityRadiansPerSecond) {
+        
     rightFlywheel.setControl(
         velocityControlRequest.withVelocity(velocityRadiansPerSecond).withEnableFOC(true));
   }
