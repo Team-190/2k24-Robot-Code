@@ -1,26 +1,37 @@
 package frc.robot.subsystems.snapback.hood;
 
 import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
+import static edu.wpi.first.math.util.Units.*;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpillibj2.command.sysid.SysIdRoutine.*;
 
 public class Hood extends SubsystemBase {
   private final HoodIO io;
   private final HoodIOInputsAutoLogged inputs = new HoodIOInputsAutoLogged();
 
   public Hood(HoodIO io) {
+    inputs = new HoodIOInputsAutoLogged();
     this.io = io;
+    positionSetpoint = HoodConstants.STOWED_POSITION;
+    isClosedLoop = true;
+
+    characterizationRoutine = 
+      new SysIdRoutine(new SysIdRoutine.Config(
+        Volts.of(0.5).per(Seconds.of(1.0)),
+        Volts.of(3.5),
+        Seconds.of(10),
+        (state) -> Logger.recordOutput("Arm/sysIDState", state.toString())),
+      new SysIdRoutine.Mechanism((volts) -> io.setHoodVoltage(volts.in(Volts)), null, this));
   }
 
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Hood", inputs);
   }  
-  
+
   public Command setVoltage(double volts) {
     return runOnce(() -> io.setVoltage(volts));
   }
@@ -55,3 +66,5 @@ public class Hood extends SubsystemBase {
   // }
 
 }
+
+
