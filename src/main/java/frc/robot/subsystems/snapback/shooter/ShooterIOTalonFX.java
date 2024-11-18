@@ -29,8 +29,8 @@ public class ShooterIOTalonFX implements ShooterIO {
   public StatusSignal<Current> leftCurrentAmps;
   public StatusSignal<Temperature> leftTemperatureCelsius;
   public double leftVelocityGoalRadiansPerSecond;
-  public StatusSignal<Double> leftVelocitySetpointRadiansPerSecond;
-  public StatusSignal<Double> leftVelocityErrorRadiansPerSecond;
+  public StatusSignal<Double> leftVelocitySetpointRotationsPerSecond;
+  public StatusSignal<Double> leftVelocityErrorRotationsPerSecond;
 
   public StatusSignal<Angle> rightPosition;
   public StatusSignal<AngularVelocity> rightVelocityRotationsPerSecond;
@@ -38,8 +38,8 @@ public class ShooterIOTalonFX implements ShooterIO {
   public StatusSignal<Current> rightCurrentAmps;
   public StatusSignal<Temperature> rightTemperatureCelsius;
   public double rightVelocityGoalRadiansPerSecond;
-  public StatusSignal<Double> rightVelocitySetpointRadiansPerSecond;
-  public StatusSignal<Double> rightVelocityErrorRadiansPerSecond;
+  public StatusSignal<Double> rightVelocitySetpointRotationsPerSecond;
+  public StatusSignal<Double> rightVelocityErrorRotationsPerSecond;
 
   public StatusSignal<Angle> acceleratorPosition;
   public StatusSignal<AngularVelocity> acceleratorVelocityRotationsPerSecond;
@@ -93,8 +93,8 @@ public class ShooterIOTalonFX implements ShooterIO {
     leftCurrentAmps = leftFlywheel.getSupplyCurrent();
     leftTemperatureCelsius = leftFlywheel.getDeviceTemp();
 
-    leftVelocitySetpointRadiansPerSecond = leftFlywheel.getClosedLoopReference();
-    leftVelocityErrorRadiansPerSecond = leftFlywheel.getClosedLoopError();
+    leftVelocitySetpointRotationsPerSecond = leftFlywheel.getClosedLoopReference();
+    leftVelocityErrorRotationsPerSecond = leftFlywheel.getClosedLoopError();
 
     rightPosition = rightFlywheel.getPosition();
     rightVelocityRotationsPerSecond = rightFlywheel.getVelocity();
@@ -102,8 +102,8 @@ public class ShooterIOTalonFX implements ShooterIO {
     rightCurrentAmps = rightFlywheel.getSupplyCurrent();
     rightTemperatureCelsius = rightFlywheel.getDeviceTemp();
 
-    rightVelocitySetpointRadiansPerSecond = rightFlywheel.getClosedLoopReference();
-    rightVelocityErrorRadiansPerSecond = rightFlywheel.getClosedLoopError();
+    rightVelocitySetpointRotationsPerSecond = rightFlywheel.getClosedLoopReference();
+    rightVelocityErrorRotationsPerSecond = rightFlywheel.getClosedLoopError();
 
     acceleratorPosition = accelerator.getPosition();
     acceleratorVelocityRotationsPerSecond = accelerator.getVelocity();
@@ -118,15 +118,15 @@ public class ShooterIOTalonFX implements ShooterIO {
         leftAppliedVolts,
         leftCurrentAmps,
         leftTemperatureCelsius,
-        leftVelocitySetpointRadiansPerSecond,
-        leftVelocityErrorRadiansPerSecond,
+        leftVelocitySetpointRotationsPerSecond,
+        leftVelocityErrorRotationsPerSecond,
         rightPosition,
         rightVelocityRotationsPerSecond,
         rightAppliedVolts,
         rightCurrentAmps,
         rightTemperatureCelsius,
-        rightVelocitySetpointRadiansPerSecond,
-        rightVelocityErrorRadiansPerSecond,
+        rightVelocitySetpointRotationsPerSecond,
+        rightVelocityErrorRotationsPerSecond,
         acceleratorPosition,
         acceleratorVelocityRotationsPerSecond,
         acceleratorAppliedVolts,
@@ -147,8 +147,8 @@ public class ShooterIOTalonFX implements ShooterIO {
                 leftAppliedVolts,
                 leftCurrentAmps,
                 leftTemperatureCelsius,
-                leftVelocitySetpointRadiansPerSecond,
-                leftVelocityErrorRadiansPerSecond)
+                leftVelocitySetpointRotationsPerSecond,
+                leftVelocityErrorRotationsPerSecond)
             .isOK();
     boolean rightConnected =
         BaseStatusSignal.refreshAll(
@@ -157,8 +157,8 @@ public class ShooterIOTalonFX implements ShooterIO {
                 rightAppliedVolts,
                 rightCurrentAmps,
                 rightTemperatureCelsius,
-                rightVelocitySetpointRadiansPerSecond,
-                rightVelocityErrorRadiansPerSecond)
+                rightVelocitySetpointRotationsPerSecond,
+                rightVelocityErrorRotationsPerSecond)
             .isOK();
     boolean acceleratorConnected =
         BaseStatusSignal.refreshAll(
@@ -180,9 +180,9 @@ public class ShooterIOTalonFX implements ShooterIO {
     inputs.leftTemperatureCelsius = leftTemperatureCelsius.getValueAsDouble();
     inputs.leftVelocityGoalRadiansPerSecond = leftVelocityGoalRadiansPerSecond;
     inputs.leftVelocitySetpointRadiansPerSecond =
-        Units.rotationsToRadians(leftVelocitySetpointRadiansPerSecond.getValueAsDouble());
+        Units.rotationsToRadians(leftVelocitySetpointRotationsPerSecond.getValueAsDouble());
     inputs.leftVelocityErrorRadiansPerSecond =
-        Units.rotationsToRadians(leftVelocityErrorRadiansPerSecond.getValueAsDouble());
+        Units.rotationsToRadians(leftVelocityErrorRotationsPerSecond.getValueAsDouble());
 
     inputs.rightPosition = Rotation2d.fromRotations(rightPosition.getValueAsDouble());
     inputs.rightVelocityRadiansPerSecond =
@@ -192,9 +192,9 @@ public class ShooterIOTalonFX implements ShooterIO {
     inputs.rightTemperatureCelsius = rightTemperatureCelsius.getValueAsDouble();
     inputs.rightVelocityGoalRadiansPerSecond = rightVelocityGoalRadiansPerSecond;
     inputs.rightVelocitySetpointRadiansPerSecond =
-        Units.rotationsToRadians(rightVelocitySetpointRadiansPerSecond.getValueAsDouble());
+        Units.rotationsToRadians(rightVelocitySetpointRotationsPerSecond.getValueAsDouble());
     inputs.rightVelocityErrorRadiansPerSecond =
-        Units.rotationsToRadians(rightVelocityErrorRadiansPerSecond.getValueAsDouble());
+        Units.rotationsToRadians(rightVelocityErrorRotationsPerSecond.getValueAsDouble());
 
     inputs.acceleratorPosition = Rotation2d.fromRotations(acceleratorPosition.getValueAsDouble());
     inputs.acceleratorVelocityRadiansPerSecond =
@@ -236,11 +236,11 @@ public class ShooterIOTalonFX implements ShooterIO {
   @Override
   public boolean atGoal() {
     return Math.abs(
-                leftVelocitySetpointRadiansPerSecond.getValueAsDouble()
+                leftVelocitySetpointRotationsPerSecond.getValueAsDouble()
                     - Units.rotationsToRadians(leftVelocityRotationsPerSecond.getValueAsDouble()))
             < ShooterConstants.FLYWHEEL_TOLERANCE_RAD_PER_SEC
         && Math.abs(
-                rightVelocitySetpointRadiansPerSecond.getValueAsDouble()
+                rightVelocitySetpointRotationsPerSecond.getValueAsDouble()
                     - Units.rotationsToRadians(rightVelocityRotationsPerSecond.getValueAsDouble()))
             < ShooterConstants.FLYWHEEL_TOLERANCE_RAD_PER_SEC;
   }
