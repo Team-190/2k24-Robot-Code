@@ -1,8 +1,11 @@
 package frc.robot.subsystems.snapback.shooter;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.constants.Constants;
 
@@ -16,8 +19,10 @@ public class ShooterIOSim implements ShooterIO {
   private double rightFlywheelMotorAppliedVolts;
   private double acceleratorMotorAppliedVolts;
 
-  private double leftFlywheelVelocityGoal;
-  private double rightFlywheelVelocityGoal;
+  private ProfiledPIDController leftFlywheelPIDController;
+  private ProfiledPIDController rightFlywheelPIDController;
+  private SimpleMotorFeedforward leftFlywheelFeedforward;
+  private SimpleMotorFeedforward rightFlywheelFeedforward;
 
   public ShooterIOSim() {
     leftFlywheelMotorSim =
@@ -45,8 +50,29 @@ public class ShooterIOSim implements ShooterIO {
     rightFlywheelMotorAppliedVolts = 0.0;
     acceleratorMotorAppliedVolts = 0.0;
 
-    leftFlywheelVelocityGoal = 0.0;
-    rightFlywheelVelocityGoal = 0.0;
+    leftFlywheelPIDController =
+        new ProfiledPIDController(
+            ShooterConstants.GAINS.kp(),
+            ShooterConstants.GAINS.ki(),
+            ShooterConstants.GAINS.kd(),
+            new TrapezoidProfile.Constraints(
+                ShooterConstants.GAINS.ka(), Double.POSITIVE_INFINITY));
+    rightFlywheelPIDController =
+        new ProfiledPIDController(
+            ShooterConstants.GAINS.kp(),
+            ShooterConstants.GAINS.ki(),
+            ShooterConstants.GAINS.kd(),
+            new TrapezoidProfile.Constraints(
+                ShooterConstants.GAINS.ka(), Double.POSITIVE_INFINITY));
+    leftFlywheelPIDController.setTolerance(ShooterConstants.FLYWHEEL_TOLERANCE_RAD_PER_SEC);
+    rightFlywheelPIDController.setTolerance(ShooterConstants.FLYWHEEL_TOLERANCE_RAD_PER_SEC);
+
+    leftFlywheelFeedforward =
+        new SimpleMotorFeedforward(
+            ShooterConstants.GAINS.ks(), ShooterConstants.GAINS.kv(), ShooterConstants.GAINS.ka());
+    rightFlywheelFeedforward =
+        new SimpleMotorFeedforward(
+            ShooterConstants.GAINS.ks(), ShooterConstants.GAINS.kv(), ShooterConstants.GAINS.ka());
   }
 
   @Override
@@ -60,20 +86,17 @@ public class ShooterIOSim implements ShooterIO {
     inputs.leftVelocityRadiansPerSecond = leftFlywheelMotorSim.getAngularVelocityRadPerSec();
     inputs.leftAppliedVolts = leftFlywheelMotorAppliedVolts;
     inputs.leftCurrentAmps = leftFlywheelMotorSim.getCurrentDrawAmps();
-    inputs.leftVelocityGoalRadiansPerSecond = leftFlywheelVelocityGoal;
+    inputs.leftVelocityGoalRadiansPerSecond = leftFlywheelPIDController.getSetpoint().velocity;
 
-    inputs.leftVelocityErrorRadiansPerSecond =
-        leftFlywheelVelocityGoal - leftFlywheelMotorSim.getAngularVelocityRadPerSec();
+    inputs.leftVelocityErrorRadiansPerSecond = leftFlywheelPIDController.getVelocityError();
 
     inputs.rightPosition = Rotation2d.fromRadians(rightFlywheelMotorSim.getAngularPositionRad());
     inputs.rightVelocityRadiansPerSecond = rightFlywheelMotorSim.getAngularVelocityRadPerSec();
     inputs.rightAppliedVolts = rightFlywheelMotorAppliedVolts;
     inputs.rightCurrentAmps = rightFlywheelMotorSim.getCurrentDrawAmps();
-    inputs.rightVelocityGoalRadiansPerSecond = rightFlywheelVelocityGoal;
+    inputs.rightVelocityGoalRadiansPerSecond = rightFlywheelPIDController.getSetpoint().velocity;
 
-    inputs.rightVelocityErrorRadiansPerSecond =
-        rightFlywheelVelocityGoal - rightFlywheelMotorSim.getAngularVelocityRadPerSec();
-
+    inputs.rightVelocityErrorRadiansPerSecond = rightFlywheelPIDController.getVelocityError();
     inputs.acceleratorPosition =
         Rotation2d.fromRadians(acceleratorMotorSim.getAngularPositionRad());
     inputs.acceleratorVelocityRadiansPerSecond = acceleratorMotorSim.getAngularVelocityRadPerSec();
@@ -101,21 +124,21 @@ public class ShooterIOSim implements ShooterIO {
 
   @Override
   public void setLeftVelocityGoal(double velocityRadiansPerSecond) {
-    leftFlywheelVelocityGoal = velocityRadiansPerSecond;
-    leftFlywheelMotorSim.setAngularVelocity(leftFlywheelMotorAppliedVolts);
+    leftFlywheelMotorSim.setInputVoltage(
+        leftFlywheelPIDController.calculate(velocityRadiansPerSecond)
+            + leftFlywheelFeedforward.calculate(leftFlywheelPIDController.getSetpoint().velocity));
   }
 
   @Override
   public void setRightVelocityGoal(double velocityRadiansPerSecond) {
-    rightFlywheelVelocityGoal = velocityRadiansPerSecond;
-    rightFlywheelMotorSim.setAngularVelocity(rightFlywheelMotorAppliedVolts);
+    rightFlywheelMotorSim.setInputVoltage(
+        rightFlywheelPIDController.calculate(velocityRadiansPerSecond)
+            + rightFlywheelFeedforward.calculate(
+                rightFlywheelPIDController.getSetpoint().velocity));
   }
 
   @Override
   public boolean atGoal() {
-    return Math.abs(leftFlywheelVelocityGoal - leftFlywheelMotorSim.getAngularVelocityRadPerSec())
-            < ShooterConstants.FLYWHEEL_TOLERANCE_RAD_PER_SEC
-        && Math.abs(rightFlywheelVelocityGoal - rightFlywheelMotorSim.getAngularVelocityRadPerSec())
-            < ShooterConstants.FLYWHEEL_TOLERANCE_RAD_PER_SEC;
+    return leftFlywheelPIDController.atGoal() && rightFlywheelPIDController.atGoal();
   }
 }
