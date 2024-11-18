@@ -17,6 +17,8 @@ public interface HoodIO {
     public double appliedVolts;
     public double currentAmps;
     public double temperatureCelsius;
+    public double positionSetpointRotationsPerSecond;
+    public double positionErrorRotationsPerSecond;
   }
 
   /** Updates AdvantageKit inputs. */
