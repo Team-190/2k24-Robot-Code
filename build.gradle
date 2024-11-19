@@ -192,6 +192,8 @@ spotless {
     }
 }
 
+
+// Grab the roboRIO comment via SSH
 import com.jcraft.jsch.*
 
 ext {
@@ -239,7 +241,14 @@ def fetchNameUsingJSch(host, user, password, remoteFile) {
         if (output.isEmpty()) {
             throw new GradleException("Failed to fetch data from ${remoteFile}")
         }
-        return output
+
+        // Extract the name within quotes if the output contains PRETTY_HOSTNAME
+        def matcher = output =~ /PRETTY_HOSTNAME="(.+?)"/
+        if (matcher.find()) {
+            return matcher.group(1) // The name within quotes
+        } else {
+            throw new GradleException("PRETTY_HOSTNAME not found in ${remoteFile}")
+        }
     } catch (Exception e) {
         throw new GradleException("Error during SSH connection: ${e.message}", e)
     } finally {
