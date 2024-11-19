@@ -44,6 +44,76 @@ deploy {
     }
 }
 
+// Grab the roboRIO comment via SSH
+import com.jcraft.jsch.*
+
+ext {
+    // RoboRIO SSH details
+    roboRIOHost = 'roboRIO-190-FRC.local'  // Replace with your team number
+    roboRIOUser = 'admin'                 // Default user
+    roboRIOPassword = ''                  // Default password
+    machineInfoFile = '/etc/machine-info' // Path to the file to read
+}
+
+task fetchRoboRIOComment {
+    doLast {
+        ROBORIO_COMMENT = fetchNameUsingJSch(
+                roboRIOHost, roboRIOUser, roboRIOPassword, machineInfoFile
+                )
+        println "RoboRIO Name: ${ROBORIO_COMMENT}"
+    }
+}
+
+// Function to fetch the file content using JSch
+def fetchNameUsingJSch(host, user, password, remoteFile) {
+    def session = null
+    def channel = null
+    try {
+        JSch jsch = new JSch()
+        session = jsch.getSession(user, host, 22)
+        session.setPassword(password)
+
+        // Skip strict host key checking for simplicity
+        session.setConfig("StrictHostKeyChecking", "no")
+
+        // Connect to the session
+        session.connect()
+
+        // Open an exec channel to run the command
+        channel = session.openChannel("exec")
+        def command = "cat ${remoteFile}"
+        channel.setCommand(command)
+
+        // Capture the output
+        def inputStream = channel.inputStream
+        channel.connect()
+
+        def output = inputStream.text.trim()
+        if (output.isEmpty()) {
+            throw new GradleException("Failed to fetch data from ${remoteFile}")
+        }
+
+        // Extract the name within quotes if the output contains PRETTY_HOSTNAME
+        def matcher = output =~ /PRETTY_HOSTNAME="(.+?)"/
+        if (matcher.find()) {
+            return matcher.group(1) // The name within quotes
+        } else {
+            throw new GradleException("PRETTY_HOSTNAME not found in ${remoteFile}")
+        }
+    } catch (Exception e) {
+        throw new GradleException("Error during SSH connection: ${e.message}", e)
+    } finally {
+        if (channel != null) {
+            channel.disconnect()
+        }
+        if (session != null) {
+            session.disconnect()
+        }
+    }
+}
+
+deployroborio.dependsOn(fetchRoboRIOComment)
+
 def deployArtifact = deploy.targets.roborio.artifacts.frcJava
 
 // Set to true to use debug for JNI.
@@ -191,74 +261,3 @@ spotless {
         endWithNewline()
     }
 }
-
-
-// Grab the roboRIO comment via SSH
-import com.jcraft.jsch.*
-
-ext {
-    // RoboRIO SSH details
-    roboRIOHost = 'roboRIO-190-FRC.local'  // Replace with your team number
-    roboRIOUser = 'admin'                 // Default user
-    roboRIOPassword = ''                  // Default password
-    machineInfoFile = '/etc/machine-info' // Path to the file to read
-}
-
-task fetchRoboRIOComment {
-    doLast {
-        ROBORIO_COMMENT = fetchNameUsingJSch(
-                roboRIOHost, roboRIOUser, roboRIOPassword, machineInfoFile
-                )
-        println "RoboRIO Name: ${ROBORIO_COMMENT}"
-    }
-}
-
-// Function to fetch the file content using JSch
-def fetchNameUsingJSch(host, user, password, remoteFile) {
-    def session = null
-    def channel = null
-    try {
-        JSch jsch = new JSch()
-        session = jsch.getSession(user, host, 22)
-        session.setPassword(password)
-
-        // Skip strict host key checking for simplicity
-        session.setConfig("StrictHostKeyChecking", "no")
-
-        // Connect to the session
-        session.connect()
-
-        // Open an exec channel to run the command
-        channel = session.openChannel("exec")
-        def command = "cat ${remoteFile}"
-        channel.setCommand(command)
-
-        // Capture the output
-        def inputStream = channel.inputStream
-        channel.connect()
-
-        def output = inputStream.text.trim()
-        if (output.isEmpty()) {
-            throw new GradleException("Failed to fetch data from ${remoteFile}")
-        }
-
-        // Extract the name within quotes if the output contains PRETTY_HOSTNAME
-        def matcher = output =~ /PRETTY_HOSTNAME="(.+?)"/
-        if (matcher.find()) {
-            return matcher.group(1) // The name within quotes
-        } else {
-            throw new GradleException("PRETTY_HOSTNAME not found in ${remoteFile}")
-        }
-    } catch (Exception e) {
-        throw new GradleException("Error during SSH connection: ${e.message}", e)
-    } finally {
-        if (channel != null) {
-            channel.disconnect()
-        }
-        if (session != null) {
-            session.disconnect()
-        }
-    }
-}
-
-deployroborio.dependsOn(fetchRoboRIOComment)
