@@ -12,6 +12,7 @@ java {
 }
 
 def ROBOT_MAIN_CLASS = "frc.robot.Main"
+def ROBORIO_COMMENT = ""
 
 // Define my targets (RoboRIO) and artifacts (deployable files)
 // This is added by GradleRIO's backing project DeployUtils.
@@ -79,6 +80,7 @@ compileJava.finalizedBy checkAkitInstall
 dependencies {
     implementation wpi.java.deps.wpilib()
     implementation wpi.java.vendor.java()
+    implementation 'com.jcraft:jsch:0.1.55' // JSch for SSH
 
     roborioDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.roborio)
     roborioDebug wpi.java.vendor.jniDebug(wpi.platforms.roborio)
@@ -135,7 +137,7 @@ task(checkRobot, dependsOn: "classes", type: JavaExec) {
     mainClass = "frc.robot.Constants"
     classpath = sourceSets.main.runtimeClasspath
 }
-// deployroborio.dependsOn(checkRobot)
+// deployroborio.dependsOn(fetchRoboRIOComment)
 
 // Create version file
 project.compileJava.dependsOn(createVersionFile)
@@ -189,3 +191,65 @@ spotless {
         endWithNewline()
     }
 }
+
+import com.jcraft.jsch.*
+
+ext {
+    // RoboRIO SSH details
+    roboRIOHost = 'roboRIO-190-FRC.local'  // Replace with your team number
+    roboRIOUser = 'admin'                 // Default user
+    roboRIOPassword = ''                  // Default password
+    machineInfoFile = '/etc/machine-info' // Path to the file to read
+}
+
+task fetchRoboRIOComment {
+    doLast {
+        ROBORIO_COMMENT = fetchNameUsingJSch(
+                roboRIOHost, roboRIOUser, roboRIOPassword, machineInfoFile
+                )
+        println "RoboRIO Name: ${ROBORIO_COMMENT}"
+    }
+}
+
+// Function to fetch the file content using JSch
+def fetchNameUsingJSch(host, user, password, remoteFile) {
+    def session = null
+    def channel = null
+    try {
+        JSch jsch = new JSch()
+        session = jsch.getSession(user, host, 22)
+        session.setPassword(password)
+
+        // Skip strict host key checking for simplicity
+        session.setConfig("StrictHostKeyChecking", "no")
+
+        // Connect to the session
+        session.connect()
+
+        // Open an exec channel to run the command
+        channel = session.openChannel("exec")
+        def command = "cat ${remoteFile}"
+        channel.setCommand(command)
+
+        // Capture the output
+        def inputStream = channel.inputStream
+        channel.connect()
+
+        def output = inputStream.text.trim()
+        if (output.isEmpty()) {
+            throw new GradleException("Failed to fetch data from ${remoteFile}")
+        }
+        return output
+    } catch (Exception e) {
+        throw new GradleException("Error during SSH connection: ${e.message}", e)
+    } finally {
+        if (channel != null) {
+            channel.disconnect()
+        }
+        if (session != null) {
+            session.disconnect()
+        }
+    }
+}
+
+deployroborio.dependsOn(fetchRoboRIOComment)
