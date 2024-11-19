@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+
 import org.littletonrobotics.junction.Logger;
 
 public class Hood extends SubsystemBase {
@@ -81,5 +83,17 @@ public class Hood extends SubsystemBase {
   // () ->
   // io.setPositionSetpoint(Rotation2d.fromRadians(HoodConstants.STOWED_POSITION.get())));
   // }
+
+  public Command runSysId() {
+    return Commands.sequence(
+      characterizationRoutine.quasistatic(Direction.kForward),
+      Commands.waitSeconds(3),
+      characterizationRoutine.quasistatic(Direction.kReverse),
+      Commands.waitSeconds(3),
+      characterizationRoutine.dynamic(Direction.kForward),
+      Commands.waitSeconds(3),
+      characterizationRoutine.dynamic(Direction.kReverse)
+    );
+  }
 
 }

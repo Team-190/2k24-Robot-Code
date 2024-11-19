@@ -12,13 +12,13 @@ public interface HoodIO {
    */
   @AutoLog
   public static class HoodIOInputs {
-    public Rotation2d position;
-    public double velocityRadiansPerSecond;
-    public double appliedVolts;
-    public double currentAmps;
-    public double temperatureCelsius;
-    public double positionSetpointRotationsPerSecond;
-    public double positionErrorRotationsPerSecond;
+    public Rotation2d position = Rotation2d.fromRadians(0);
+    public double velocityRadiansPerSecond = 0;
+    public double appliedVolts = 0;
+    public double currentAmps = 0;
+    public double temperatureCelsius = 0;
+    public double positionSetpointRotationsPerSecond = 0;
+    public double positionErrorRotationsPerSecond = 0;
   }
 
   /** Updates AdvantageKit inputs. */
