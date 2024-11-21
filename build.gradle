@@ -49,18 +49,44 @@ import com.jcraft.jsch.*
 
 ext {
     // RoboRIO SSH details
-    roboRIOHost = 'roboRIO-190-FRC.local'  // Replace with your team number
+    roboRIOHost = 'roboRIO-190-FRC.local' // Replace with your team number
     roboRIOUser = 'admin'                 // Default user
     roboRIOPassword = ''                  // Default password
     machineInfoFile = '/etc/machine-info' // Path to the file to read
 }
 
 task fetchRoboRIOComment {
+    dependsOn compileJava
     doLast {
         ROBORIO_COMMENT = fetchNameUsingJSch(
                 roboRIOHost, roboRIOUser, roboRIOPassword, machineInfoFile
                 )
         println "RoboRIO Name: ${ROBORIO_COMMENT}"
+
+
+        // Fully qualified name of the nested enum class
+        def className = 'frc.robot.constants.Constants$RobotType'
+        
+        // Load the class using reflection
+        def clazz = Class.forName(className)
+        
+        // Get enum constants and their names
+        def enumConstants = clazz.enumConstants*.name
+        println "Enum constants: $enumConstants"
+
+        boolean foundMatch = false
+        for (enumConstant in enumConstants) {
+            if (enumConstant == ROBORIO_COMMENT) {
+                foundMatch = true
+                break // Exit the loop once a match is found
+            }
+        }
+
+        if (foundMatch) {
+            println "Match found for: $valueToCheck"
+        } else {
+            throw new GradleException("Failed to find a match for: $valueToCheck, aborting deployment")
+        }
     }
 }
 
