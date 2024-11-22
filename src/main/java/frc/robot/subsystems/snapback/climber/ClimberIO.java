@@ -1,6 +1,5 @@
 package frc.robot.subsystems.snapback.climber;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;
 
 /** Interface for Snapback's climber subsystem. */
