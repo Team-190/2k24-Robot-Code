@@ -17,9 +17,9 @@ public interface HoodIO {
     public double appliedVolts = 0;
     public double currentAmps = 0;
     public double temperatureCelsius = 0;
-    public double positionSetpointRadians = 0;
-    public double positionErrorRadians = 0;
-    public double motionMagicGoal = 0;
+    public Rotation2d positionSetpointRadians;
+    public Rotation2d positionErrorRadians;
+    public Rotation2d motionMagicGoal;
   }
 
   /** Updates AdvantageKit inputs. */
