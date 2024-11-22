@@ -58,6 +58,8 @@ public class Hood extends SubsystemBase {
             io.setPositionSetpoint(Rotation2d.fromRotations(HoodConstants.STOWED_POSITION.get())));
   }
 
+  /** TODO: Remove and replace both fee commands with a generalized feed command that sets the angle to the calculated angle from RobotState.java. */
+
   public Command setAmp() {
     return runEnd(
         () -> io.setPositionSetpoint(Rotation2d.fromRotations(HoodConstants.AMP_POSITION.get())),
@@ -72,6 +74,8 @@ public class Hood extends SubsystemBase {
   public Command decreaseAngle() {
     return Commands.runOnce(() -> HoodConstants.angleOffset -= Units.degreesToRadians(0.25));
   }
+
+  /** TODO: Make a method to set the hood to the speaker Angle. Use RobotState.java to get the calculations. */
 
   // public Command setAnglePosition() {
   // return runEnd(

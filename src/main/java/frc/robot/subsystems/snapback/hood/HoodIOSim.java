@@ -27,7 +27,7 @@ public class HoodIOSim implements HoodIO {
             HoodConstants.GAINS.kp(),
             HoodConstants.GAINS.ki(),
             HoodConstants.GAINS.kd(),
-            new TrapezoidProfile.Constraints(HoodConstants.GAINS.kv(), HoodConstants.GAINS.ka()));
+            new TrapezoidProfile.Constraints(HoodConstants.MAX_VELOCITY.get(), HoodConstants.MAX_ACCELERATION.get()));
     feedforward = new SimpleMotorFeedforward(HoodConstants.GAINS.ks(), HoodConstants.GAINS.kv());
   }
 
@@ -39,8 +39,8 @@ public class HoodIOSim implements HoodIO {
     inputs.velocityRadiansPerSecond = motorSim.getAngularVelocityRadPerSec();
     inputs.appliedVolts = appliedVolts;
     inputs.currentAmps = motorSim.getCurrentDrawAmps();
-    inputs.positionSetpointRotationsPerSecond = controller.getSetpoint().position;
-    inputs.positionErrorRotationsPerSecond = controller.getPositionError();
+    inputs.positionSetpointRadians = controller.getSetpoint().position;
+    inputs.positionErrorRadians = controller.getPositionError();
   }
 
   @Override
