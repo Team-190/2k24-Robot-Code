@@ -12,17 +12,21 @@ public interface ClimberIO {
    */
   @AutoLog
   public static class ClimberIOInputs {
-    public Rotation2d leftPosition;
-    public double leftVelocityRadiansPerSecond;
-    public double leftAppliedVolts;
-    public double leftCurrentAmps;
-    public double leftTemperatureCelsius;
+    public double leftPosition = 0.0;
+    public double leftVelocityRadiansPerSecond = 0.0;
+    public double leftAppliedVolts = 0.0;
+    public double leftCurrentAmps = 0.0;
+    public double leftTemperatureCelsius = 0.0;
+    public double leftPositionGoalMeters = 0.0;
+    public double leftPositionErrorMeters = 0.0;
 
-    public Rotation2d rightPosition;
-    public double rightVelocityRadiansPerSecond;
-    public double rightAppliedVolts;
-    public double rightCurrentAmps;
-    public double rightTemperatureCelsius;
+    public double rightPosition = 0.0;
+    public double rightVelocityRadiansPerSecond = 0.0;
+    public double rightAppliedVolts = 0.0;
+    public double rightCurrentAmps = 0.0;
+    public double rightTemperatureCelsius = 0.0;
+    public double rightPositionGoalMeters = 0.0;
+    public double rightPositionErrorMeters = 0.0;
   }
 
   /** Updates AdvantageKit inputs. */
@@ -35,14 +39,19 @@ public interface ClimberIO {
   public default void setRightVoltage(double volts) {}
 
   /** Sets motor closed loop position setpoint for left climber. */
-  public default void setLeftPositionSetpoint(Rotation2d position) {}
+  public default void setLeftPositionGoal(double positionMeters) {}
 
   /** Sets motor closed loop position setpoint for right climber. */
-  public default void setRightPositionSetpoint(Rotation2d position) {}
+  public default void setRightPositionGoal(double positionMeters) {}
 
   /** Sets motor position for left climber. */
-  public default void setLeftPosition(Rotation2d position) {}
+  public default void setLeftPosition(double positionMeters) {}
 
   /** Sets motor position for right climber. */
-  public default void setRightPosition(Rotation2d position) {}
+  public default void setRightPosition(double positionMeters) {}
+
+  /** Returns true if the climber is at the goal position. */
+  public default boolean atGoal() {
+    return false;
+  }
 }
