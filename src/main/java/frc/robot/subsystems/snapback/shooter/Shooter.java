@@ -38,7 +38,7 @@ public class Shooter extends SubsystemBase {
                 Volts.of(0.2).per(Second),
                 Volts.of(3.5),
                 Seconds.of(10.0),
-                (state) -> Logger.recordOutput("Shooter/sysID State Left", state.toString())),
+                (state) -> Logger.recordOutput("Shooter/sysID State Right", state.toString())),
             new SysIdRoutine.Mechanism((volts) -> io.setRightVoltage(volts.in(Volts)), null, this));
   }
 

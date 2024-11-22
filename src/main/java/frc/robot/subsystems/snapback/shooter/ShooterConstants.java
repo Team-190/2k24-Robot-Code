@@ -51,15 +51,12 @@ public class ShooterConstants {
 
         GAINS =
             new Gains(
-                new LoggedTunableNumber("Shooter/GAINS/kP"),
-                new LoggedTunableNumber("Shooter/GAINS/kI"),
-                new LoggedTunableNumber("Shooter/GAINS/kD"),
+                new LoggedTunableNumber("Shooter/GAINS/kP", 0.0),
+                new LoggedTunableNumber("Shooter/GAINS/kI", 0.0),
+                new LoggedTunableNumber("Shooter/GAINS/kD", 0.0),
                 0.0,
                 0.0,
                 0.0);
-        GAINS.kp().initDefault(0.0);
-        GAINS.ki().initDefault(0.0);
-        GAINS.kd().initDefault(0.0);
 
         CRUISE_VELOCITY.initDefault(0.0);
         MAX_ACCELERATION.initDefault(0.0);
@@ -79,15 +76,12 @@ public class ShooterConstants {
 
         GAINS =
             new Gains(
-                new LoggedTunableNumber("Shooter/GAINS/kP"),
-                new LoggedTunableNumber("Shooter/GAINS/kI"),
-                new LoggedTunableNumber("Shooter/GAINS/kD"),
+                new LoggedTunableNumber("Shooter/GAINS/kP", 0.0),
+                new LoggedTunableNumber("Shooter/GAINS/kI", 0.0),
+                new LoggedTunableNumber("Shooter/GAINS/kD", 0.0),
                 0.0,
                 0.0,
                 0.0);
-        GAINS.kp().initDefault(0.0);
-        GAINS.ki().initDefault(0.0);
-        GAINS.kd().initDefault(0.0);
 
         CRUISE_VELOCITY.initDefault(0.0);
         MAX_ACCELERATION.initDefault(0.0);
