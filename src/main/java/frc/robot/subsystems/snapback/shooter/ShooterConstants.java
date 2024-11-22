@@ -3,6 +3,7 @@ package frc.robot.subsystems.snapback.shooter;
 import edu.wpi.first.math.system.plant.DCMotor;
 import frc.robot.RobotState;
 import frc.robot.constants.Constants;
+import frc.robot.util.LoggedTunableNumber;
 import java.util.function.DoubleSupplier;
 import lombok.RequiredArgsConstructor;
 
@@ -16,16 +17,24 @@ public class ShooterConstants {
   public static final double FLYWHEEL_GEAR_REDUCTION;
   public static final double ACCELERATOR_GEAR_REDUCTION;
 
+  // Current Limits
+  public static final double FLYWHEEL_CURRENT_LIMIT;
+  public static final double ACCELERATOR_CURRENT_LIMIT;
+
   // Flywheel tolerance
   public static final double FLYWHEEL_TOLERANCE_RAD_PER_SEC;
   // Gains
   public static final Gains GAINS;
-
+  // Flywheel constraints
+  public static final LoggedTunableNumber CRUISE_VELOCITY;
+  public static final LoggedTunableNumber MAX_ACCELERATION;
   // Simulation parameters
   public static final DCMotor FLYWHEEL_GEARBOX;
   public static final DCMotor ACCELERATOR_GEARBOX;
 
   static {
+    CRUISE_VELOCITY = new LoggedTunableNumber("Shooter/Constraints/Cruise Velocity");
+    MAX_ACCELERATION = new LoggedTunableNumber("Shooter/Constraints/Max Acceleration");
     switch (Constants.ROBOT) {
       case SNAPBACK:
         LEFT_FLYWHEEL_MOTOR_CAN_ID = 16;
@@ -35,8 +44,25 @@ public class ShooterConstants {
         FLYWHEEL_GEAR_REDUCTION = 68.0 / 24.0;
         ACCELERATOR_GEAR_REDUCTION = 2.0;
 
+        FLYWHEEL_CURRENT_LIMIT = 60.0;
+        ACCELERATOR_CURRENT_LIMIT = 40.0;
+
         FLYWHEEL_TOLERANCE_RAD_PER_SEC = 0.1;
-        GAINS = new Gains(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+
+        GAINS =
+            new Gains(
+                new LoggedTunableNumber("Shooter/GAINS/kP"),
+                new LoggedTunableNumber("Shooter/GAINS/kI"),
+                new LoggedTunableNumber("Shooter/GAINS/kD"),
+                0.0,
+                0.0,
+                0.0);
+        GAINS.kp().initDefault(0.0);
+        GAINS.ki().initDefault(0.0);
+        GAINS.kd().initDefault(0.0);
+
+        CRUISE_VELOCITY.initDefault(0.0);
+        MAX_ACCELERATION.initDefault(0.0);
         break;
       default:
         LEFT_FLYWHEEL_MOTOR_CAN_ID = 0;
@@ -46,14 +72,37 @@ public class ShooterConstants {
         FLYWHEEL_GEAR_REDUCTION = 1.0;
         ACCELERATOR_GEAR_REDUCTION = 1.0;
 
+        FLYWHEEL_CURRENT_LIMIT = 0.0;
+        ACCELERATOR_CURRENT_LIMIT = 0.0;
+
         FLYWHEEL_TOLERANCE_RAD_PER_SEC = 0.0;
-        GAINS = new Gains(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+
+        GAINS =
+            new Gains(
+                new LoggedTunableNumber("Shooter/GAINS/kP"),
+                new LoggedTunableNumber("Shooter/GAINS/kI"),
+                new LoggedTunableNumber("Shooter/GAINS/kD"),
+                0.0,
+                0.0,
+                0.0);
+        GAINS.kp().initDefault(0.0);
+        GAINS.ki().initDefault(0.0);
+        GAINS.kd().initDefault(0.0);
+
+        CRUISE_VELOCITY.initDefault(0.0);
+        MAX_ACCELERATION.initDefault(0.0);
     }
     FLYWHEEL_GEARBOX = DCMotor.getKrakenX60Foc(1);
     ACCELERATOR_GEARBOX = DCMotor.getKrakenX60Foc(1);
   }
 
-  public record Gains(double kp, double ki, double kd, double ks, double kv, double ka) {}
+  public record Gains(
+      LoggedTunableNumber kp,
+      LoggedTunableNumber ki,
+      LoggedTunableNumber kd,
+      double ks,
+      double kv,
+      double ka) {}
 
   @RequiredArgsConstructor
   public enum Goal {

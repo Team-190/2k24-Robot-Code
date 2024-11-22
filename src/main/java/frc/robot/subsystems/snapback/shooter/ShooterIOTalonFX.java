@@ -66,16 +66,20 @@ public class ShooterIOTalonFX implements ShooterIO {
     accelerator = new TalonFX(ShooterConstants.ACCELERATOR_MOTOR_CAN_ID);
 
     TalonFXConfiguration rightFlywheelConfig = new TalonFXConfiguration();
-    rightFlywheelConfig.CurrentLimits.SupplyCurrentLimit = 60.0;
+    rightFlywheelConfig.CurrentLimits.SupplyCurrentLimit = ShooterConstants.FLYWHEEL_CURRENT_LIMIT;
     rightFlywheelConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     rightFlywheelConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     rightFlywheelConfig.Feedback.SensorToMechanismRatio = ShooterConstants.FLYWHEEL_GEAR_REDUCTION;
-    rightFlywheelConfig.Slot0.kP = ShooterConstants.GAINS.kp();
-    rightFlywheelConfig.Slot0.kI = ShooterConstants.GAINS.ki();
-    rightFlywheelConfig.Slot0.kD = ShooterConstants.GAINS.kd();
+    rightFlywheelConfig.Slot0.kP = ShooterConstants.GAINS.kp().get();
+    rightFlywheelConfig.Slot0.kI = ShooterConstants.GAINS.ki().get();
+    rightFlywheelConfig.Slot0.kD = ShooterConstants.GAINS.kd().get();
     rightFlywheelConfig.Slot0.kS = ShooterConstants.GAINS.ks();
     rightFlywheelConfig.Slot0.kV = ShooterConstants.GAINS.kv();
     rightFlywheelConfig.Slot0.kA = ShooterConstants.GAINS.ka();
+    rightFlywheelConfig.MotionMagic.MotionMagicCruiseVelocity =
+        ShooterConstants.CRUISE_VELOCITY.get();
+    rightFlywheelConfig.MotionMagic.MotionMagicAcceleration =
+        ShooterConstants.MAX_ACCELERATION.get();
     rightFlywheel.getConfigurator().apply(rightFlywheelConfig);
 
     TalonFXConfiguration leftFlywheelConfig = rightFlywheelConfig;
@@ -83,7 +87,7 @@ public class ShooterIOTalonFX implements ShooterIO {
     leftFlywheel.getConfigurator().apply(leftFlywheelConfig);
 
     TalonFXConfiguration acceleratorConfig = rightFlywheelConfig;
-    acceleratorConfig.CurrentLimits.SupplyCurrentLimit = 40.0;
+    acceleratorConfig.CurrentLimits.SupplyCurrentLimit = ShooterConstants.ACCELERATOR_CURRENT_LIMIT;
     acceleratorConfig.Feedback.SensorToMechanismRatio = ShooterConstants.ACCELERATOR_GEAR_REDUCTION;
     accelerator.getConfigurator().apply(acceleratorConfig);
 
