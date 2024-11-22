@@ -52,18 +52,18 @@ public class ShooterIOSim implements ShooterIO {
 
     leftFlywheelPIDController =
         new ProfiledPIDController(
-            ShooterConstants.GAINS.kp(),
-            ShooterConstants.GAINS.ki(),
-            ShooterConstants.GAINS.kd(),
+            ShooterConstants.GAINS.kp().get(),
+            ShooterConstants.GAINS.ki().get(),
+            ShooterConstants.GAINS.kd().get(),
             new TrapezoidProfile.Constraints(
-                ShooterConstants.GAINS.ka(), Double.POSITIVE_INFINITY));
+                ShooterConstants.MAX_ACCELERATION.get(), Double.POSITIVE_INFINITY));
     rightFlywheelPIDController =
         new ProfiledPIDController(
-            ShooterConstants.GAINS.kp(),
-            ShooterConstants.GAINS.ki(),
-            ShooterConstants.GAINS.kd(),
+            ShooterConstants.GAINS.kp().get(),
+            ShooterConstants.GAINS.ki().get(),
+            ShooterConstants.GAINS.kd().get(),
             new TrapezoidProfile.Constraints(
-                ShooterConstants.GAINS.ka(), Double.POSITIVE_INFINITY));
+                ShooterConstants.MAX_ACCELERATION.get(), Double.POSITIVE_INFINITY));
     leftFlywheelPIDController.setTolerance(ShooterConstants.FLYWHEEL_TOLERANCE_RAD_PER_SEC);
     rightFlywheelPIDController.setTolerance(ShooterConstants.FLYWHEEL_TOLERANCE_RAD_PER_SEC);
 
