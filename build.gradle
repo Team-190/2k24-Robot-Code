@@ -12,7 +12,6 @@ java {
 }
 
 def ROBOT_MAIN_CLASS = "frc.robot.Main"
-def ROBORIO_COMMENT = ""
 
 // Define my targets (RoboRIO) and artifacts (deployable files)
 // This is added by GradleRIO's backing project DeployUtils.
@@ -55,38 +54,78 @@ ext {
     machineInfoFile = '/etc/machine-info' // Path to the file to read
 }
 
-task fetchRoboRIOComment {
+task checkRoboRIOtoRobotType {
     dependsOn compileJava
     doLast {
-        ROBORIO_COMMENT = fetchNameUsingJSch(
+        def ROBORIO_COMMENT = fetchNameUsingJSch(
                 roboRIOHost, roboRIOUser, roboRIOPassword, machineInfoFile
                 )
         println "RoboRIO Name: ${ROBORIO_COMMENT}"
 
+        // Ensure the build output directory is in the classpath
+        def buildOutputDir = file('build/classes/java/main')
+        URLClassLoader loader = new URLClassLoader([
+            buildOutputDir.toURI().toURL()
+        ] as URL[], this.class.classLoader)
 
-        // Fully qualified name of the nested enum class
-        def className = 'frc.robot.constants.Constants$RobotType'
-        
-        // Load the class using reflection
-        def clazz = Class.forName(className)
-        
-        // Get enum constants and their names
-        def enumConstants = clazz.enumConstants*.name
-        println "Enum constants: $enumConstants"
+        // Set file path names and constants
+        def robotTypeClassName = 'frc.robot.constants.Constants$RobotType'
+        def constantsClassName = 'frc.robot.constants.Constants'
+        def robotType = null
+        def constantsClass = null
+        def robotFieldName = 'ROBOT'
 
+        try {
+            // Load the class from the extended classloader
+            robotType = loader.loadClass(robotTypeClassName)
+            println "Loaded class: ${robotType.name}"
+
+            def constants = robotType.enumConstants
+            println "Enum constants: ${constants.collect { it.name() }}"
+
+        } catch (ClassNotFoundException e) {
+            println "Error: Class ${robotTypeClassName} not found. ${e.message}"
+        }
+
+        // Check for valid name of roboRIO comment
         boolean foundMatch = false
-        for (enumConstant in enumConstants) {
-            if (enumConstant == ROBORIO_COMMENT) {
+        for (enumConstant in robotType.enumConstants) {
+            if (enumConstant.toString().equalsIgnoreCase(ROBORIO_COMMENT)) {
                 foundMatch = true
                 break // Exit the loop once a match is found
             }
         }
 
         if (foundMatch) {
-            println "Match found for: $valueToCheck"
+            println "Match found for possible RobotType"
         } else {
-            throw new GradleException("Failed to find a match for: $valueToCheck, aborting deployment")
+            throw new GradleException("Error: ${ROBORIO_COMMENT} is not a valid RobotType, aborting deployment")
         }
+
+        try {
+            // Load the class from the extended classloader
+            constantsClass = loader.loadClass(constantsClassName)
+            println "Loaded class: ${constantsClass.name}"
+
+        } catch (ClassNotFoundException e) {
+            println "Error: Class ${constantsClassName} not found. ${e.message}"
+        }
+
+        // Get the ROBOT field
+        def robotField = constantsClass.getDeclaredField(robotFieldName)
+        robotField.setAccessible(true)
+
+        // Get the value of the ROBOT field
+        def robotEnumValue = robotField.get(null) // For static fields, pass `null`
+        println "Declared ROBOT in Constants.java: ${robotEnumValue}"
+
+        // Compare roboRIO name with ROBOT value
+        if (ROBORIO_COMMENT.equalsIgnoreCase(robotEnumValue.name())) {
+            println "The roboRIO name matches the ROBOT value in Constants.java!"
+        } else {
+            throw new GradleException("Mismatch! The roboRIO name (${ROBORIO_COMMENT}) does not match the ROBOT value (${robotEnumValue.name()}).")
+        }
+
     }
 }
 
@@ -138,7 +177,7 @@ def fetchNameUsingJSch(host, user, password, remoteFile) {
     }
 }
 
-deployroborio.dependsOn(fetchRoboRIOComment)
+deployroborio.dependsOn(checkRoboRIOtoRobotType)
 
 def deployArtifact = deploy.targets.roborio.artifacts.frcJava
 
@@ -227,13 +266,6 @@ wpi.java.configureTestTasks(test)
 tasks.withType(JavaCompile) {
     options.compilerArgs.add '-XDstringConcat=inline'
 }
-
-// Check selected robot when deploying
-task(checkRobot, dependsOn: "classes", type: JavaExec) {
-    mainClass = "frc.robot.Constants"
-    classpath = sourceSets.main.runtimeClasspath
-}
-// deployroborio.dependsOn(fetchRoboRIOComment)
 
 // Create version file
 project.compileJava.dependsOn(createVersionFile)
