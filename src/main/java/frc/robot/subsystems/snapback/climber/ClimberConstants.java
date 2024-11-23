@@ -15,6 +15,11 @@ public class ClimberConstants {
 
   // Climber tolerance
   public static final LoggedTunableNumber CLIMBER_TOLERANCE_METERS;
+  // Climber Position Constants
+  public static final double CLIMBER_MAX_HEIGHT_METERS;
+  public static final double CLIMBER_MIN_HEIGHT_METERS;
+  public static final LoggedTunableNumber CLIMBER_STOWED_HEIGHT_METERS;
+
   // Gains
   public static final Gains GAINS;
 
@@ -28,6 +33,8 @@ public class ClimberConstants {
   static {
     CLIMBER_TOLERANCE_METERS = new LoggedTunableNumber("Climber/CLIMBER_TOLERANCE_METERS");
 
+    CLIMBER_STOWED_HEIGHT_METERS = new LoggedTunableNumber("Climber/CLIMBER_STOWED_HEIGHT_METERS");
+
     CRUISE_VELOCITY = new LoggedTunableNumber("Climber/CRUISE_VELOCITY");
     MAX_ACCELERATION = new LoggedTunableNumber("Climber/MAX_ACCELERATION");
 
@@ -40,14 +47,18 @@ public class ClimberConstants {
         CLIMBER_PULLY_RADIUS_METERS = 0.0;
 
         CLIMBER_TOLERANCE_METERS.initDefault(0.1);
-        GAINS =
-            new Gains(
-                new LoggedTunableNumber("Climber/GAINS/kP"),
-                new LoggedTunableNumber("Climber/GAINS/kI"),
-                new LoggedTunableNumber("Climber/GAINS/kD"),
-                0.0,
-                0.0,
-                0.0);
+
+        CLIMBER_MAX_HEIGHT_METERS = 0.0;
+        CLIMBER_MIN_HEIGHT_METERS = 0.0;
+        CLIMBER_STOWED_HEIGHT_METERS.initDefault(0.0);
+
+        GAINS = new Gains(
+            new LoggedTunableNumber("Climber/GAINS/kP"),
+            new LoggedTunableNumber("Climber/GAINS/kI"),
+            new LoggedTunableNumber("Climber/GAINS/kD"),
+            0.0,
+            0.0,
+            0.0);
 
         CRUISE_VELOCITY.initDefault(0.0);
         MAX_ACCELERATION.initDefault(0.0);
@@ -60,14 +71,18 @@ public class ClimberConstants {
         CLIMBER_PULLY_RADIUS_METERS = 0.0;
 
         CLIMBER_TOLERANCE_METERS.initDefault(0.0);
-        GAINS =
-            new Gains(
-                new LoggedTunableNumber("Climber/GAINS/kP"),
-                new LoggedTunableNumber("Climber/GAINS/kI"),
-                new LoggedTunableNumber("Climber/GAINS/kD"),
-                0.0,
-                0.0,
-                0.0);
+
+        CLIMBER_MAX_HEIGHT_METERS = 0.0;
+        CLIMBER_MIN_HEIGHT_METERS = 0.0;
+        CLIMBER_STOWED_HEIGHT_METERS.initDefault(0.0);
+        
+        GAINS = new Gains(
+            new LoggedTunableNumber("Climber/GAINS/kP"),
+            new LoggedTunableNumber("Climber/GAINS/kI"),
+            new LoggedTunableNumber("Climber/GAINS/kD"),
+            0.0,
+            0.0,
+            0.0);
 
         CRUISE_VELOCITY.initDefault(0.0);
         MAX_ACCELERATION.initDefault(0.0);
@@ -81,5 +96,6 @@ public class ClimberConstants {
       LoggedTunableNumber kd,
       double ks,
       double kv,
-      double ka) {}
+      double ka) {
+  }
 }

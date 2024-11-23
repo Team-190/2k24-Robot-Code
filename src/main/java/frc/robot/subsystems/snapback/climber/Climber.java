@@ -50,6 +50,45 @@ public class Climber extends SubsystemBase {
     return io.atGoal();
   }
 
+  public Command setLeftVoltage(double volts) {
+    return runEnd(() -> io.setLeftVoltage(volts), ()->io.setLeftVoltage(0));
+  }
+
+  public Command setRightVoltage(double volts) {
+    return runEnd(() -> io.setRightVoltage(volts), ()->io.setRightVoltage(0));
+  }
+
+  public Command setLeftPositionGoal(double positionMeters) {
+    return run(() -> io.setLeftPositionGoal(positionMeters)).until(this::atGoal);
+  }
+
+  public Command setRightPositionGoal(double positionMeters) {
+    return run(() -> io.setRightPositionGoal(positionMeters)).until(this::atGoal);
+  }
+  public double getLeftPositionMeters() {
+    return inputs.leftPosition;
+  }
+
+  public double getRightPositionMeters() {
+    return inputs.rightPosition;
+  }
+
+  public Command stop() {
+    return Commands.run(
+        () -> {
+          io.setLeftVoltage(0.0);
+          io.setRightVoltage(0.0);
+        });
+  }
+
+  public Command resetPosition() {
+    return Commands.run(
+        () -> {
+          io.setLeftPosition(ClimberConstants.CLIMBER_STOWED_HEIGHT_METERS.get());
+          io.setRightPosition(ClimberConstants.CLIMBER_STOWED_HEIGHT_METERS.get());
+        });
+  }
+
   public Command runSysId() {
     return Commands.sequence(
         sysIdRoutineLeft
