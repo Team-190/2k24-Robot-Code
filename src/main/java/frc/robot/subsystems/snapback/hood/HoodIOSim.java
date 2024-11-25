@@ -39,8 +39,8 @@ public class HoodIOSim implements HoodIO {
     inputs.velocityRadiansPerSecond = motorSim.getAngularVelocityRadPerSec();
     inputs.appliedVolts = appliedVolts;
     inputs.currentAmps = motorSim.getCurrentDrawAmps();
-    inputs.positionSetpointRadians = Rotation2d.fromRotations(controller.getSetpoint().position);
-    inputs.positionErrorRadians = Rotation2d.fromRotations(controller.getPositionError());
+    inputs.positionSetpoint = Rotation2d.fromRotations(controller.getSetpoint().position);
+    inputs.positionError = Rotation2d.fromRotations(controller.getPositionError());
   }
 
   @Override

@@ -24,9 +24,9 @@ public class HoodIOTalonFX implements HoodIO {
   public StatusSignal<AngularVelocity> velocityRotationsPerSecond;
   public StatusSignal<Current> currentAmps;
   public StatusSignal<Temperature> tempratureCelsius;
-  public StatusSignal<Double> positionSetpointRadians;
-  public StatusSignal<Double> positionErrorRadians;
-  public Rotation2d motionMagicGoal;
+  public StatusSignal<Double> positionSetpointRotations;
+  public StatusSignal<Double> positionErrorRotations;
+  public Rotation2d positionGoal;
 
   private final Alert disconnectedAlert =
       new Alert("Hood Talon is disconnected, check CAN bus.", AlertType.ERROR);
@@ -56,8 +56,8 @@ public class HoodIOTalonFX implements HoodIO {
     velocityRotationsPerSecond = hoodMotor.getVelocity();
     currentAmps = hoodMotor.getSupplyCurrent();
     tempratureCelsius = hoodMotor.getDeviceTemp();
-    positionSetpointRadians = hoodMotor.getClosedLoopReference();
-    positionErrorRadians = hoodMotor.getClosedLoopError();
+    positionSetpointRotations = hoodMotor.getClosedLoopReference();
+    positionErrorRotations = hoodMotor.getClosedLoopError();
 
     BaseStatusSignal.setUpdateFrequencyForAll(
         50, positionRotations, velocityRotationsPerSecond, currentAmps, tempratureCelsius);
@@ -76,10 +76,10 @@ public class HoodIOTalonFX implements HoodIO {
         Units.rotationsToRadians(velocityRotationsPerSecond.getValueAsDouble());
     inputs.currentAmps = currentAmps.getValueAsDouble();
     inputs.temperatureCelsius = tempratureCelsius.getValueAsDouble();
-    inputs.positionSetpointRadians =
-        Rotation2d.fromRotations(positionSetpointRadians.getValueAsDouble());
-    inputs.positionErrorRadians = Rotation2d.fromRotations(positionErrorRadians.getValueAsDouble());
-    inputs.motionMagicGoal = motionMagicGoal;
+    inputs.positionSetpoint =
+        Rotation2d.fromRotations(positionSetpointRotations.getValueAsDouble());
+    inputs.positionError = Rotation2d.fromRotations(positionErrorRotations.getValueAsDouble());
+    inputs.positionGoal = positionGoal;
   }
 
   public void setVoltage(double volts) {
@@ -87,9 +87,9 @@ public class HoodIOTalonFX implements HoodIO {
   }
 
   public void setPositionGoal(Rotation2d position) {
-    motionMagicGoal = position;
+    positionGoal = position;
     hoodMotor.setControl(
-        positionControlRequest.withPosition(motionMagicGoal.getRotations()).withEnableFOC(true));
+        positionControlRequest.withPosition(positionGoal.getRotations()).withEnableFOC(true));
   }
 
   public void setPosition(Rotation2d position) {

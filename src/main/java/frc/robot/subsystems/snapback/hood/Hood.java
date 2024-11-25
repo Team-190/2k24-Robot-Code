@@ -9,6 +9,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.RobotState;
+
 import org.littletonrobotics.junction.Logger;
 
 public class Hood extends SubsystemBase {
@@ -40,25 +42,23 @@ public class Hood extends SubsystemBase {
     return runOnce(() -> io.setVoltage(volts));
   }
 
-  public Command setAmpSideFeed() {
+  public Command setHoodAngleSpeaker() {
     return runEnd(
-        () ->
-            io.setPositionSetpoint(
-                Rotation2d.fromRotations(HoodConstants.AMP_SIDE_FEED_POSITION.get())),
-        () ->
-            io.setPositionSetpoint(Rotation2d.fromRotations(HoodConstants.STOWED_POSITION.get())));
+      () ->
+          io.setPositionSetpoint(RobotState.getControlData().speakerArmAngle()),
+
+      () ->
+          io.setPositionSetpoint(Rotation2d.fromRotations(HoodConstants.STOWED_POSITION.get())));
   }
 
-  public Command setSourceSideFeed() {
+  public Command setFeed() {
     return runEnd(
-        () ->
-            io.setPositionSetpoint(
-                Rotation2d.fromRotations(HoodConstants.SOURCE_SIDE_FEED_POSITION.get())),
-        () ->
-            io.setPositionSetpoint(Rotation2d.fromRotations(HoodConstants.STOWED_POSITION.get())));
-  }
+      () -> 
+          io.setPositionSetpoint(RobotState.getControlData().ampFeedArmAngle()),
 
-  /** TODO: Remove and replace both fee commands with a generalized feed command that sets the angle to the calculated angle from RobotState.java. */
+      () ->
+        io.setPositionSetpoint(Rotation2d.fromRotations(HoodConstants.STOWED_POSITION.get())));
+  }
 
   public Command setAmp() {
     return runEnd(
@@ -74,8 +74,6 @@ public class Hood extends SubsystemBase {
   public Command decreaseAngle() {
     return Commands.runOnce(() -> HoodConstants.angleOffset -= Units.degreesToRadians(0.25));
   }
-
-  /** TODO: Make a method to set the hood to the speaker Angle. Use RobotState.java to get the calculations. */
 
   // public Command setAnglePosition() {
   // return runEnd(
