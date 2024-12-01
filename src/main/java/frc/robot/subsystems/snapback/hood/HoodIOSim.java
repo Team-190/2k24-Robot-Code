@@ -1,5 +1,7 @@
 package frc.robot.subsystems.snapback.hood;
 
+import static edu.wpi.first.units.Units.*;
+
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -27,7 +29,8 @@ public class HoodIOSim implements HoodIO {
             HoodConstants.GAINS.kp(),
             HoodConstants.GAINS.ki(),
             HoodConstants.GAINS.kd(),
-            new TrapezoidProfile.Constraints(HoodConstants.MAX_VELOCITY.get(), HoodConstants.MAX_ACCELERATION.get()));
+            new TrapezoidProfile.Constraints(
+                HoodConstants.MAX_VELOCITY.get(), HoodConstants.MAX_ACCELERATION.get()));
     feedforward = new SimpleMotorFeedforward(HoodConstants.GAINS.ks(), HoodConstants.GAINS.kv());
   }
 
@@ -50,10 +53,12 @@ public class HoodIOSim implements HoodIO {
   }
 
   @Override
-  public void setPositionSetpoint(Rotation2d position) {
+  public void setPositionGoal(Rotation2d position) {
     appliedVolts =
         controller.calculate(position.getRadians())
-            + feedforward.calculate(controller.getSetpoint().velocity);
+            + feedforward
+                .calculate(RadiansPerSecond.of(controller.getSetpoint().velocity))
+                .in(Volts);
     motorSim.setInputVoltage(appliedVolts);
   }
 

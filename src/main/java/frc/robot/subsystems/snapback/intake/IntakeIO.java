@@ -47,5 +47,6 @@ public interface IntakeIO {
   /** Sets kicker motor voltage. */
   public default void setKickerVoltage(double volts) {}
 
+  /** Sets the actuator to the specified value. */
   public default void setActuatorValue(Value value) {}
 }

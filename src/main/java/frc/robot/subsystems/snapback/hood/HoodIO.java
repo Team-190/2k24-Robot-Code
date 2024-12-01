@@ -12,14 +12,14 @@ public interface HoodIO {
    */
   @AutoLog
   public static class HoodIOInputs {
-    public Rotation2d position = Rotation2d.fromRadians(0);
-    public double velocityRadiansPerSecond = 0;
-    public double appliedVolts = 0;
-    public double currentAmps = 0;
-    public double temperatureCelsius = 0;
+    public Rotation2d position = new Rotation2d();
+    public double velocityRadiansPerSecond = 0.0;
+    public double appliedVolts = 0.0;
+    public double currentAmps = 0.0;
+    public double temperatureCelsius = 0.0;
+    public Rotation2d positionGoal;
     public Rotation2d positionSetpoint;
     public Rotation2d positionError;
-    public Rotation2d positionGoal;
   }
 
   /** Updates AdvantageKit inputs. */
@@ -29,7 +29,7 @@ public interface HoodIO {
   public default void setVoltage(double volts) {}
 
   /** Sets motor closed loop position setpoint. */
-  public default void setPositionSetpoint(Rotation2d position) {}
+  public default void setPositionGoal(Rotation2d position) {}
 
   /** Sets motor position. */
   public default void setPosition(Rotation2d position) {}

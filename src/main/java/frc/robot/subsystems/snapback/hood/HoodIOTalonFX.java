@@ -1,7 +1,5 @@
 package frc.robot.subsystems.snapback.hood;
 
-import java.io.ObjectInputFilter.Status;
-
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -20,13 +18,14 @@ import frc.robot.util.Alert.AlertType;
 
 public class HoodIOTalonFX implements HoodIO {
   private final TalonFX hoodMotor;
+
   public StatusSignal<Angle> positionRotations;
   public StatusSignal<AngularVelocity> velocityRotationsPerSecond;
   public StatusSignal<Current> currentAmps;
   public StatusSignal<Temperature> tempratureCelsius;
+  public Rotation2d positionGoal;
   public StatusSignal<Double> positionSetpointRotations;
   public StatusSignal<Double> positionErrorRotations;
-  public Rotation2d positionGoal;
 
   private final Alert disconnectedAlert =
       new Alert("Hood Talon is disconnected, check CAN bus.", AlertType.ERROR);
@@ -60,14 +59,25 @@ public class HoodIOTalonFX implements HoodIO {
     positionErrorRotations = hoodMotor.getClosedLoopError();
 
     BaseStatusSignal.setUpdateFrequencyForAll(
-        50, positionRotations, velocityRotationsPerSecond, currentAmps, tempratureCelsius);
+        50,
+        positionRotations,
+        velocityRotationsPerSecond,
+        currentAmps,
+        tempratureCelsius,
+        positionSetpointRotations,
+        positionErrorRotations);
     hoodMotor.optimizeBusUtilization();
   }
 
   public void updateInputs(HoodIOInputs inputs) {
     boolean isConnected =
         BaseStatusSignal.refreshAll(
-                positionRotations, velocityRotationsPerSecond, currentAmps, tempratureCelsius)
+                positionRotations,
+                velocityRotationsPerSecond,
+                currentAmps,
+                tempratureCelsius,
+                positionSetpointRotations,
+                positionErrorRotations)
             .isOK();
     disconnectedAlert.set(!isConnected);
 
@@ -76,20 +86,20 @@ public class HoodIOTalonFX implements HoodIO {
         Units.rotationsToRadians(velocityRotationsPerSecond.getValueAsDouble());
     inputs.currentAmps = currentAmps.getValueAsDouble();
     inputs.temperatureCelsius = tempratureCelsius.getValueAsDouble();
+    inputs.positionGoal = positionGoal;
     inputs.positionSetpoint =
         Rotation2d.fromRotations(positionSetpointRotations.getValueAsDouble());
     inputs.positionError = Rotation2d.fromRotations(positionErrorRotations.getValueAsDouble());
-    inputs.positionGoal = positionGoal;
   }
 
   public void setVoltage(double volts) {
-    hoodMotor.setControl(voltageControlRequest.withOutput(volts).withEnableFOC(true));
+    hoodMotor.setControl(voltageControlRequest.withOutput(volts).withUpdateFreqHz(1000.0));
   }
 
   public void setPositionGoal(Rotation2d position) {
     positionGoal = position;
     hoodMotor.setControl(
-        positionControlRequest.withPosition(positionGoal.getRotations()).withEnableFOC(true));
+        positionControlRequest.withPosition(positionGoal.getRotations()).withUpdateFreqHz(1000.0));
   }
 
   public void setPosition(Rotation2d position) {

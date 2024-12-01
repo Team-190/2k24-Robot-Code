@@ -2,7 +2,6 @@ package frc.robot.subsystems.snapback.hood;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
-import frc.robot.RobotState;
 import frc.robot.constants.Constants;
 import frc.robot.util.LoggedTunableNumber;
 
@@ -21,7 +20,6 @@ public class HoodConstants {
   public static final LoggedTunableNumber GOAL_TOLERANCE;
   public static final LoggedTunableNumber MAX_ACCELERATION;
   public static final LoggedTunableNumber MAX_VELOCITY;
-  public static double angleOffset = RobotState.getSpeakerAngleCompensation();
   public static final double SUPPLY_CURRENT_LIMIT_AMPS;
 
   static {

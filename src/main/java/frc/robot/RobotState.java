@@ -49,7 +49,7 @@ public class RobotState {
           new FlywheelSpeeds(0.0, 0.0));
 
   @Getter @Setter private static double speakerFlywheelCompensation = 0.0;
-  @Getter @Setter private static double speakerAngleCompensation = 3.5;
+  @Getter @Setter private static double speakerAngleCompensation = Units.degreesToRadians(3.5);
 
   private static final SwerveDrivePoseEstimator poseEstimator;
   private static final SwerveDriveOdometry odometry;

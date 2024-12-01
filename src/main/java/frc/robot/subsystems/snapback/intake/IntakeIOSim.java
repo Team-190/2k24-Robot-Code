@@ -1,6 +1,5 @@
 package frc.robot.subsystems.snapback.intake;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
@@ -15,11 +14,7 @@ public class IntakeIOSim implements IntakeIO {
   private DCMotorSim serializerMotorSim;
   private DCMotorSim kickerMotorSim;
 
-  private DoubleSolenoidSim SOLENOID_SIM;
-
-  private double intakeMotorAppliedVolts = 0.0;
-  private double serializerMotorAppliedVolts = 0.0;
-  private double kickerMotorAppliedVolts = 0.0;
+  private DoubleSolenoidSim solenoidSim;
 
   public IntakeIOSim() {
     intakeMotorSim =
@@ -45,7 +40,7 @@ public class IntakeIOSim implements IntakeIO {
             IntakeConstants.KICKER_GEARBOX,
             0.004);
 
-    SOLENOID_SIM = new DoubleSolenoidSim(PneumaticsModuleType.CTREPCM, 5, 6);
+    solenoidSim = new DoubleSolenoidSim(PneumaticsModuleType.CTREPCM, 5, 6);
   }
 
   @Override
@@ -56,43 +51,40 @@ public class IntakeIOSim implements IntakeIO {
 
     inputs.intakePosition = Rotation2d.fromRadians(intakeMotorSim.getAngularPositionRad());
     inputs.intakeVelocityRadiansPerSecond = intakeMotorSim.getAngularVelocityRadPerSec();
-    inputs.intakeAppliedVolts = intakeMotorAppliedVolts;
+    inputs.intakeAppliedVolts = intakeMotorSim.getInputVoltage();
     inputs.intakeCurrentAmps = intakeMotorSim.getCurrentDrawAmps();
 
     inputs.serializerPosition = Rotation2d.fromRadians(serializerMotorSim.getAngularPositionRad());
     inputs.serializerVelocityRadiansPerSecond = serializerMotorSim.getAngularVelocityRadPerSec();
-    inputs.serializerAppliedVolts = serializerMotorAppliedVolts;
+    inputs.serializerAppliedVolts = serializerMotorSim.getInputVoltage();
     inputs.serializerCurrentAmps = serializerMotorSim.getCurrentDrawAmps();
 
     inputs.kickerPosition = Rotation2d.fromRadians(kickerMotorSim.getAngularPositionRad());
     inputs.kickerVelocityRadiansPerSecond = kickerMotorSim.getAngularVelocityRadPerSec();
-    inputs.kickerAppliedVolts = kickerMotorAppliedVolts;
+    inputs.kickerAppliedVolts = kickerMotorSim.getInputVoltage();
     inputs.kickerCurrentAmps = kickerMotorSim.getCurrentDrawAmps();
 
     inputs.sensorValue = false;
-    inputs.pneumaticValue = SOLENOID_SIM.get();
+    inputs.pneumaticValue = solenoidSim.get();
   }
 
   @Override
   public void setIntakeVoltage(double volts) {
-    intakeMotorAppliedVolts = MathUtil.clamp(volts, -12.0, 12.0);
-    intakeMotorSim.setInputVoltage(intakeMotorAppliedVolts);
+    intakeMotorSim.setInputVoltage(volts);
   }
 
   @Override
   public void setSerializerVoltage(double volts) {
-    serializerMotorAppliedVolts = MathUtil.clamp(volts, -12.0, 12.0);
-    serializerMotorSim.setInputVoltage(serializerMotorAppliedVolts);
+    serializerMotorSim.setInputVoltage(volts);
   }
 
   @Override
   public void setKickerVoltage(double volts) {
-    kickerMotorAppliedVolts = MathUtil.clamp(volts, -12.0, 12.0);
-    kickerMotorSim.setInputVoltage(kickerMotorAppliedVolts);
+    kickerMotorSim.setInputVoltage(volts);
   }
 
   @Override
   public void setActuatorValue(Value value) {
-    SOLENOID_SIM.set(value);
+    solenoidSim.set(value);
   }
 }

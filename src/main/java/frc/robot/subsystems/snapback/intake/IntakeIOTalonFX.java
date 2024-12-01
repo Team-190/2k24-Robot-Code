@@ -19,25 +19,25 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
 public class IntakeIOTalonFX implements IntakeIO {
   private final TalonFX intakeMotor;
-  public StatusSignal<Angle> intakePosition;
-  public StatusSignal<AngularVelocity> intakeVelocityRotationsPerSecond;
-  public StatusSignal<Voltage> intakeAppliedVolts;
-  public StatusSignal<Current> intakeCurrentAmps;
-  public StatusSignal<Temperature> intakeTemperatureCelsius;
+  private final StatusSignal<Angle> intakePosition;
+  private final StatusSignal<AngularVelocity> intakeVelocityRotationsPerSecond;
+  private final StatusSignal<Voltage> intakeAppliedVolts;
+  private final StatusSignal<Current> intakeCurrentAmps;
+  private final StatusSignal<Temperature> intakeTemperatureCelsius;
 
   private final TalonFX serializerMotor;
-  public StatusSignal<Angle> serializerPosition;
-  public StatusSignal<AngularVelocity> serializerVelocityRotationsPerSecond;
-  public StatusSignal<Voltage> serializerAppliedVolts;
-  public StatusSignal<Current> serializerCurrentAmps;
-  public StatusSignal<Temperature> serializerTemperatureCelsius;
+  private final StatusSignal<Angle> serializerPosition;
+  private final StatusSignal<AngularVelocity> serializerVelocityRotationsPerSecond;
+  private final StatusSignal<Voltage> serializerAppliedVolts;
+  private final StatusSignal<Current> serializerCurrentAmps;
+  private final StatusSignal<Temperature> serializerTemperatureCelsius;
 
   private final TalonFX kickerMotor;
-  public StatusSignal<Angle> kickerPosition;
-  public StatusSignal<AngularVelocity> kickerVelocityRotationsPerSecond;
-  public StatusSignal<Voltage> kickerAppliedVolts;
-  public StatusSignal<Current> kickerCurrentAmps;
-  public StatusSignal<Temperature> kickerTemperatureCelsius;
+  private final StatusSignal<Angle> kickerPosition;
+  private final StatusSignal<AngularVelocity> kickerVelocityRotationsPerSecond;
+  private final StatusSignal<Voltage> kickerAppliedVolts;
+  private final StatusSignal<Current> kickerCurrentAmps;
+  private final StatusSignal<Temperature> kickerTemperatureCelsius;
 
   private final DigitalInput sensor;
 
@@ -106,9 +106,9 @@ public class IntakeIOTalonFX implements IntakeIO {
         kickerTemperatureCelsius,
         kickerVelocityRotationsPerSecond);
 
-    intakeMotor.optimizeBusUtilization(50.0, 1.0);
-    serializerMotor.optimizeBusUtilization(50.0, 1.0);
-    kickerMotor.optimizeBusUtilization(50.0, 1.0);
+    intakeMotor.optimizeBusUtilization();
+    serializerMotor.optimizeBusUtilization();
+    kickerMotor.optimizeBusUtilization();
 
     voltageControl = new VoltageOut(0.0);
   }
@@ -158,17 +158,17 @@ public class IntakeIOTalonFX implements IntakeIO {
 
   @Override
   public void setIntakeVoltage(double volts) {
-    intakeMotor.setControl(voltageControl.withOutput(volts).withEnableFOC(true));
+    intakeMotor.setControl(voltageControl.withOutput(volts).withUpdateFreqHz(1000.0));
   }
 
   @Override
   public void setSerializerVoltage(double volts) {
-    serializerMotor.setControl(voltageControl.withOutput(volts).withEnableFOC(true));
+    serializerMotor.setControl(voltageControl.withOutput(volts).withUpdateFreqHz(1000.0));
   }
 
   @Override
   public void setKickerVoltage(double volts) {
-    kickerMotor.setControl(voltageControl.withOutput(volts).withEnableFOC(true));
+    kickerMotor.setControl(voltageControl.withOutput(volts).withUpdateFreqHz(1000.0));
   }
 
   @Override

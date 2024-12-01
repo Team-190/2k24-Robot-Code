@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.RobotState;
-
 import org.littletonrobotics.junction.Logger;
 
 public class Hood extends SubsystemBase {
@@ -44,46 +43,35 @@ public class Hood extends SubsystemBase {
 
   public Command setHoodAngleSpeaker() {
     return runEnd(
-      () ->
-          io.setPositionSetpoint(RobotState.getControlData().speakerArmAngle()),
-
-      () ->
-          io.setPositionSetpoint(Rotation2d.fromRotations(HoodConstants.STOWED_POSITION.get())));
+        () -> io.setPositionGoal(RobotState.getControlData().speakerArmAngle()),
+        () -> io.setPositionGoal(Rotation2d.fromRotations(HoodConstants.STOWED_POSITION.get())));
   }
 
   public Command setFeed() {
     return runEnd(
-      () -> 
-          io.setPositionSetpoint(RobotState.getControlData().ampFeedArmAngle()),
-
-      () ->
-        io.setPositionSetpoint(Rotation2d.fromRotations(HoodConstants.STOWED_POSITION.get())));
+        () -> io.setPositionGoal(RobotState.getControlData().ampFeedArmAngle()),
+        () -> io.setPositionGoal(Rotation2d.fromRotations(HoodConstants.STOWED_POSITION.get())));
   }
 
   public Command setAmp() {
     return runEnd(
-        () -> io.setPositionSetpoint(Rotation2d.fromRotations(HoodConstants.AMP_POSITION.get())),
-        () ->
-            io.setPositionSetpoint(Rotation2d.fromRotations(HoodConstants.STOWED_POSITION.get())));
+        () -> io.setPositionGoal(Rotation2d.fromRotations(HoodConstants.AMP_POSITION.get())),
+        () -> io.setPositionGoal(Rotation2d.fromRotations(HoodConstants.STOWED_POSITION.get())));
   }
 
   public Command increaseAngle() {
-    return Commands.runOnce(() -> HoodConstants.angleOffset += Units.degreesToRadians(0.25));
+    return Commands.runOnce(
+        () ->
+            RobotState.setSpeakerAngleCompensation(
+                RobotState.getSpeakerAngleCompensation() + Units.degreesToRadians(0.25)));
   }
 
   public Command decreaseAngle() {
-    return Commands.runOnce(() -> HoodConstants.angleOffset -= Units.degreesToRadians(0.25));
+    return Commands.runOnce(
+        () ->
+            RobotState.setSpeakerAngleCompensation(
+                RobotState.getSpeakerAngleCompensation() - Units.degreesToRadians(0.25)));
   }
-
-  // public Command setAnglePosition() {
-  // return runEnd(
-  // () -> {
-  // AimingParameters aimingParameters = ShotCalculator.angleCalculation();
-  // io.setPositionseSetpoint(Rotation2d.fromRadians(aimingParameters.shooterAngle().getRadians()));
-  // },
-  // () ->
-  // io.setPositionSetpoint(Rotation2d.fromRadians(HoodConstants.STOWED_POSITION.get())));
-  // }
 
   public Command runSysId() {
     return Commands.sequence(
