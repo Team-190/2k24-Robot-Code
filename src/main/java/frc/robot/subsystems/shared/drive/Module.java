@@ -13,7 +13,6 @@
 
 package frc.robot.subsystems.shared.drive;
 
-import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -26,17 +25,15 @@ public class Module {
   private final ModuleIO io;
   private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
   private final int index;
-  private final SwerveModuleConstants constants;
 
   private final Alert driveDisconnectedAlert;
   private final Alert turnDisconnectedAlert;
   private final Alert turnEncoderDisconnectedAlert;
   private SwerveModulePosition[] odometryPositions = new SwerveModulePosition[] {};
 
-  public Module(ModuleIO io, int index, SwerveModuleConstants constants) {
+  public Module(ModuleIO io, int index) {
     this.io = io;
     this.index = index;
-    this.constants = constants;
     driveDisconnectedAlert =
         new Alert(
             "Disconnected drive motor on module " + Integer.toString(index) + ".",
@@ -58,7 +55,8 @@ public class Module {
     int sampleCount = inputs.odometryTimestamps.length; // All signals are sampled together
     odometryPositions = new SwerveModulePosition[sampleCount];
     for (int i = 0; i < sampleCount; i++) {
-      double positionMeters = inputs.odometryDrivePositionsRad[i] * constants.WheelRadius;
+      double positionMeters =
+          inputs.odometryDrivePositions[i].getRadians() * DriveConstants.DRIVE_CONFIG.wheelRadius();
       Rotation2d angle = inputs.odometryTurnPositions[i];
       odometryPositions[i] = new SwerveModulePosition(positionMeters, angle);
     }
@@ -70,26 +68,31 @@ public class Module {
   }
 
   /** Runs the module with the specified setpoint state. Mutates the state to optimize it. */
-  public void runSetpoint(SwerveModuleState state) {
+  public void runSetpoint(SwerveModuleState state, SwerveModuleState torqueFeedforward) {
     // Optimize veloci[ty setpoint
     state.optimize(getAngle());
     state.cosineScale(inputs.turnPosition);
 
+    double wheelTorqueNewtonMeters = torqueFeedforward.speedMetersPerSecond;
     // Apply setpoints
-    io.setDriveVelocity(state.speedMetersPerSecond / constants.WheelRadius);
+    io.setDriveVelocity(
+        state.speedMetersPerSecond / DriveConstants.DRIVE_CONFIG.wheelRadius(),
+        DriveConstants.DRIVE_CONFIG
+            .driveModel()
+            .getCurrent(wheelTorqueNewtonMeters / DriveConstants.FRONT_LEFT.DriveMotorGearRatio));
     io.setTurnPosition(state.angle);
   }
 
   /** Runs the module with the specified output while controlling to zero degrees. */
-  public void runCharacterization(double output) {
-    io.setDriveOpenLoop(output);
+  public void runCharacterization(double amps) {
+    io.setDriveAmps(amps);
     io.setTurnPosition(new Rotation2d());
   }
 
   /** Disables all outputs to motors. */
   public void stop() {
-    io.setDriveOpenLoop(0.0);
-    io.setTurnOpenLoop(0.0);
+    io.setDriveAmps(0.0);
+    io.setTurnAmps(0.0);
   }
 
   /** Returns the current turn angle of the module. */
@@ -99,12 +102,12 @@ public class Module {
 
   /** Returns the current drive position of the module in meters. */
   public double getPositionMeters() {
-    return inputs.drivePositionRad * constants.WheelRadius;
+    return inputs.drivePosition.getRadians() * DriveConstants.DRIVE_CONFIG.wheelRadius();
   }
 
   /** Returns the current drive velocity of the module in meters per second. */
   public double getVelocityMetersPerSec() {
-    return inputs.driveVelocityRadPerSec * constants.WheelRadius;
+    return inputs.driveVelocityRadiansPerSecond * DriveConstants.DRIVE_CONFIG.wheelRadius();
   }
 
   /** Returns the module position (turn angle and drive position). */
@@ -128,12 +131,12 @@ public class Module {
   }
 
   /** Returns the module position in radians. */
-  public double getWheelRadiusCharacterizationPosition() {
-    return inputs.drivePositionRad;
+  public Rotation2d getWheelRadiusCharacterizationPosition() {
+    return inputs.drivePosition;
   }
 
   /** Returns the module velocity in rotations/sec (Phoenix native units). */
   public double getFFCharacterizationVelocity() {
-    return Units.radiansToRotations(inputs.driveVelocityRadPerSec);
+    return Units.radiansToRotations(inputs.driveVelocityRadiansPerSecond);
   }
 }

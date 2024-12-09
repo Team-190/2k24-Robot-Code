@@ -26,7 +26,8 @@ import java.util.Queue;
 
 /** IO implementation for Pigeon 2. */
 public class GyroIOPigeon2 implements GyroIO {
-  private final Pigeon2 pigeon = new Pigeon2(DriveConstants.GYRO_CAN_ID, DriveConstants.CAN_BUS);
+  private final Pigeon2 pigeon =
+      new Pigeon2(DriveConstants.DRIVE_CONFIG.pigeon2Id(), DriveConstants.DRIVE_CONFIG.canBus());
   private final StatusSignal<Angle> yaw = pigeon.getYaw();
   private final Queue<Double> yawPositionQueue;
   private final Queue<Double> yawTimestampQueue;

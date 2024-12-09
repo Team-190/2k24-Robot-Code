@@ -14,8 +14,6 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.constants.Constants;
-import frc.robot.constants.FieldConstants;
 import frc.robot.subsystems.shared.drive.DriveConstants;
 import frc.robot.subsystems.shared.vision.Camera;
 import frc.robot.util.AllianceFlipUtil;
@@ -43,13 +41,17 @@ public class RobotState {
           0.0,
           new Rotation2d(),
           new FlywheelSpeeds(0.0, 0.0),
+          0.0,
           new Rotation2d(),
           0.0,
           new Rotation2d(),
-          new FlywheelSpeeds(0.0, 0.0));
+          new FlywheelSpeeds(0.0, 0.0),
+          false,
+          false,
+          false);
 
   @Getter @Setter private static double speakerFlywheelCompensation = 0.0;
-  @Getter @Setter private static double speakerAngleCompensation = Units.degreesToRadians(3.5);
+  @Getter @Setter private static double speakerAngleCompensation = 0.0;
 
   private static final SwerveDrivePoseEstimator poseEstimator;
   private static final SwerveDriveOdometry odometry;
@@ -61,6 +63,7 @@ public class RobotState {
   static {
     switch (Constants.ROBOT) {
       case SNAPBACK:
+      case SNAPBACK_SIM:
         speakerShotAngleMap.put(2.16, 0.05);
         speakerShotAngleMap.put(2.45, 0.05 + Units.degreesToRadians(-1));
         speakerShotAngleMap.put(2.69, 0.16);
@@ -91,27 +94,7 @@ public class RobotState {
         timeOfFlightMap.put(4.0, (2.60 - 2.32));
         break;
       case WHIPLASH:
-        speakerShotAngleMap.put(1.0051382994805276, Units.degreesToRadians(57.0));
-        speakerShotAngleMap.put(1.4924089439984491, 0.84);
-        speakerShotAngleMap.put(2.0188748058905883, 0.74);
-        speakerShotAngleMap.put(2.494223768158363, 0.66);
-        speakerShotAngleMap.put(2.997906851949344, 0.57);
-        speakerShotAngleMap.put(3.481117210151285, 0.5);
-        speakerShotAngleMap.put(3.992798130214426, 0.46);
-        speakerShotAngleMap.put(4.590536757726377, 0.44);
-        speakerShotAngleMap.put(4.9909464332643125, 0.42);
-        speakerShotAngleMap.put(5.508818126964896, 0.4);
-        speakerShotAngleMap.put(6.067253283488031, 0.37);
-
-        feedShotAngleMap.put(0.0, 0.0);
-
-        speakerShotSpeedMap.put(0.0, new FlywheelSpeeds(600.0, 600.0));
-
-        feedShotSpeedMap.put(0.0, new FlywheelSpeeds(600.0, 600.0));
-
-        timeOfFlightMap.put(0.0, 0.0);
-        break;
-      case ROBOT_SIM:
+      case WHIPLASH_SIM:
         speakerShotAngleMap.put(1.0051382994805276, Units.degreesToRadians(57.0));
         speakerShotAngleMap.put(1.4924089439984491, 0.84);
         speakerShotAngleMap.put(2.0188748058905883, 0.74);
@@ -144,9 +127,13 @@ public class RobotState {
 
     poseEstimator =
         new SwerveDrivePoseEstimator(
-            DriveConstants.KINEMATICS, new Rotation2d(), modulePositions, new Pose2d());
+            DriveConstants.DRIVE_CONFIG.kinematics(),
+            new Rotation2d(),
+            modulePositions,
+            new Pose2d());
     odometry =
-        new SwerveDriveOdometry(DriveConstants.KINEMATICS, new Rotation2d(), modulePositions);
+        new SwerveDriveOdometry(
+            DriveConstants.DRIVE_CONFIG.kinematics(), new Rotation2d(), modulePositions);
     headingOffset = new Rotation2d();
   }
 
@@ -158,7 +145,10 @@ public class RobotState {
       double robotYawVelocity,
       Translation2d robotFieldRelativeVelocity,
       SwerveModulePosition[] modulePositions,
-      Camera[] cameras) {
+      Camera[] cameras,
+      boolean hasNoteLocked,
+      boolean hasNoteStaged,
+      boolean isIntaking) {
 
     RobotState.robotHeading = robotHeading;
     RobotState.modulePositions = modulePositions;
@@ -214,6 +204,17 @@ public class RobotState {
             .getTranslation()
             .plus(robotFieldRelativeVelocity.times(timeOfFlightMap.get(distanceToSpeaker)));
     double effectiveDistanceToSpeaker = effectiveSpeakerAimingTranslation.getDistance(speakerPose);
+
+    Translation2d ampPose = AllianceFlipUtil.apply(FieldConstants.ampCenter);
+    double distanceToAmp =
+        poseEstimator.getEstimatedPosition().getTranslation().getDistance(ampPose);
+    Translation2d effectiveAmpAimingTranslation =
+        poseEstimator
+            .getEstimatedPosition()
+            .getTranslation()
+            .plus(robotFieldRelativeVelocity.times(timeOfFlightMap.get(distanceToAmp)));
+    double effectiveDistanceToAmp = effectiveAmpAimingTranslation.getDistance(ampPose);
+
     Rotation2d speakerRobotAngle =
         speakerPose
             .minus(effectiveSpeakerAimingTranslation)
@@ -223,25 +224,20 @@ public class RobotState {
         -robotFieldRelativeVelocity.rotateBy(speakerRobotAngle.unaryMinus()).getY();
     double speakerRadialVelocity = speakerTangentialVelocity / effectiveDistanceToSpeaker;
 
-    // Amp/Feed Shot Calculations
-    Translation2d ampFeedPose =
-        AllianceFlipUtil.apply(FieldConstants.Speaker.centerSpeakerOpening.toTranslation2d());
-    double distanceToAmpFeed =
-        poseEstimator.getEstimatedPosition().getTranslation().getDistance(ampFeedPose);
-    Translation2d effectiveAmpFeedAimingTranslation =
-        poseEstimator
-            .getEstimatedPosition()
-            .getTranslation()
-            .plus(robotFieldRelativeVelocity.times(timeOfFlightMap.get(distanceToAmpFeed)));
-    double effectiveDistanceToAmpFeed = effectiveAmpFeedAimingTranslation.getDistance(ampFeedPose);
-    Rotation2d ampFeedRobotAngle =
-        ampFeedPose
-            .minus(effectiveAmpFeedAimingTranslation)
+    Rotation2d ampRobotAngle =
+        ampPose.minus(effectiveAmpAimingTranslation).getAngle().minus(Rotation2d.fromDegrees(90.0));
+    double ampTangentialVelocity =
+        -robotFieldRelativeVelocity.rotateBy(ampRobotAngle.unaryMinus()).getY();
+    double ampRadialVelocity = ampTangentialVelocity / effectiveDistanceToAmp;
+
+    Rotation2d feedRobotAngle =
+        ampPose
+            .minus(effectiveAmpAimingTranslation)
             .getAngle()
-            .minus(Rotation2d.fromDegrees(180.0 + 3.5));
-    double ampFeedTangentialVelocity =
-        -robotFieldRelativeVelocity.rotateBy(ampFeedRobotAngle.unaryMinus()).getY();
-    double ampFeedRadialVelocity = ampFeedTangentialVelocity / effectiveDistanceToAmpFeed;
+            .minus(Rotation2d.fromDegrees(180.0));
+    double feedTangentialVelocity =
+        -robotFieldRelativeVelocity.rotateBy(feedRobotAngle.unaryMinus()).getY();
+    double feedRadialVelocity = feedTangentialVelocity / effectiveDistanceToAmp;
 
     controlData =
         new ControlData(
@@ -249,43 +245,43 @@ public class RobotState {
             speakerRadialVelocity,
             new Rotation2d(speakerShotAngleMap.get(effectiveDistanceToSpeaker)),
             speakerShotSpeedMap.get(effectiveDistanceToSpeaker),
-            ampFeedRobotAngle,
-            ampFeedRadialVelocity,
-            new Rotation2d(feedShotAngleMap.get(effectiveDistanceToAmpFeed)),
-            feedShotSpeedMap.get(effectiveDistanceToAmpFeed));
+            ampRadialVelocity,
+            feedRobotAngle,
+            feedRadialVelocity,
+            new Rotation2d(feedShotAngleMap.get(effectiveDistanceToAmp)),
+            feedShotSpeedMap.get(effectiveDistanceToAmp),
+            hasNoteLocked,
+            hasNoteStaged,
+            isIntaking);
 
     Logger.recordOutput(
         "RobotState/Pose Data/Estimated Pose", poseEstimator.getEstimatedPosition());
     Logger.recordOutput("RobotState/Pose Data/Odometry Pose", odometry.getPoseMeters());
     Logger.recordOutput("RobotState/Pose Data/Heading Offset", headingOffset);
-
     Logger.recordOutput(
-        "RobotState/Pose Data/Speaker/Effective Speaker Aiming Pose",
+        "RobotState/Pose Data/Effective Speaker Aiming Pose",
         new Pose2d(effectiveSpeakerAimingTranslation, speakerRobotAngle));
     Logger.recordOutput(
-        "RobotState/Pose Data/Speaker/Effective Distance To Speaker", effectiveDistanceToSpeaker);
+        "RobotState/Pose Data/Effective Amp Aiming Pose",
+        new Pose2d(effectiveAmpAimingTranslation, ampRobotAngle));
+    Logger.recordOutput(
+        "RobotState/Pose Data/Effective Feed Aiming Pose",
+        new Pose2d(effectiveAmpAimingTranslation, feedRobotAngle));
+    Logger.recordOutput(
+        "RobotState/Pose Data/Effective Distance To Speaker", effectiveDistanceToSpeaker);
+    Logger.recordOutput("RobotState/Pose Data/Effective Distance To Amp", effectiveDistanceToAmp);
 
     Logger.recordOutput(
-        "RobotState/Control Data/Speaker/Speaker Robot Angle", controlData.speakerRobotAngle());
+        "RobotState/Control Data/Speaker Robot Angle", controlData.speakerRobotAngle());
+    Logger.recordOutput("RobotState/Control Data/Speaker Arm Angle", controlData.speakerArmAngle());
     Logger.recordOutput(
-        "RobotState/Control Data/Speaker/Speaker Arm Angle", controlData.speakerArmAngle());
+        "RobotState/Control Data/Speaker Radial Velocity", controlData.speakerRadialVelocity());
     Logger.recordOutput(
-        "RobotState/Control Data/Speaker/Speaker Radial Velocity",
-        controlData.speakerRadialVelocity());
-
+        "RobotState/Control Data/Amp Radial Velocity", controlData.ampRadialVelocity());
+    Logger.recordOutput("RobotState/Control Data/Feed Robot Angle", controlData.feedRobotAngle());
     Logger.recordOutput(
-        "RobotState/Pose Data/AmpFeed/Effective AmpFeed Aiming Pose",
-        new Pose2d(effectiveAmpFeedAimingTranslation, ampFeedRobotAngle));
-    Logger.recordOutput(
-        "RobotState/Pose Data/AmpFeed/Effective Distance To AmpFeed", effectiveDistanceToAmpFeed);
-
-    Logger.recordOutput(
-        "RobotState/Control Data/AmpFeed/AmpFeed Robot Angle", controlData.ampFeedRobotAngle());
-    Logger.recordOutput(
-        "RobotState/Control Data/AmpFeed/AmpFeed Arm Angle", controlData.ampFeedArmAngle());
-    Logger.recordOutput(
-        "RobotState/Control Data/AmpFeed/AmpFeed Radial Velocity",
-        controlData.ampFeedRadialVelocity());
+        "RobotState/Control Data/Feed Radial Velocity", controlData.feedRadialVelocity());
+    Logger.recordOutput("RobotState/Control Data/Feed Arm Angle", controlData.feedArmAngle());
   }
 
   public static Pose2d getRobotPose() {
@@ -306,11 +302,15 @@ public class RobotState {
       Rotation2d speakerRobotAngle,
       double speakerRadialVelocity,
       Rotation2d speakerArmAngle,
-      FlywheelSpeeds speakerShooterSpeed,
-      Rotation2d ampFeedRobotAngle,
-      double ampFeedRadialVelocity,
-      Rotation2d ampFeedArmAngle,
-      FlywheelSpeeds ampFeedShooterSpeed) {}
+      FlywheelSpeeds speakerShotSpeed,
+      double ampRadialVelocity,
+      Rotation2d feedRobotAngle,
+      double feedRadialVelocity,
+      Rotation2d feedArmAngle,
+      FlywheelSpeeds feedShotSpeed,
+      boolean hasNoteLocked,
+      boolean hasNoteStaged,
+      boolean isIntaking) {}
 
   public record FlywheelSpeeds(double f1Speed, double f2Speed) {
     public static FlywheelSpeeds interpolate(FlywheelSpeeds t1, FlywheelSpeeds t2, double v) {
