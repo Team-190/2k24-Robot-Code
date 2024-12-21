@@ -39,9 +39,9 @@ public final class DriveCommands {
   static {
     aimController =
         new PIDController(
-            DriveConstants.AUTO_ALIGN_GAINS.rotation_Kp(),
+            DriveConstants.AUTO_ALIGN_GAINS.rotation_Kp().get(),
             0,
-            DriveConstants.AUTO_ALIGN_GAINS.rotation_Kd(),
+            DriveConstants.AUTO_ALIGN_GAINS.rotation_Kd().get(),
             Constants.LOOP_PERIOD_SECONDS);
 
     aimController.enableContinuousInput(-Math.PI, Math.PI);
@@ -114,11 +114,13 @@ public final class DriveCommands {
           }
 
           ChassisSpeeds chassisSpeeds =
-              new ChassisSpeeds(fieldRelativeXVel, fieldRelativeYVel, angular);
-          chassisSpeeds.toRobotRelativeSpeeds(
-              isFlipped
-                  ? RobotState.getRobotPose().getRotation().plus(new Rotation2d(Math.PI))
-                  : RobotState.getRobotPose().getRotation());
+              ChassisSpeeds.fromFieldRelativeSpeeds(
+                  fieldRelativeXVel,
+                  fieldRelativeYVel,
+                  angular,
+                  isFlipped
+                      ? RobotState.getRobotPose().getRotation().plus(new Rotation2d(Math.PI))
+                      : RobotState.getRobotPose().getRotation());
 
           // Convert to field relative speeds & send command
           drive.runVelocity(chassisSpeeds);
@@ -134,17 +136,16 @@ public final class DriveCommands {
                       && DriverStation.getAlliance().get() == Alliance.Red;
 
               ChassisSpeeds chassisSpeeds =
-                  new ChassisSpeeds(
+                  ChassisSpeeds.fromFieldRelativeSpeeds(
                       0,
                       0,
                       RobotState.getControlData().speakerRadialVelocity()
                           + (aimController.calculate(
                               RobotState.getRobotPose().getRotation().getRadians(),
-                              RobotState.getControlData().speakerRobotAngle().getRadians())));
-              chassisSpeeds.toRobotRelativeSpeeds(
-                  isFlipped
-                      ? RobotState.getRobotPose().getRotation().plus(new Rotation2d(Math.PI))
-                      : RobotState.getRobotPose().getRotation());
+                              RobotState.getControlData().speakerRobotAngle().getRadians())),
+                      isFlipped
+                          ? RobotState.getRobotPose().getRotation().plus(new Rotation2d(Math.PI))
+                          : RobotState.getRobotPose().getRotation());
 
               // Convert to field relative speeds & send command
               drive.runVelocity(chassisSpeeds);
@@ -158,5 +159,9 @@ public final class DriveCommands {
 
   public static final Command stop(Drive drive) {
     return Commands.run(() -> drive.stopWithX());
+  }
+
+  public static final void setPIDGains(double kp, double ki, double kd) {
+    aimController.setPID(kp, ki, kd);
   }
 }

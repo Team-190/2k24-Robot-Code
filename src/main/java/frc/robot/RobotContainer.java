@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.Mode;
+import frc.robot.Constants.RobotType;
 import frc.robot.commands.CompositeCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.shared.drive.Drive;
@@ -55,6 +56,7 @@ import frc.robot.subsystems.whiplash.shooter.WhiplashShooter;
 import frc.robot.subsystems.whiplash.shooter.WhiplashShooterIO;
 import frc.robot.subsystems.whiplash.shooter.WhiplashShooterIOSim;
 import frc.robot.subsystems.whiplash.shooter.WhiplashShooterIOTalonFX;
+import frc.robot.util.LTNUpdater;
 
 public class RobotContainer {
   // Subsystems
@@ -266,23 +268,6 @@ public class RobotContainer {
     operator.leftBumper().whileTrue(CompositeCommands.collect(snapbackIntake));
   }
 
-  private boolean[] getIntakeState() {
-    switch (Constants.ROBOT) {
-      case SNAPBACK:
-      case SNAPBACK_SIM:
-        return new boolean[] {snapbackIntake.sensorTriggered(), false, snapbackIntake.isIntaking()};
-      case WHIPLASH:
-      case WHIPLASH_SIM:
-        return new boolean[] {
-          whiplashIntake.hasNoteLocked(),
-          whiplashIntake.hasNoteStaged(),
-          whiplashIntake.isIntaking()
-        };
-      default:
-        return new boolean[] {false, false, false};
-    }
-  }
-
   public void robotPeriodic() {
     RobotState.periodic(
         drive.getRawGyroRotation(),
@@ -291,9 +276,12 @@ public class RobotContainer {
         drive.getFieldRelativeVelocity(),
         drive.getModulePositions(),
         vision.getCameras(),
-        getIntakeState()[0],
-        getIntakeState()[1],
-        getIntakeState()[2]);
+        false,
+        false,
+        false);
+    if (Constants.ROBOT == RobotType.WHIPLASH || Constants.ROBOT == RobotType.WHIPLASH_SIM) {
+      LTNUpdater.updateWhiplash(drive, whiplashArm, whiplashIntake, whiplashShooter);
+    }
   }
 
   public Command getAutonomousCommand() {

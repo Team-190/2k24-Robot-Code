@@ -179,7 +179,7 @@ public class RobotState {
             camera.getPrimaryPose(),
             camera.getFrameTimestamp(),
             VecBuilder.fill(xyStddevPrimary, xyStddevPrimary, Double.POSITIVE_INFINITY));
-        if (camera.getAverageDistance() <= 1.0) {
+        if (camera.getTotalTargets() > 1) {
           double xyStddevSecondary =
               camera.getSecondaryXYStandardDeviationCoefficient()
                   * Math.pow(camera.getAverageDistance(), 2.0)

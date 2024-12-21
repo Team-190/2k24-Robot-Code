@@ -49,7 +49,7 @@ public class Drive extends SubsystemBase {
 
   private final GyroIO gyroIO;
   private final GyroIOInputsAutoLogged gyroInputs;
-  private final Module[] modules = new Module[4]; // FL, FR, BL, BR
+  private final Module[] modules;
 
   private final LinearFilter xFilter;
   private final LinearFilter yFilter;
@@ -57,7 +57,7 @@ public class Drive extends SubsystemBase {
   private double filteredY;
 
   private final SwerveDriveKinematics kinematics;
-  @Getter private Rotation2d rawGyroRotation = new Rotation2d();
+  @Getter private Rotation2d rawGyroRotation;
   private SwerveModulePosition[] lastModulePositions;
 
   @Getter private AutoFactory autoFactory;
@@ -74,6 +74,7 @@ public class Drive extends SubsystemBase {
       ModuleIO brModuleIO) {
     this.gyroIO = gyroIO;
     gyroInputs = new GyroIOInputsAutoLogged();
+    modules = new Module[4]; // FL, FR, BL, BR
     modules[0] = new Module(flModuleIO, 0);
     modules[1] = new Module(frModuleIO, 1);
     modules[2] = new Module(blModuleIO, 2);
@@ -88,6 +89,7 @@ public class Drive extends SubsystemBase {
     filteredY = 0;
 
     kinematics = DriveConstants.DRIVE_CONFIG.kinematics();
+    rawGyroRotation = new Rotation2d();
     lastModulePositions = // For delta tracking
         new SwerveModulePosition[] {
           new SwerveModulePosition(),
@@ -172,8 +174,8 @@ public class Drive extends SubsystemBase {
    */
   public void runVelocity(ChassisSpeeds speeds) {
     // Calculate module setpoints
-    speeds.discretize(Constants.LOOP_PERIOD_SECONDS);
-    SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(speeds);
+    ChassisSpeeds optimizedSpeeds = ChassisSpeeds.discretize(speeds, Constants.LOOP_PERIOD_SECONDS);
+    SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(optimizedSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(
         setpointStates, DriveConstants.DRIVE_CONFIG.maxLinearVelocity());
 
@@ -200,8 +202,8 @@ public class Drive extends SubsystemBase {
       throw new IllegalArgumentException("Forces array must have 4 elements");
     }
     // Calculate module setpoints
-    speeds.discretize(Constants.LOOP_PERIOD_SECONDS);
-    SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(speeds);
+    ChassisSpeeds optimizedSpeeds = ChassisSpeeds.discretize(speeds, Constants.LOOP_PERIOD_SECONDS);
+    SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(optimizedSpeeds);
     SwerveModuleState[] setpointTorques = new SwerveModuleState[4];
     SwerveDriveKinematics.desaturateWheelSpeeds(
         setpointStates, DriveConstants.DRIVE_CONFIG.maxLinearVelocity());
@@ -280,7 +282,7 @@ public class Drive extends SubsystemBase {
   public double[] getWheelRadiusCharacterizationPositions() {
     double[] values = new double[4];
     for (int i = 0; i < 4; i++) {
-      values[i] = modules[i].getWheelRadiusCharacterizationPosition().getRadians();
+      values[i] = modules[i].getWheelRadiusCharacterizationPosition();
     }
     return values;
   }
@@ -314,23 +316,37 @@ public class Drive extends SubsystemBase {
     return gyroInputs.yawVelocityRadPerSec;
   }
 
+  /** Sets PID gains for modules */
+  public void setPIDGains(double drive_Kp, double drive_Kd, double turn_Kp, double turn_Kd) {
+    for (var module : modules) {
+      module.setPID(drive_Kp, drive_Kd, turn_Kp, turn_Kd);
+    }
+  }
+
+  /** Sets FF gains for modules */
+  public void setFFGains(double kS, double kV) {
+    for (var module : modules) {
+      module.setFF(kS, kV);
+    }
+  }
+
   public class AutoController implements Consumer<SwerveSample> {
     private final Drive drive; // drive subsystem
     private final PIDController xController =
         new PIDController(
-            DriveConstants.AUTO_ALIGN_GAINS.translation_Kp(),
+            DriveConstants.AUTO_ALIGN_GAINS.translation_Kp().get(),
             0.0,
-            DriveConstants.AUTO_ALIGN_GAINS.translation_Kd());
+            DriveConstants.AUTO_ALIGN_GAINS.translation_Kd().get());
     private final PIDController yController =
         new PIDController(
-            DriveConstants.AUTO_ALIGN_GAINS.translation_Kp(),
+            DriveConstants.AUTO_ALIGN_GAINS.translation_Kp().get(),
             0.0,
-            DriveConstants.AUTO_ALIGN_GAINS.translation_Kd());
+            DriveConstants.AUTO_ALIGN_GAINS.translation_Kd().get());
     private final PIDController headingController =
         new PIDController(
-            DriveConstants.AUTO_ALIGN_GAINS.rotation_Kp(),
+            DriveConstants.AUTO_ALIGN_GAINS.rotation_Kp().get(),
             0.0,
-            DriveConstants.AUTO_ALIGN_GAINS.rotation_Kd());
+            DriveConstants.AUTO_ALIGN_GAINS.rotation_Kd().get());
 
     public AutoController(Drive drive) {
       this.drive = drive;
@@ -350,8 +366,8 @@ public class Drive extends SubsystemBase {
           headingController.calculate(pose.getRotation().getRadians(), referenceState.heading);
 
       ChassisSpeeds velocity =
-          new ChassisSpeeds(xFF + xFeedback, yFF + yFeedback, rotationFF + rotationFeedback);
-      velocity.toRobotRelativeSpeeds(pose.getRotation());
+          ChassisSpeeds.fromFieldRelativeSpeeds(
+              xFF + xFeedback, yFF + yFeedback, rotationFF + rotationFeedback, pose.getRotation());
 
       List<Vector<N2>> moduleTorques = new ArrayList<>(4);
 

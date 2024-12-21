@@ -223,7 +223,8 @@ public class ModuleIOTalonFX implements ModuleIO {
             turnPositionErrorRotations);
     var turnEncoderStatus = BaseStatusSignal.refreshAll(turnAbsolutePositionRotations);
 
-    inputs.drivePosition = Rotation2d.fromRotations(drivePositionRotations.getValueAsDouble());
+    inputs.drivePositionRadians =
+        Units.rotationsToRadians(drivePositionRotations.getValueAsDouble());
     inputs.driveVelocityRadiansPerSecond =
         Units.rotationsToRadians(driveVelocityRotationsPerSecond.getValueAsDouble());
     inputs.driveAppliedVolts = driveAppliedVolts.getValueAsDouble();
@@ -256,10 +257,8 @@ public class ModuleIOTalonFX implements ModuleIO {
 
     inputs.odometryTimestamps =
         timestampQueue.stream().mapToDouble((Double value) -> value).toArray();
-    inputs.odometryDrivePositions =
-        drivePositionQueue.stream()
-            .map((Double value) -> Rotation2d.fromRotations(value))
-            .toArray(Rotation2d[]::new);
+    inputs.odometryDrivePositionsRadians =
+        drivePositionQueue.stream().mapToDouble(value -> Units.rotationsToRadians(value)).toArray();
     inputs.odometryTurnPositions =
         turnPositionQueue.stream()
             .map((Double value) -> Rotation2d.fromRotations(value))
@@ -294,5 +293,23 @@ public class ModuleIOTalonFX implements ModuleIO {
         positionTorqueCurrentRequest
             .withPosition(rotation.getRotations())
             .withUpdateFreqHz(1000.0));
+  }
+
+  @Override
+  public void setPID(double drive_Kp, double drive_Kd, double turn_Kp, double turn_Kd) {
+    driveConfig.Slot0.kP = drive_Kp;
+    driveConfig.Slot0.kD = drive_Kd;
+    turnConfig.Slot0.kP = turn_Kp;
+    turnConfig.Slot0.kD = turn_Kd;
+    tryUntilOk(5, () -> driveTalon.getConfigurator().apply(driveConfig, 0.25));
+    tryUntilOk(5, () -> turnTalon.getConfigurator().apply(turnConfig, 0.25));
+  }
+
+  @Override
+  public void setFeedforward(double drive_Ks, double drive_Kv) {
+    driveConfig.Slot0.kS = drive_Ks;
+    driveConfig.Slot0.kV = drive_Kv;
+    tryUntilOk(5, () -> driveTalon.getConfigurator().apply(driveConfig, 0.25));
+    tryUntilOk(5, () -> turnTalon.getConfigurator().apply(turnConfig, 0.25));
   }
 }

@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.system.plant.DCMotor;
 import frc.robot.Constants;
+import frc.robot.util.LoggedTunableNumber;
 
 public class DriveConstants {
   public static final DriveConfig DRIVE_CONFIG;
@@ -45,8 +46,20 @@ public class DriveConstants {
         BACK_LEFT = TunerConstantsWhiplash.BackLeft;
         BACK_RIGHT = TunerConstantsWhiplash.BackRight;
 
-        GAINS = new Gains(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-        AUTO_ALIGN_GAINS = new AutoAlignGains(4.0, 0.0, 5.0, 0.05);
+        GAINS =
+            new Gains(
+                new LoggedTunableNumber("Drive/Drive KS", 0.0),
+                new LoggedTunableNumber("Drive/Drive KV", 0.0),
+                new LoggedTunableNumber("Drive/Drive KP", 0.0),
+                new LoggedTunableNumber("Drive/Drive KD", 0.0),
+                new LoggedTunableNumber("Drive/Turn KP", 0.0),
+                new LoggedTunableNumber("Drive/Turn KD", 0.0));
+        AUTO_ALIGN_GAINS =
+            new AutoAlignGains(
+                new LoggedTunableNumber("Drive/Translation KP", 4.0),
+                new LoggedTunableNumber("Drive/Translation KD", 0.0),
+                new LoggedTunableNumber("Drive/Rotation KP", 5.0),
+                new LoggedTunableNumber("Drive/Rotation KD", 0.05));
 
         ODOMETRY_FREQUENCY = 250.0;
         DRIVER_DEADBAND = 0.025;
@@ -71,9 +84,20 @@ public class DriveConstants {
         BACK_LEFT = TunerConstantsSnapback.BackLeft;
         BACK_RIGHT = TunerConstantsSnapback.BackRight;
 
-        GAINS = new Gains(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-        AUTO_ALIGN_GAINS = new AutoAlignGains(4.0, 0.0, 5.0, 0.05);
-
+        GAINS =
+            new Gains(
+                new LoggedTunableNumber("Drive/Drive KS"),
+                new LoggedTunableNumber("Drive/Drive KV"),
+                new LoggedTunableNumber("Drive/Drive KP"),
+                new LoggedTunableNumber("Drive/Drive KD"),
+                new LoggedTunableNumber("Drive/Turn KP"),
+                new LoggedTunableNumber("Drive/Turn KD"));
+        AUTO_ALIGN_GAINS =
+            new AutoAlignGains(
+                new LoggedTunableNumber("Drive/Translation KP", 4.0),
+                new LoggedTunableNumber("Drive/Translation KD", 0.0),
+                new LoggedTunableNumber("Drive/Rotation KP", 5.0),
+                new LoggedTunableNumber("Drive/Rotation KD", 0.05));
         ODOMETRY_FREQUENCY = 250.0;
         DRIVER_DEADBAND = 0.025;
         break;
@@ -117,13 +141,16 @@ public class DriveConstants {
   }
 
   public record Gains(
-      double driveKs,
-      double driveKv,
-      double driveKp,
-      double driveKd,
-      double turnKp,
-      double turnKd) {}
+      LoggedTunableNumber driveKs,
+      LoggedTunableNumber driveKv,
+      LoggedTunableNumber driveKp,
+      LoggedTunableNumber driveKd,
+      LoggedTunableNumber turnKp,
+      LoggedTunableNumber turnKd) {}
 
   public record AutoAlignGains(
-      double translation_Kp, double translation_Kd, double rotation_Kp, double rotation_Kd) {}
+      LoggedTunableNumber translation_Kp,
+      LoggedTunableNumber translation_Kd,
+      LoggedTunableNumber rotation_Kp,
+      LoggedTunableNumber rotation_Kd) {}
 }

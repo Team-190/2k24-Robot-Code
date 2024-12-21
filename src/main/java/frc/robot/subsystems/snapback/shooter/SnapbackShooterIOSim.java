@@ -1,7 +1,5 @@
 package frc.robot.subsystems.snapback.shooter;
 
-import static edu.wpi.first.units.Units.*;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -134,18 +132,15 @@ public class SnapbackShooterIOSim implements SnapbackShooterIO {
   public void setLeftVelocityGoal(double velocityRadiansPerSecond) {
     leftFlywheelMotorSim.setInputVoltage(
         leftFlywheelPIDController.calculate(velocityRadiansPerSecond)
-            + leftFlywheelFeedforward
-                .calculate(RadiansPerSecond.of(leftFlywheelPIDController.getSetpoint().velocity))
-                .in(Volts));
+            + leftFlywheelFeedforward.calculate(leftFlywheelPIDController.getSetpoint().velocity));
   }
 
   @Override
   public void setRightVelocityGoal(double velocityRadiansPerSecond) {
     rightFlywheelMotorSim.setInputVoltage(
         rightFlywheelPIDController.calculate(velocityRadiansPerSecond)
-            + rightFlywheelFeedforward
-                .calculate(RadiansPerSecond.of(rightFlywheelPIDController.getSetpoint().velocity))
-                .in(Volts));
+            + rightFlywheelFeedforward.calculate(
+                rightFlywheelPIDController.getSetpoint().velocity));
   }
 
   @Override

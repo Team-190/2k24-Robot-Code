@@ -191,7 +191,15 @@ public class WhiplashShooterIOTalonFX implements WhiplashShooterIO {
   }
 
   @Override
-  public void setTopFeedForward(double kS, double kV, double kA) {
+  public void setPID(double kP, double kI, double kD) {
+    topConfig.Slot0.kP = kP;
+    topConfig.Slot0.kI = kI;
+    topConfig.Slot0.kD = kD;
+    topMotor.getConfigurator().apply(topConfig, 0.01);
+  }
+
+  @Override
+  public void setFeedForward(double kS, double kV, double kA) {
     topConfig.Slot0.kS = kS;
     topConfig.Slot0.kV = kV;
     topConfig.Slot0.kA = kA;
@@ -199,11 +207,10 @@ public class WhiplashShooterIOTalonFX implements WhiplashShooterIO {
   }
 
   @Override
-  public void setBottomFeedForward(double kS, double kV, double kA) {
-    topConfig.Slot0.kS = kS;
-    topConfig.Slot0.kV = kV;
-    topConfig.Slot0.kA = kA;
-    topMotor.getConfigurator().apply(topConfig, 0.01);
+  public void setProfile(double maxAccelerationRadiansPerSecondSquared) {
+    topConfig.MotionMagic.MotionMagicAcceleration =
+        Units.radiansToRotations(maxAccelerationRadiansPerSecondSquared);
+    topMotor.getConfigurator().apply(topConfig);
   }
 
   @Override
@@ -217,36 +224,6 @@ public class WhiplashShooterIOTalonFX implements WhiplashShooterIO {
                     - bottomVelocityRotPerSec.getValueAsDouble())
             <= Units.radiansToRotations(
                 WhiplashShooterConstants.SPEED_TOLERANCE_RADIANS_PER_SECOND);
-  }
-
-  @Override
-  public void setTopProfile(double maxAccelerationRadiansPerSecondSquared) {
-    topConfig.MotionMagic.MotionMagicAcceleration =
-        Units.radiansToRotations(maxAccelerationRadiansPerSecondSquared);
-    topMotor.getConfigurator().apply(topConfig);
-  }
-
-  @Override
-  public void setBottomProfile(double maxAccelerationRadiansPerSecondSquared) {
-    bottomConfig.MotionMagic.MotionMagicAcceleration =
-        Units.radiansToRotations(maxAccelerationRadiansPerSecondSquared);
-    bottomMotor.getConfigurator().apply(bottomConfig);
-  }
-
-  @Override
-  public void setTopPID(double kP, double kI, double kD) {
-    topConfig.Slot0.kP = kP;
-    topConfig.Slot0.kI = kI;
-    topConfig.Slot0.kD = kD;
-    topMotor.getConfigurator().apply(topConfig, 0.01);
-  }
-
-  @Override
-  public void setBottomPID(double kP, double kI, double kD) {
-    bottomConfig.Slot0.kP = kP;
-    bottomConfig.Slot0.kI = kI;
-    bottomConfig.Slot0.kD = kD;
-    bottomMotor.getConfigurator().apply(bottomConfig, 0.001);
   }
 
   @Override

@@ -19,7 +19,7 @@ import org.littletonrobotics.junction.AutoLog;
 public interface ModuleIO {
   @AutoLog
   public static class ModuleIOInputs {
-    public Rotation2d drivePosition = new Rotation2d();
+    public double drivePositionRadians = 0.0;
     public double driveVelocityRadiansPerSecond = 0.0;
     public double driveAppliedVolts = 0.0;
     public double driveSupplyCurrentAmps = 0.0;
@@ -44,7 +44,7 @@ public interface ModuleIO {
     public boolean turnEncoderConnected = false;
 
     public double[] odometryTimestamps = new double[] {};
-    public Rotation2d[] odometryDrivePositions = new Rotation2d[] {};
+    public double[] odometryDrivePositionsRadians = new double[] {};
     public Rotation2d[] odometryTurnPositions = new Rotation2d[] {};
   }
 
@@ -63,4 +63,11 @@ public interface ModuleIO {
 
   /** Run the turn motor to the specified rotation. */
   public default void setTurnPosition(Rotation2d position) {}
+
+  /** Sets the module PID gains */
+  public default void setPID(
+      double drive_Kp, double drive_Kd, double turn_Kp, double turn_Kd) {}
+
+  /** Sets the module FF gains */
+  public default void setFeedforward(double drive_Ks, double drive_Kv) {}
 }

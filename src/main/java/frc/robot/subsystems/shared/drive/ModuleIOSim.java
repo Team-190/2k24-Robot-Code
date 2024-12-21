@@ -62,9 +62,11 @@ public class ModuleIOSim implements ModuleIO {
     turnClosedLoop = false;
 
     driveController =
-        new PIDController(DriveConstants.GAINS.driveKp(), 0.0, DriveConstants.GAINS.driveKd());
+        new PIDController(
+            DriveConstants.GAINS.driveKp().get(), 0.0, DriveConstants.GAINS.driveKd().get());
     turnController =
-        new PIDController(DriveConstants.GAINS.turnKp(), 0.0, DriveConstants.GAINS.turnKd());
+        new PIDController(
+            DriveConstants.GAINS.turnKp().get(), 0.0, DriveConstants.GAINS.turnKd().get());
 
     driveFFVolts = 0.0;
     driveAppliedVolts = 0.0;
@@ -95,7 +97,7 @@ public class ModuleIOSim implements ModuleIO {
     driveSim.update(0.02);
     turnSim.update(0.02);
 
-    inputs.drivePosition = Rotation2d.fromRadians(driveSim.getAngularPositionRad());
+    inputs.drivePositionRadians = driveSim.getAngularPositionRad();
     inputs.driveVelocityRadiansPerSecond = driveSim.getAngularVelocityRadPerSec();
     inputs.driveAppliedVolts = driveAppliedVolts;
     inputs.driveSupplyCurrentAmps = Math.abs(driveSim.getCurrentDrawAmps());
@@ -116,7 +118,7 @@ public class ModuleIOSim implements ModuleIO {
     inputs.turnEncoderConnected = true;
 
     inputs.odometryTimestamps = new double[] {Timer.getFPGATimestamp()};
-    inputs.odometryDrivePositions = new Rotation2d[] {inputs.drivePosition};
+    inputs.odometryDrivePositionsRadians = new double[] {inputs.drivePositionRadians};
     inputs.odometryTurnPositions = new Rotation2d[] {inputs.turnPosition};
   }
 
@@ -136,8 +138,8 @@ public class ModuleIOSim implements ModuleIO {
   public void setDriveVelocity(double velocityRadiansPerSecond, double currentFeedforward) {
     driveClosedLoop = true;
     driveFFVolts =
-        DriveConstants.GAINS.driveKs() * Math.signum(velocityRadiansPerSecond)
-            + DriveConstants.GAINS.driveKv() * velocityRadiansPerSecond;
+        DriveConstants.GAINS.driveKs().get() * Math.signum(velocityRadiansPerSecond)
+            + DriveConstants.GAINS.driveKv().get() * velocityRadiansPerSecond;
     driveController.setSetpoint(velocityRadiansPerSecond);
   }
 
@@ -145,5 +147,13 @@ public class ModuleIOSim implements ModuleIO {
   public void setTurnPosition(Rotation2d position) {
     turnClosedLoop = true;
     turnController.setSetpoint(position.getRadians());
+  }
+
+  @Override
+  public void setPID(double drive_Kp, double drive_Kd, double turn_Kp, double turn_Kd) {
+    driveController.setP(drive_Kp);
+    driveController.setD(drive_Kd);
+    turnController.setP(turn_Kp);
+    turnController.setD(turn_Kd);
   }
 }

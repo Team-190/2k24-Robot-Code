@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants;
 import frc.robot.RobotState;
-import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -57,33 +56,6 @@ public class WhiplashShooter extends SubsystemBase {
           io.setTopVelocitySetPoint(topVelocitySetPointRadiansPerSecond);
           io.setBottomVelocitySetPoint(-bottomVelocitySetPointRadiansPerSecond);
         }
-
-        LoggedTunableNumber.ifChanged(
-            hashCode(),
-            pid -> {
-              io.setTopPID(pid[0], 0.0, pid[1]);
-              io.setBottomPID(pid[0], 0.0, pid[1]);
-            },
-            WhiplashShooterConstants.KP,
-            WhiplashShooterConstants.KD);
-
-        LoggedTunableNumber.ifChanged(
-            hashCode(),
-            ff -> {
-              io.setTopFeedForward(ff[0], ff[1], ff[2]);
-              io.setBottomFeedForward(ff[0], ff[1], ff[2]);
-            },
-            WhiplashShooterConstants.KS,
-            WhiplashShooterConstants.KV,
-            WhiplashShooterConstants.KA);
-
-        LoggedTunableNumber.ifChanged(
-            hashCode(),
-            profile -> {
-              io.setTopProfile(profile[0]);
-              io.setBottomProfile(profile[0]);
-            },
-            WhiplashShooterConstants.MAX_ACCELERATION_RADIANS_PER_SECOND_SQUARED);
 
         Logger.recordOutput("Shooter/Position", inputs.topPosition.getRadians());
         Logger.recordOutput(
@@ -163,7 +135,6 @@ public class WhiplashShooter extends SubsystemBase {
    * @return the feedFoward gains calculated by the tests
    */
   public Command runCharacterization() {
-
     return Commands.sequence(
         Commands.runOnce(() -> isClosedLoop = false),
         characterizationRoutine.quasistatic(Direction.kForward),
@@ -173,5 +144,17 @@ public class WhiplashShooter extends SubsystemBase {
         characterizationRoutine.dynamic(Direction.kForward),
         Commands.waitSeconds(5),
         characterizationRoutine.dynamic(Direction.kReverse));
+  }
+
+  public void setPID(double kp, double kd) {
+    io.setPID(kp, 0.0, kd);
+  }
+
+  public void setFeedforward(double ks, double kv, double ka) {
+    io.setFeedForward(ks, kv, ka);
+  }
+
+  public void setProfile(double maxAcceleration) {
+    io.setProfile(maxAcceleration);
   }
 }

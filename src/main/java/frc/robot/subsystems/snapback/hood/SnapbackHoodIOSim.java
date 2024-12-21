@@ -1,7 +1,5 @@
 package frc.robot.subsystems.snapback.hood;
 
-import static edu.wpi.first.units.Units.*;
-
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -60,9 +58,7 @@ public class SnapbackHoodIOSim implements SnapbackHoodIO {
   public void setPositionGoal(Rotation2d position) {
     appliedVolts =
         controller.calculate(position.getRadians())
-            + feedforward
-                .calculate(RadiansPerSecond.of(controller.getSetpoint().velocity))
-                .in(Volts);
+            + feedforward.calculate(controller.getSetpoint().velocity);
     motorSim.setInputVoltage(appliedVolts);
   }
 

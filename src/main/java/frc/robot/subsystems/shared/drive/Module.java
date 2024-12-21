@@ -56,7 +56,7 @@ public class Module {
     odometryPositions = new SwerveModulePosition[sampleCount];
     for (int i = 0; i < sampleCount; i++) {
       double positionMeters =
-          inputs.odometryDrivePositions[i].getRadians() * DriveConstants.DRIVE_CONFIG.wheelRadius();
+          inputs.odometryDrivePositionsRadians[i] * DriveConstants.DRIVE_CONFIG.wheelRadius();
       Rotation2d angle = inputs.odometryTurnPositions[i];
       odometryPositions[i] = new SwerveModulePosition(positionMeters, angle);
     }
@@ -102,7 +102,7 @@ public class Module {
 
   /** Returns the current drive position of the module in meters. */
   public double getPositionMeters() {
-    return inputs.drivePosition.getRadians() * DriveConstants.DRIVE_CONFIG.wheelRadius();
+    return inputs.drivePositionRadians * DriveConstants.DRIVE_CONFIG.wheelRadius();
   }
 
   /** Returns the current drive velocity of the module in meters per second. */
@@ -131,12 +131,22 @@ public class Module {
   }
 
   /** Returns the module position in radians. */
-  public Rotation2d getWheelRadiusCharacterizationPosition() {
-    return inputs.drivePosition;
+  public double getWheelRadiusCharacterizationPosition() {
+    return inputs.drivePositionRadians;
   }
 
   /** Returns the module velocity in rotations/sec (Phoenix native units). */
   public double getFFCharacterizationVelocity() {
     return Units.radiansToRotations(inputs.driveVelocityRadiansPerSecond);
+  }
+
+  /** Sets module PID gains */
+  public void setPID(double drive_Kp, double drive_Kd, double turn_Kp, double turn_Kd) {
+    io.setPID(drive_Kp, drive_Kd, turn_Kp, turn_Kd);
+  }
+
+  /** Sets module FF gains */
+  public void setFF(double kS, double kV) {
+    io.setFeedforward(kS, kV);
   }
 }

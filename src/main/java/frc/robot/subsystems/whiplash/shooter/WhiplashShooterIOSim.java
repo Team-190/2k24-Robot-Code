@@ -1,7 +1,5 @@
 package frc.robot.subsystems.whiplash.shooter;
 
-import static edu.wpi.first.units.Units.*;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -85,9 +83,7 @@ public class WhiplashShooterIOSim implements WhiplashShooterIO {
         MathUtil.clamp(
             feedback.calculate(
                     topMotorSim.getAngularVelocityRadPerSec(), profile.calculateSetpoint())
-                + feedForward
-                    .calculate(RadiansPerSecond.of(setPointVelocityRadiansPerSecond))
-                    .in(Volts),
+                + feedForward.calculate(feedback.getSetpoint()),
             -12.0,
             12.0);
     topMotorSim.setInputVoltage(topAppliedVolts);
@@ -107,9 +103,7 @@ public class WhiplashShooterIOSim implements WhiplashShooterIO {
         MathUtil.clamp(
             feedback.calculate(
                     bottomMotorSim.getAngularVelocityRadPerSec(), profile.calculateSetpoint())
-                + feedForward
-                    .calculate(RadiansPerSecond.of(setPointVelocityRadiansPerSecond))
-                    .in(Volts),
+                + feedForward.calculate(feedback.getSetpoint()),
             -12.0,
             12.0);
     bottomMotorSim.setInputVoltage(bottomAppliedVolts);
@@ -132,36 +126,17 @@ public class WhiplashShooterIOSim implements WhiplashShooterIO {
   }
 
   @Override
-  public void setTopPID(double kP, double kI, double kD) {
-
+  public void setPID(double kP, double kI, double kD) {
     feedback.setPID(kP, kI, kD);
   }
 
   @Override
-  public void setBottomPID(double kP, double kI, double kD) {
-
-    feedback.setPID(kP, kI, kD);
-  }
-
-  @Override
-  public void setTopFeedForward(double kS, double kV, double kA) {
-
+  public void setFeedForward(double kS, double kV, double kA) {
     feedForward = new SimpleMotorFeedforward(kS, kV, kA);
   }
 
   @Override
-  public void setBottomFeedForward(double kS, double kV, double kA) {
-
-    feedForward = new SimpleMotorFeedforward(kS, kV, kA);
-  }
-
-  @Override
-  public void setTopProfile(double maxAcceleration) {
-    profile.setMaxAcceleration(maxAcceleration);
-  }
-
-  @Override
-  public void setBottomProfile(double maxAcceleration) {
+  public void setProfile(double maxAcceleration) {
     profile.setMaxAcceleration(maxAcceleration);
   }
 

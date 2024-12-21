@@ -16,7 +16,7 @@ public class FieldConstants {
   public static final double startingLineX = Units.inchesToMeters(74.111);
 
   public static final Translation2d ampCenter =
-      new Translation2d(Units.inchesToMeters(72.455), fieldWidth);
+      new Translation2d(Units.inchesToMeters(84.455), fieldWidth);
 
   public static final class StagingLocations {
     public static final double centerlineX = fieldLength / 2.0;

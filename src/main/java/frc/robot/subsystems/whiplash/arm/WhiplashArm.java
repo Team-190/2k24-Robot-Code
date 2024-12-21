@@ -241,4 +241,16 @@ public class WhiplashArm extends SubsystemBase {
   public Rotation2d getPosition() {
     return inputs.armAbsolutePosition;
   }
+
+  public void setPIDGains(double kp, double kd) {
+    io.setPID(kp, 0.0, kd);
+  }
+
+  public void setFeedforward(double ks, double kg, double kv) {
+    io.setFeedforward(ks, kg, kv);
+  }
+
+  public void setConstraints(double maxVelocity, double maxAcceleration) {
+    io.setProfile(maxVelocity, maxAcceleration);
+  }
 }
