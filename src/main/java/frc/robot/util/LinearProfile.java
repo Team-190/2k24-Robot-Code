@@ -7,14 +7,16 @@
 
 package frc.robot.util;
 
+import edu.wpi.first.math.geometry.Twist2d;
 import lombok.Getter;
+import lombok.Setter;
 
 /** Ramps up and down to setpoint for velocity closed loop control */
 public class LinearProfile {
   private double dv;
   @Getter private final double period;
   @Getter private double currentSetpoint = 0;
-  private double goal = 0;
+  @Getter @Setter private double goal = 0;
 
   /**
    * Creates a new LinearProfile
@@ -30,14 +32,6 @@ public class LinearProfile {
   /** Set the max acceleration constraint in rpm/sec */
   public void setMaxAcceleration(double maxAcceleration) {
     dv = maxAcceleration * period;
-  }
-
-  public double getGoal() {
-    return goal;
-  }
-
-  public void setGoal(double goal) {
-    this.goal = goal;
   }
 
   /**
@@ -78,5 +72,24 @@ public class LinearProfile {
       }
     }
     return currentSetpoint;
+  }
+
+  public class EqualsUtil {
+    public static boolean epsilonEquals(double a, double b, double epsilon) {
+      return (a - epsilon <= b) && (a + epsilon >= b);
+    }
+
+    public static boolean epsilonEquals(double a, double b) {
+      return epsilonEquals(a, b, 1e-9);
+    }
+
+    /** Extension methods for wpi geometry objects */
+    public static class GeomExtensions {
+      public static boolean epsilonEquals(Twist2d twist, Twist2d other) {
+        return EqualsUtil.epsilonEquals(twist.dx, other.dx)
+            && EqualsUtil.epsilonEquals(twist.dy, other.dy)
+            && EqualsUtil.epsilonEquals(twist.dtheta, other.dtheta);
+      }
+    }
   }
 }
