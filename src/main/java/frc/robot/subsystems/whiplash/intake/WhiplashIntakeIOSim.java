@@ -45,6 +45,10 @@ public class WhiplashIntakeIOSim implements WhiplashIntakeIO {
 
   @Override
   public void updateInputs(WhiplashIntakeIOInputs inputs) {
+    topMotorSim.setInputVoltage(MathUtil.clamp(topAppliedVolts, -12.0, 12.0));
+    bottomMotorSim.setInputVoltage(MathUtil.clamp(bottomAppliedVolts, -12.0, 12.0));
+    acceleratorMotorSim.setInputVoltage(MathUtil.clamp(acceleratorAppliedVolts, -12.0, 12.0));
+
     topMotorSim.update(Constants.LOOP_PERIOD_SECONDS);
     bottomMotorSim.update(Constants.LOOP_PERIOD_SECONDS);
     acceleratorMotorSim.update(Constants.LOOP_PERIOD_SECONDS);
@@ -68,26 +72,23 @@ public class WhiplashIntakeIOSim implements WhiplashIntakeIO {
 
   @Override
   public void setTopVoltage(double volts) {
-    topAppliedVolts = MathUtil.clamp(volts, -12.0, 12.0);
-    topMotorSim.setInputVoltage(topAppliedVolts);
+    topAppliedVolts = volts;
   }
 
   @Override
   public void setBottomVoltage(double volts) {
-    bottomAppliedVolts = MathUtil.clamp(volts, -12.0, 12.0);
-    bottomMotorSim.setInputVoltage(bottomAppliedVolts);
+    bottomAppliedVolts = volts;
   }
 
   @Override
   public void setAcceleratorVoltage(double volts) {
-    acceleratorAppliedVolts = MathUtil.clamp(volts, -12.0, 12.0);
-    acceleratorMotorSim.setInputVoltage(acceleratorAppliedVolts);
+    acceleratorAppliedVolts = volts;
   }
 
   @Override
   public void stop() {
-    topMotorSim.setInputVoltage(0.0);
-    bottomMotorSim.setInputVoltage(0.0);
-    acceleratorMotorSim.setInputVoltage(0.0);
+    topAppliedVolts = 0.0;
+    bottomAppliedVolts = 0.0;
+    acceleratorAppliedVolts = 0.0;
   }
 }

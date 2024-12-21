@@ -13,8 +13,6 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
-import frc.robot.util.Alert;
-import frc.robot.util.Alert.AlertType;
 
 public class SnapbackHoodIOTalonFX implements SnapbackHoodIO {
   private final TalonFX hoodMotor;
@@ -27,28 +25,26 @@ public class SnapbackHoodIOTalonFX implements SnapbackHoodIO {
   public StatusSignal<Double> positionSetpointRotations;
   public StatusSignal<Double> positionErrorRotations;
 
-  private final Alert disconnectedAlert =
-      new Alert("Hood Talon is disconnected, check CAN bus.", AlertType.ERROR);
-
   private VoltageOut voltageControlRequest;
   private MotionMagicVoltage positionControlRequest;
 
   public SnapbackHoodIOTalonFX() {
-    hoodMotor = new TalonFX(SnapbackHoodConstants.HOOD_MOTOR_CAN_ID);
+    hoodMotor = new TalonFX(SnapbackHoodConstants.MOTOR_CAN_ID);
 
     TalonFXConfiguration config = new TalonFXConfiguration();
-    config.CurrentLimits.SupplyCurrentLimit = SnapbackHoodConstants.SUPPLY_CURRENT_LIMIT_AMPS;
+    config.CurrentLimits.SupplyCurrentLimit = SnapbackHoodConstants.CURRENT_LIMIT;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    config.Feedback.SensorToMechanismRatio = SnapbackHoodConstants.GEAR_REDUCTION;
-    config.Slot0.kP = SnapbackHoodConstants.GAINS.kp();
-    config.Slot0.kI = SnapbackHoodConstants.GAINS.ki();
-    config.Slot0.kD = SnapbackHoodConstants.GAINS.kd();
-    config.Slot0.kS = SnapbackHoodConstants.GAINS.ks();
-    config.Slot0.kV = SnapbackHoodConstants.GAINS.kv();
-    config.Slot0.kA = SnapbackHoodConstants.GAINS.ka();
-    config.MotionMagic.MotionMagicAcceleration = SnapbackHoodConstants.MAX_ACCELERATION.get();
-    config.MotionMagic.MotionMagicCruiseVelocity = SnapbackHoodConstants.MAX_VELOCITY.get();
+    config.Feedback.SensorToMechanismRatio = SnapbackHoodConstants.GEAR_RATIO;
+    config.Slot0.kP = SnapbackHoodConstants.GAINS.kp().get();
+    config.Slot0.kD = SnapbackHoodConstants.GAINS.kd().get();
+    config.Slot0.kS = SnapbackHoodConstants.GAINS.ks().get();
+    config.Slot0.kV = SnapbackHoodConstants.GAINS.kv().get();
+    config.Slot0.kA = SnapbackHoodConstants.GAINS.ka().get();
+    config.MotionMagic.MotionMagicCruiseVelocity =
+        SnapbackHoodConstants.CONSTRAINTS.maxVelocityRadiansPerSecond().get();
+    config.MotionMagic.MotionMagicAcceleration =
+        SnapbackHoodConstants.CONSTRAINTS.maxAccelerationRadiansPerSecondSqaured().get();
     hoodMotor.getConfigurator().apply(config);
 
     positionRotations = hoodMotor.getPosition();
@@ -71,16 +67,13 @@ public class SnapbackHoodIOTalonFX implements SnapbackHoodIO {
 
   @Override
   public void updateInputs(SnapbackHoodIOInputs inputs) {
-    boolean isConnected =
-        BaseStatusSignal.refreshAll(
-                positionRotations,
-                velocityRotationsPerSecond,
-                currentAmps,
-                tempratureCelsius,
-                positionSetpointRotations,
-                positionErrorRotations)
-            .isOK();
-    disconnectedAlert.set(!isConnected);
+    BaseStatusSignal.refreshAll(
+        positionRotations,
+        velocityRotationsPerSecond,
+        currentAmps,
+        tempratureCelsius,
+        positionSetpointRotations,
+        positionErrorRotations);
 
     inputs.position = Rotation2d.fromRotations(positionRotations.getValueAsDouble());
     inputs.velocityRadiansPerSecond =
@@ -99,20 +92,44 @@ public class SnapbackHoodIOTalonFX implements SnapbackHoodIO {
   }
 
   @Override
-  public void setPositionGoal(Rotation2d position) {
+  public void setPosition(Rotation2d position) {
     positionGoal = position;
     hoodMotor.setControl(
         positionControlRequest.withPosition(positionGoal.getRotations()).withUpdateFreqHz(1000.0));
   }
 
   @Override
-  public void setPosition(Rotation2d position) {
-    hoodMotor.setPosition(position.getRotations());
+  public void setPID(double kp, double ki, double kd) {
+    TalonFXConfiguration config = new TalonFXConfiguration();
+    config.Slot0.kP = kp;
+    config.Slot0.kI = ki;
+    config.Slot0.kD = kd;
+    hoodMotor.getConfigurator().apply(config);
+  }
+
+  @Override
+  public void setFeedforward(double ks, double kv, double ka) {
+    TalonFXConfiguration config = new TalonFXConfiguration();
+    config.Slot0.kS = ks;
+    config.Slot0.kV = kv;
+    config.Slot0.kA = ka;
+    hoodMotor.getConfigurator().apply(config);
+  }
+
+  @Override
+  public void setProfile(
+      double maxVelocityRadiansPerSecond,
+      double maxAccelerationRadiansPerSecondSquared,
+      double goalToleranceRadians) {
+    TalonFXConfiguration config = new TalonFXConfiguration();
+    config.MotionMagic.MotionMagicCruiseVelocity = maxVelocityRadiansPerSecond;
+    config.MotionMagic.MotionMagicAcceleration = maxAccelerationRadiansPerSecondSquared;
+    hoodMotor.getConfigurator().apply(config);
   }
 
   @Override
   public boolean atGoal() {
     return Math.abs(positionGoal.getRotations() - positionRotations.getValueAsDouble())
-        <= SnapbackHoodConstants.GOAL_TOLERANCE.get();
+        <= SnapbackHoodConstants.CONSTRAINTS.goalToleranceRadians().get();
   }
 }

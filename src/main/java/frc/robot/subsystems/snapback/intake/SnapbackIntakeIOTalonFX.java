@@ -43,7 +43,7 @@ public class SnapbackIntakeIOTalonFX implements SnapbackIntakeIO {
 
   private final DoubleSolenoid pneumatic;
 
-  private VoltageOut voltageControl;
+  private final VoltageOut voltageControlRequest;
 
   public SnapbackIntakeIOTalonFX() {
     intakeMotor = new TalonFX(SnapbackIntakeConstants.INTAKE_MOTOR_CAN_ID);
@@ -111,7 +111,7 @@ public class SnapbackIntakeIOTalonFX implements SnapbackIntakeIO {
     serializerMotor.optimizeBusUtilization();
     kickerMotor.optimizeBusUtilization();
 
-    voltageControl = new VoltageOut(0.0);
+    voltageControlRequest = new VoltageOut(0.0);
   }
 
   @Override
@@ -159,17 +159,17 @@ public class SnapbackIntakeIOTalonFX implements SnapbackIntakeIO {
 
   @Override
   public void setIntakeVoltage(double volts) {
-    intakeMotor.setControl(voltageControl.withOutput(volts).withUpdateFreqHz(1000.0));
+    intakeMotor.setControl(voltageControlRequest.withOutput(volts).withUpdateFreqHz(1000.0));
   }
 
   @Override
   public void setSerializerVoltage(double volts) {
-    serializerMotor.setControl(voltageControl.withOutput(volts).withUpdateFreqHz(1000.0));
+    serializerMotor.setControl(voltageControlRequest.withOutput(volts).withUpdateFreqHz(1000.0));
   }
 
   @Override
   public void setKickerVoltage(double volts) {
-    kickerMotor.setControl(voltageControl.withOutput(volts).withUpdateFreqHz(1000.0));
+    kickerMotor.setControl(voltageControlRequest.withOutput(volts).withUpdateFreqHz(1000.0));
   }
 
   @Override

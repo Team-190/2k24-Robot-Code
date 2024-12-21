@@ -17,9 +17,9 @@ public interface SnapbackHoodIO {
     public double appliedVolts = 0.0;
     public double currentAmps = 0.0;
     public double temperatureCelsius = 0.0;
-    public Rotation2d positionGoal;
-    public Rotation2d positionSetpoint;
-    public Rotation2d positionError;
+    public Rotation2d positionGoal = new Rotation2d();
+    public Rotation2d positionSetpoint = new Rotation2d();
+    public Rotation2d positionError = new Rotation2d();
   }
 
   /** Updates AdvantageKit inputs. */
@@ -29,11 +29,16 @@ public interface SnapbackHoodIO {
   public default void setVoltage(double volts) {}
 
   /** Sets motor closed loop position setpoint. */
-  public default void setPositionGoal(Rotation2d position) {}
-
-  /** Sets motor position. */
   public default void setPosition(Rotation2d position) {}
 
+  public default void setPID(double kp, double ki, double kd) {}
+
+  public default void setFeedforward(double ks, double kv, double ka) {}
+
+  public default void setProfile(
+      double maxVelocityRadiansPerSecond,
+      double maxAccelerationRadiansPerSecondSquared,
+      double goalToleranceRadians) {}
   /** Checks if the hood is within tolerance */
   public default boolean atGoal() {
     return false;

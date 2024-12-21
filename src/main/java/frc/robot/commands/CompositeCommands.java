@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotState;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.snapback.hood.SnapbackHood;
+import frc.robot.subsystems.snapback.hood.SnapbackHoodConstants.SnapbackHoodGoal;
 import frc.robot.subsystems.snapback.intake.SnapbackIntake;
 import frc.robot.subsystems.snapback.shooter.SnapbackShooter;
 import frc.robot.subsystems.snapback.shooter.SnapbackShooterConstants.SnapbackShooterGoal;
@@ -49,7 +50,9 @@ public class CompositeCommands {
       SnapbackShooter shooter,
       XboxController driver) {
     return Commands.sequence(
-            Commands.parallel(shooter.setGoal(SnapbackShooterGoal.SPEAKER), hood.setSpeaker())
+            Commands.parallel(
+                    shooter.setGoal(SnapbackShooterGoal.SPEAKER),
+                    hood.setGoal(SnapbackHoodGoal.SPEAKER))
                 .until(
                     () ->
                         shooter.atGoal()
@@ -66,7 +69,8 @@ public class CompositeCommands {
   public static final Command shootSpeakerAuto(
       Drive drive, SnapbackIntake intake, SnapbackHood hood, SnapbackShooter shooter) {
     return Commands.sequence(
-        Commands.parallel(shooter.setGoal(SnapbackShooterGoal.SPEAKER), hood.setSpeaker()),
+        Commands.parallel(
+            shooter.setGoal(SnapbackShooterGoal.SPEAKER), hood.setGoal(SnapbackHoodGoal.SPEAKER)),
         Commands.waitUntil(
             () ->
                 shooter.atGoal() && hood.atGoal() && DriveCommands.getAimController().atSetpoint()),
@@ -78,7 +82,8 @@ public class CompositeCommands {
   public static final Command shootFeed(
       SnapbackIntake intake, SnapbackHood hood, SnapbackShooter shooter) {
     return Commands.sequence(
-        Commands.parallel(shooter.setGoal(SnapbackShooterGoal.FEED), hood.setFeed()),
+        Commands.parallel(
+            shooter.setGoal(SnapbackShooterGoal.FEED), hood.setGoal(SnapbackHoodGoal.FEED)),
         Commands.waitUntil(() -> shooter.atGoal() && hood.atGoal()),
         intake.shoot());
   }
@@ -87,15 +92,13 @@ public class CompositeCommands {
   public static final Command collect(WhiplashIntake intake, WhiplashArm arm) {
     return Commands.sequence(
         arm.setGoal(WhiplashArmGoal.INTAKE),
-        Commands.waitUntil(() -> arm.atSetpoint()),
+        Commands.waitUntil(() -> arm.atGoal()),
         intake.intake());
   }
 
   public static final Command eject(WhiplashIntake intake, WhiplashArm arm) {
     return Commands.sequence(
-        arm.setGoal(WhiplashArmGoal.EJECT),
-        Commands.waitUntil(() -> arm.atSetpoint()),
-        intake.eject());
+        arm.setGoal(WhiplashArmGoal.EJECT), Commands.waitUntil(() -> arm.atGoal()), intake.eject());
   }
 
   public static final Command shootSpeaker(
@@ -110,8 +113,8 @@ public class CompositeCommands {
                     arm.setGoal(WhiplashArmGoal.SPEAKER))
                 .until(
                     () ->
-                        shooter.atSetpoint()
-                            && arm.atSetpoint()
+                        shooter.atGoal()
+                            && arm.atGoal()
                             && DriveCommands.getAimController().atSetpoint()
                             && drive.getYawVelocity() <= Units.degreesToRadians(1)),
             Commands.waitSeconds(0.125),
@@ -124,8 +127,8 @@ public class CompositeCommands {
                             arm.setGoal(WhiplashArmGoal.SPEAKER))
                         .until(
                             () ->
-                                shooter.atSetpoint()
-                                    && arm.atSetpoint()
+                                shooter.atGoal()
+                                    && arm.atGoal()
                                     && DriveCommands.getAimController().atSetpoint()),
                     Commands.waitSeconds(0.125),
                     intake.shoot(),
@@ -144,9 +147,7 @@ public class CompositeCommands {
             shooter.setGoal(WhiplashShooterGoal.SPEAKER), arm.setGoal(WhiplashArmGoal.SPEAKER)),
         Commands.waitUntil(
             () ->
-                shooter.atSetpoint()
-                    && arm.atSetpoint()
-                    && DriveCommands.getAimController().atSetpoint()),
+                shooter.atGoal() && arm.atGoal() && DriveCommands.getAimController().atSetpoint()),
         Commands.runOnce(() -> drive.stop()),
         Commands.waitSeconds(0.125),
         intake.shoot());
@@ -157,7 +158,7 @@ public class CompositeCommands {
     return Commands.sequence(
         Commands.parallel(
             shooter.setGoal(WhiplashShooterGoal.SPEAKER), arm.setGoal(WhiplashArmGoal.SUBWOOFER)),
-        Commands.waitUntil(() -> shooter.atSetpoint() && arm.atSetpoint()),
+        Commands.waitUntil(() -> shooter.atGoal() && arm.atGoal()),
         intake.shoot(),
         Commands.either(
             Commands.sequence(
@@ -165,7 +166,7 @@ public class CompositeCommands {
                 Commands.parallel(
                     shooter.setGoal(WhiplashShooterGoal.SPEAKER),
                     arm.setGoal(WhiplashArmGoal.SUBWOOFER)),
-                Commands.waitUntil(() -> shooter.atSetpoint() && arm.atSetpoint()),
+                Commands.waitUntil(() -> shooter.atGoal() && arm.atGoal()),
                 intake.shoot(),
                 arm.setGoal(WhiplashArmGoal.STOW)),
             arm.setGoal(WhiplashArmGoal.STOW),
@@ -177,7 +178,7 @@ public class CompositeCommands {
     return Commands.sequence(
         Commands.parallel(
             shooter.setGoal(WhiplashShooterGoal.AMP), arm.setGoal(WhiplashArmGoal.PREAMP)),
-        Commands.waitUntil(() -> shooter.atSetpoint() && arm.atSetpoint()),
+        Commands.waitUntil(() -> shooter.atGoal() && arm.atGoal()),
         Commands.waitSeconds(0.125),
         Commands.parallel(intake.shoot(), arm.setGoal(WhiplashArmGoal.AMP)),
         Commands.waitSeconds(0.5),
@@ -186,7 +187,7 @@ public class CompositeCommands {
                 CompositeCommands.collect(intake, arm),
                 Commands.parallel(
                     shooter.setGoal(WhiplashShooterGoal.AMP), arm.setGoal(WhiplashArmGoal.PREAMP)),
-                Commands.waitUntil(() -> shooter.atSetpoint() && arm.atSetpoint()),
+                Commands.waitUntil(() -> shooter.atGoal() && arm.atGoal()),
                 Commands.waitSeconds(0.125),
                 Commands.parallel(intake.shoot(), arm.setGoal(WhiplashArmGoal.AMP)),
                 Commands.waitSeconds(0.5),
@@ -200,14 +201,14 @@ public class CompositeCommands {
     return Commands.sequence(
         Commands.parallel(
             shooter.setGoal(WhiplashShooterGoal.FEED), arm.setGoal(WhiplashArmGoal.FEED)),
-        Commands.waitUntil(() -> shooter.atSetpoint() && arm.atSetpoint()),
+        Commands.waitUntil(() -> shooter.atGoal() && arm.atGoal()),
         intake.shoot(),
         Commands.either(
             Commands.sequence(
                 CompositeCommands.collect(intake, arm),
                 Commands.parallel(
                     shooter.setGoal(WhiplashShooterGoal.FEED), arm.setGoal(WhiplashArmGoal.FEED)),
-                Commands.waitUntil(() -> shooter.atSetpoint() && arm.atSetpoint()),
+                Commands.waitUntil(() -> shooter.atGoal() && arm.atGoal()),
                 intake.shoot(),
                 arm.setGoal(WhiplashArmGoal.STOW)),
             arm.setGoal(WhiplashArmGoal.STOW),

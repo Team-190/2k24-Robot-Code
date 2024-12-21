@@ -42,11 +42,11 @@ public class WhiplashArmConstants {
 
     GAINS =
         new Gains(
+            new LoggedTunableNumber("Arm/KP", 120.0),
+            new LoggedTunableNumber("Arm/KD", 0.0),
             new LoggedTunableNumber("Arm/KS", 0.14578),
             new LoggedTunableNumber("Arm/KG", 0.14124),
-            new LoggedTunableNumber("Arm/KV", 0.9053),
-            new LoggedTunableNumber("Arm/KP", 120.0),
-            new LoggedTunableNumber("Arm/KD", 0.0));
+            new LoggedTunableNumber("Arm/KV", 0.9053));
     CONSTRAINTS =
         new Constraints(
             new LoggedTunableNumber("Arm/Max Velocity", 120.0),
@@ -82,11 +82,11 @@ public class WhiplashArmConstants {
   }
 
   public record Gains(
+      LoggedTunableNumber kp,
+      LoggedTunableNumber kd,
       LoggedTunableNumber ks,
       LoggedTunableNumber kg,
-      LoggedTunableNumber kv,
-      LoggedTunableNumber kp,
-      LoggedTunableNumber kd) {}
+      LoggedTunableNumber kv) {}
 
   public record Constraints(
       LoggedTunableNumber maxVelocityRadiansPerSecond,

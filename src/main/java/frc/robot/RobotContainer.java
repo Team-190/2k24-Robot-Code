@@ -287,6 +287,7 @@ public class RobotContainer {
         break;
       case SNAPBACK:
       case SNAPBACK_SIM:
+        LTNUpdater.updateSnapback(drive, snapbackHood, snapbackShooter);
         break;
     }
   }

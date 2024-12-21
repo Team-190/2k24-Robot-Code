@@ -46,8 +46,8 @@ public class WhiplashShooter extends SubsystemBase {
         io.updateInputs(inputs);
         Logger.processInputs("Shooter", inputs);
         if (isClosedLoop) {
-          io.setTopVelocitySetpoint(goal.getTopGoal());
-          io.setBottomVelocitySetpoint(-goal.getBottomGoal());
+          io.setTopVelocity(goal.getTopGoal());
+          io.setBottomVelocity(-goal.getBottomGoal());
         }
         break;
       default:
@@ -61,8 +61,8 @@ public class WhiplashShooter extends SubsystemBase {
   }
 
   @AutoLogOutput(key = "Shooter/at setpoint")
-  public boolean atSetpoint() {
-    return io.atSetpoint();
+  public boolean atGoal() {
+    return io.atGoal();
   }
 
   public void setPID(double kp, double kd) {

@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants;
 import frc.robot.subsystems.whiplash.arm.WhiplashArmConstants.WhiplashArmGoal;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class WhiplashArm extends SubsystemBase {
@@ -74,10 +75,6 @@ public class WhiplashArm extends SubsystemBase {
       default:
         break;
     }
-
-    Logger.recordOutput("Arm/Current Position", inputs.position.getRadians());
-    Logger.recordOutput("Arm/Position Goal", positionGoal);
-    Logger.recordOutput("Arm/At Setpoint", atSetpoint());
   }
 
   public Command setGoal(WhiplashArmGoal goal) {
@@ -86,8 +83,9 @@ public class WhiplashArm extends SubsystemBase {
     return Commands.runOnce(() -> positionGoal = goal.getAngle());
   }
 
-  public boolean atSetpoint() {
-    return io.atSetpoint();
+  @AutoLogOutput(key = "Arm/At Goal")
+  public boolean atGoal() {
+    return io.atGoal();
   }
 
   public Command runQuasistaticCharacterization(Direction direction) {
@@ -109,7 +107,7 @@ public class WhiplashArm extends SubsystemBase {
     return inputs.absolutePosition;
   }
 
-  public void setPIDGains(double kp, double kd) {
+  public void setPID(double kp, double kd) {
     io.setPID(kp, 0.0, kd);
   }
 
@@ -117,7 +115,7 @@ public class WhiplashArm extends SubsystemBase {
     io.setFeedforward(ks, kg, kv);
   }
 
-  public void setConstraints(
+  public void setProfile(
       double maxVelocityRadiansPerSecond,
       double maxAccelerationRadiansPerSecondSquared,
       double goalToleranceRadians) {

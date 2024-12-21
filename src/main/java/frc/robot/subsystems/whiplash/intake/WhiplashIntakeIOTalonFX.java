@@ -26,27 +26,27 @@ public class WhiplashIntakeIOTalonFX implements WhiplashIntakeIO {
   private final DigitalInput finalSensor;
 
   private final StatusSignal<Angle> topPositionRotations;
-  private final StatusSignal<AngularVelocity> topVelocityRotPerSec;
+  private final StatusSignal<AngularVelocity> topVelocityRotationsPerSecond;
   private final StatusSignal<Voltage> topAppliedVolts;
   private final StatusSignal<Current> topCurrentAmps;
   private final StatusSignal<Temperature> topTemperatureCelsius;
 
   private final StatusSignal<Angle> bottomPositionRotations;
-  private final StatusSignal<AngularVelocity> bottomVelocityRotPerSec;
+  private final StatusSignal<AngularVelocity> bottomVelocityRotationsPerSecond;
   private final StatusSignal<Voltage> bottomAppliedVolts;
   private final StatusSignal<Current> bottomCurrentAmps;
   private final StatusSignal<Temperature> bottomTemperatureCelsius;
 
   private final StatusSignal<Angle> acceleratorPositionRotations;
-  private final StatusSignal<AngularVelocity> acceleratorVelocityRotPerSec;
+  private final StatusSignal<AngularVelocity> acceleratorVelocityRotationsPerSecond;
   private final StatusSignal<Voltage> acceleratorAppliedVolts;
   private final StatusSignal<Current> acceleratorCurrentAmps;
   private final StatusSignal<Temperature> acceleratorTemperatureCelsius;
 
   private final TalonFXConfiguration motorConfig;
 
-  private final NeutralOut neutralControl;
-  private final VoltageOut voltageControl;
+  private final NeutralOut neutralControlRequest;
+  private final VoltageOut voltageControlRequest;
 
   public WhiplashIntakeIOTalonFX() {
     topMotor = new TalonFX(WhiplashIntakeConstants.TOP_CAN_ID);
@@ -66,19 +66,19 @@ public class WhiplashIntakeIOTalonFX implements WhiplashIntakeIO {
     acceleratorMotor.getConfigurator().apply(motorConfig);
 
     topPositionRotations = topMotor.getPosition();
-    topVelocityRotPerSec = topMotor.getVelocity();
+    topVelocityRotationsPerSecond = topMotor.getVelocity();
     topAppliedVolts = topMotor.getMotorVoltage();
     topCurrentAmps = topMotor.getSupplyCurrent();
     topTemperatureCelsius = topMotor.getDeviceTemp();
 
     bottomPositionRotations = bottomMotor.getPosition();
-    bottomVelocityRotPerSec = bottomMotor.getVelocity();
+    bottomVelocityRotationsPerSecond = bottomMotor.getVelocity();
     bottomAppliedVolts = bottomMotor.getMotorVoltage();
     bottomCurrentAmps = bottomMotor.getSupplyCurrent();
     bottomTemperatureCelsius = bottomMotor.getDeviceTemp();
 
     acceleratorPositionRotations = acceleratorMotor.getPosition();
-    acceleratorVelocityRotPerSec = acceleratorMotor.getVelocity();
+    acceleratorVelocityRotationsPerSecond = acceleratorMotor.getVelocity();
     acceleratorAppliedVolts = acceleratorMotor.getMotorVoltage();
     acceleratorCurrentAmps = acceleratorMotor.getSupplyCurrent();
     acceleratorTemperatureCelsius = acceleratorMotor.getDeviceTemp();
@@ -86,17 +86,17 @@ public class WhiplashIntakeIOTalonFX implements WhiplashIntakeIO {
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0,
         topPositionRotations,
-        topVelocityRotPerSec,
+        topVelocityRotationsPerSecond,
         topAppliedVolts,
         topCurrentAmps,
         topTemperatureCelsius,
         bottomPositionRotations,
-        bottomVelocityRotPerSec,
+        bottomVelocityRotationsPerSecond,
         bottomAppliedVolts,
         bottomCurrentAmps,
         bottomTemperatureCelsius,
         acceleratorPositionRotations,
-        acceleratorVelocityRotPerSec,
+        acceleratorVelocityRotationsPerSecond,
         acceleratorAppliedVolts,
         acceleratorCurrentAmps,
         acceleratorTemperatureCelsius);
@@ -104,22 +104,22 @@ public class WhiplashIntakeIOTalonFX implements WhiplashIntakeIO {
     bottomMotor.optimizeBusUtilization();
     acceleratorMotor.optimizeBusUtilization();
 
-    neutralControl = new NeutralOut();
-    voltageControl = new VoltageOut(0.0);
+    neutralControlRequest = new NeutralOut();
+    voltageControlRequest = new VoltageOut(0.0);
   }
 
   @Override
   public void updateInputs(WhiplashIntakeIOInputs inputs) {
     inputs.topPosition = Rotation2d.fromRotations(topPositionRotations.getValueAsDouble());
     inputs.topVelocityRadiansPerSecond =
-        Units.rotationsPerMinuteToRadiansPerSecond(topVelocityRotPerSec.getValueAsDouble());
+        Units.rotationsToRadians(topVelocityRotationsPerSecond.getValueAsDouble());
     inputs.topAppliedVolts = topAppliedVolts.getValueAsDouble();
     inputs.topCurrentAmps = topCurrentAmps.getValueAsDouble();
     inputs.topTemperatureCelsius = topTemperatureCelsius.getValueAsDouble();
 
     inputs.bottomPosition = Rotation2d.fromRotations(bottomPositionRotations.getValueAsDouble());
     inputs.bottomVelocityRadiansPerSecond =
-        Units.rotationsPerMinuteToRadiansPerSecond(bottomCurrentAmps.getValueAsDouble());
+        Units.rotationsToRadians(bottomVelocityRotationsPerSecond.getValueAsDouble());
     inputs.bottomAppliedVolts = bottomAppliedVolts.getValueAsDouble();
     inputs.bottomCurrentAmps = bottomCurrentAmps.getValueAsDouble();
     inputs.bottomTemperatureCelsius = bottomTemperatureCelsius.getValueAsDouble();
@@ -127,7 +127,7 @@ public class WhiplashIntakeIOTalonFX implements WhiplashIntakeIO {
     inputs.acceleratorPosition =
         Rotation2d.fromRotations(acceleratorPositionRotations.getValueAsDouble());
     inputs.acceleratorVelocityRadiansPerSecond =
-        Units.rotationsPerMinuteToRadiansPerSecond(acceleratorCurrentAmps.getValueAsDouble());
+        Units.rotationsToRadians(acceleratorVelocityRotationsPerSecond.getValueAsDouble());
     inputs.acceleratorAppliedVolts = acceleratorAppliedVolts.getValueAsDouble();
     inputs.acceleratorCurrentAmps = acceleratorCurrentAmps.getValueAsDouble();
     inputs.acceleratorTemperatureCelsius = acceleratorTemperatureCelsius.getValueAsDouble();
@@ -139,23 +139,23 @@ public class WhiplashIntakeIOTalonFX implements WhiplashIntakeIO {
 
   @Override
   public void setTopVoltage(double volts) {
-    topMotor.setControl(voltageControl.withOutput(volts));
+    topMotor.setControl(voltageControlRequest.withOutput(volts));
   }
 
   @Override
   public void setBottomVoltage(double volts) {
-    bottomMotor.setControl(voltageControl.withOutput(volts));
+    bottomMotor.setControl(voltageControlRequest.withOutput(volts));
   }
 
   @Override
   public void setAcceleratorVoltage(double volts) {
-    acceleratorMotor.setControl(voltageControl.withOutput(volts));
+    acceleratorMotor.setControl(voltageControlRequest.withOutput(volts));
   }
 
   @Override
   public void stop() {
-    topMotor.setControl(neutralControl);
-    bottomMotor.setControl(neutralControl);
-    acceleratorMotor.setControl(neutralControl);
+    topMotor.setControl(neutralControlRequest);
+    bottomMotor.setControl(neutralControlRequest);
+    acceleratorMotor.setControl(neutralControlRequest);
   }
 }

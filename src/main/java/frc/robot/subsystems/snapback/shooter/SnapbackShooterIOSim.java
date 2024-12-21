@@ -28,24 +28,24 @@ public class SnapbackShooterIOSim implements SnapbackShooterIO {
     leftFlywheelMotorSim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(
-                SnapbackShooterConstants.FLYWHEEL_GEARBOX,
+                SnapbackShooterConstants.LEFT_MOTOR_CONFIG,
                 0.004,
-                SnapbackShooterConstants.FLYWHEEL_GEAR_REDUCTION),
-            SnapbackShooterConstants.FLYWHEEL_GEARBOX);
+                SnapbackShooterConstants.LEFT_GEAR_RATIO),
+            SnapbackShooterConstants.LEFT_MOTOR_CONFIG);
     rightFlywheelMotorSim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(
-                SnapbackShooterConstants.FLYWHEEL_GEARBOX,
+                SnapbackShooterConstants.RIGHT_MOTOR_CONFIG,
                 0.004,
-                SnapbackShooterConstants.FLYWHEEL_GEAR_REDUCTION),
-            SnapbackShooterConstants.FLYWHEEL_GEARBOX);
+                SnapbackShooterConstants.RIGHT_GEAR_RATIO),
+            SnapbackShooterConstants.RIGHT_MOTOR_CONFIG);
     acceleratorMotorSim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(
-                SnapbackShooterConstants.ACCELERATOR_GEARBOX,
+                SnapbackShooterConstants.ACCELERATOR_MOTOR_CONFIG,
                 0.004,
-                SnapbackShooterConstants.ACCELERATOR_GEAR_REDUCTION),
-            SnapbackShooterConstants.ACCELERATOR_GEARBOX);
+                SnapbackShooterConstants.ACCELERATOR_GEAR_RATIO),
+            SnapbackShooterConstants.ACCELERATOR_MOTOR_CONFIG);
 
     leftFlywheelMotorAppliedVolts = 0.0;
     rightFlywheelMotorAppliedVolts = 0.0;
@@ -54,31 +54,34 @@ public class SnapbackShooterIOSim implements SnapbackShooterIO {
     leftFlywheelPIDController =
         new ProfiledPIDController(
             SnapbackShooterConstants.GAINS.kp().get(),
-            SnapbackShooterConstants.GAINS.ki().get(),
+            0.0,
             SnapbackShooterConstants.GAINS.kd().get(),
             new TrapezoidProfile.Constraints(
-                SnapbackShooterConstants.MAX_ACCELERATION.get(), Double.POSITIVE_INFINITY));
+                SnapbackShooterConstants.CONSTRAINTS.maxAccelerationRadiansPerSecondSquared().get(),
+                Double.POSITIVE_INFINITY));
     rightFlywheelPIDController =
         new ProfiledPIDController(
             SnapbackShooterConstants.GAINS.kp().get(),
-            SnapbackShooterConstants.GAINS.ki().get(),
+            0.0,
             SnapbackShooterConstants.GAINS.kd().get(),
             new TrapezoidProfile.Constraints(
-                SnapbackShooterConstants.MAX_ACCELERATION.get(), Double.POSITIVE_INFINITY));
-    leftFlywheelPIDController.setTolerance(SnapbackShooterConstants.FLYWHEEL_TOLERANCE_RAD_PER_SEC);
+                SnapbackShooterConstants.CONSTRAINTS.maxAccelerationRadiansPerSecondSquared().get(),
+                Double.POSITIVE_INFINITY));
+    leftFlywheelPIDController.setTolerance(
+        SnapbackShooterConstants.CONSTRAINTS.goalToleranceRadiansPerSecond().get());
     rightFlywheelPIDController.setTolerance(
-        SnapbackShooterConstants.FLYWHEEL_TOLERANCE_RAD_PER_SEC);
+        SnapbackShooterConstants.CONSTRAINTS.goalToleranceRadiansPerSecond().get());
 
     leftFlywheelFeedforward =
         new SimpleMotorFeedforward(
-            SnapbackShooterConstants.GAINS.ks(),
-            SnapbackShooterConstants.GAINS.kv(),
-            SnapbackShooterConstants.GAINS.ka());
+            SnapbackShooterConstants.GAINS.ks().get(),
+            SnapbackShooterConstants.GAINS.kv().get(),
+            SnapbackShooterConstants.GAINS.ka().get());
     rightFlywheelFeedforward =
         new SimpleMotorFeedforward(
-            SnapbackShooterConstants.GAINS.ks(),
-            SnapbackShooterConstants.GAINS.kv(),
-            SnapbackShooterConstants.GAINS.ka());
+            SnapbackShooterConstants.GAINS.ks().get(),
+            SnapbackShooterConstants.GAINS.kv().get(),
+            SnapbackShooterConstants.GAINS.ka().get());
   }
 
   @Override
@@ -129,18 +132,43 @@ public class SnapbackShooterIOSim implements SnapbackShooterIO {
   }
 
   @Override
-  public void setLeftVelocityGoal(double velocityRadiansPerSecond) {
+  public void setLeftVelocity(double velocityRadiansPerSecond) {
     leftFlywheelMotorSim.setInputVoltage(
         leftFlywheelPIDController.calculate(velocityRadiansPerSecond)
             + leftFlywheelFeedforward.calculate(leftFlywheelPIDController.getSetpoint().velocity));
   }
 
   @Override
-  public void setRightVelocityGoal(double velocityRadiansPerSecond) {
+  public void setRightVelocity(double velocityRadiansPerSecond) {
     rightFlywheelMotorSim.setInputVoltage(
         rightFlywheelPIDController.calculate(velocityRadiansPerSecond)
             + rightFlywheelFeedforward.calculate(
                 rightFlywheelPIDController.getSetpoint().velocity));
+  }
+
+  @Override
+  public void setPID(double kp, double ki, double kd) {
+    leftFlywheelPIDController.setPID(kp, ki, kd);
+    rightFlywheelPIDController.setPID(kp, ki, kd);
+  }
+
+  @Override
+  public void setFeedforward(double ks, double kv, double ka) {
+    leftFlywheelFeedforward = new SimpleMotorFeedforward(ks, kv, ka);
+    rightFlywheelFeedforward = new SimpleMotorFeedforward(ks, kv, ka);
+  }
+
+  @Override
+  public void setProfile(
+      double maxAccelerationRadiansPerSecondSquared, double goalToleranceRadiansPerSecond) {
+    leftFlywheelPIDController.setConstraints(
+        new TrapezoidProfile.Constraints(
+            maxAccelerationRadiansPerSecondSquared, Double.POSITIVE_INFINITY));
+    rightFlywheelPIDController.setConstraints(
+        new TrapezoidProfile.Constraints(
+            maxAccelerationRadiansPerSecondSquared, Double.POSITIVE_INFINITY));
+    leftFlywheelPIDController.setTolerance(goalToleranceRadiansPerSecond);
+    rightFlywheelPIDController.setTolerance(goalToleranceRadiansPerSecond);
   }
 
   @Override

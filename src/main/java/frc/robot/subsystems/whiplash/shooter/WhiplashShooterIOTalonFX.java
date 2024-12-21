@@ -42,10 +42,10 @@ public class WhiplashShooterIOTalonFX implements WhiplashShooterIO {
   private final TalonFXConfiguration topConfig;
   private final TalonFXConfiguration bottomConfig;
 
-  private final NeutralOut neutralControl;
-  private final VoltageOut voltageControl;
-  private final VelocityVoltage topProfiledVelocityControl;
-  private final VelocityVoltage bottomProfiledVelocityControl;
+  private final NeutralOut neutralControlRequest;
+  private final VoltageOut voltageControlRequest;
+  private final VelocityVoltage topVelocityControlRequest;
+  private final VelocityVoltage bottomVelocityControlRequest;
 
   public WhiplashShooterIOTalonFX() {
     topMotor = new TalonFX(WhiplashShooterConstants.TOP_CAN_ID);
@@ -112,10 +112,10 @@ public class WhiplashShooterIOTalonFX implements WhiplashShooterIO {
     topMotor.optimizeBusUtilization(50.0, 1.0);
     bottomMotor.optimizeBusUtilization(50.0, 1.0);
 
-    neutralControl = new NeutralOut();
-    voltageControl = new VoltageOut(0.0);
-    topProfiledVelocityControl = new VelocityVoltage(0);
-    bottomProfiledVelocityControl = new VelocityVoltage(0);
+    neutralControlRequest = new NeutralOut();
+    voltageControlRequest = new VoltageOut(0.0);
+    topVelocityControlRequest = new VelocityVoltage(0);
+    bottomVelocityControlRequest = new VelocityVoltage(0);
   }
 
   @Override
@@ -167,25 +167,25 @@ public class WhiplashShooterIOTalonFX implements WhiplashShooterIO {
 
   @Override
   public void setVoltage(double volts) {
-    topMotor.setControl(voltageControl.withOutput(volts).withEnableFOC(true));
-    bottomMotor.setControl(voltageControl.withOutput(volts).withEnableFOC(true));
+    topMotor.setControl(voltageControlRequest.withOutput(volts).withEnableFOC(true));
+    bottomMotor.setControl(voltageControlRequest.withOutput(volts).withEnableFOC(true));
   }
 
   @Override
-  public void setTopVelocitySetpoint(double setpointVelocityRadiansPerSecond) {
-    topGoalRadiansPerSecond = setpointVelocityRadiansPerSecond;
+  public void setTopVelocity(double velocityRadiansPerSecond) {
+    topGoalRadiansPerSecond = velocityRadiansPerSecond;
     topMotor.setControl(
-        topProfiledVelocityControl
-            .withVelocity(Units.radiansToRotations(setpointVelocityRadiansPerSecond))
+        topVelocityControlRequest
+            .withVelocity(Units.radiansToRotations(velocityRadiansPerSecond))
             .withEnableFOC(true));
   }
 
   @Override
-  public void setBottomVelocitySetpoint(double setpointVelocityRadiansPerSecond) {
-    bottomGoalRadiansPerSecond = setpointVelocityRadiansPerSecond;
+  public void setBottomVelocity(double velocityRadiansPerSecond) {
+    bottomGoalRadiansPerSecond = velocityRadiansPerSecond;
     bottomMotor.setControl(
-        bottomProfiledVelocityControl
-            .withVelocity(Units.radiansToRotations(setpointVelocityRadiansPerSecond))
+        bottomVelocityControlRequest
+            .withVelocity(Units.radiansToRotations(velocityRadiansPerSecond))
             .withEnableFOC(true));
   }
 
@@ -214,7 +214,7 @@ public class WhiplashShooterIOTalonFX implements WhiplashShooterIO {
   }
 
   @Override
-  public boolean atSetpoint() {
+  public boolean atGoal() {
     return Math.abs(
                 Units.radiansToRotations(topGoalRadiansPerSecond)
                     - topVelocityRotationsPerSecond.getValueAsDouble())
@@ -229,7 +229,7 @@ public class WhiplashShooterIOTalonFX implements WhiplashShooterIO {
 
   @Override
   public void stop() {
-    topMotor.setControl(neutralControl);
-    bottomMotor.setControl(neutralControl);
+    topMotor.setControl(neutralControlRequest);
+    bottomMotor.setControl(neutralControlRequest);
   }
 }

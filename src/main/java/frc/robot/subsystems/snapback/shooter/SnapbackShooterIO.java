@@ -50,10 +50,17 @@ public interface SnapbackShooterIO {
   public default void setAcceleratorVoltage(double volts) {}
 
   /** Sets motor closed loop velocity setpoint for left flywheel. */
-  public default void setLeftVelocityGoal(double velocityRadiansPerSecond) {}
+  public default void setLeftVelocity(double velocityRadiansPerSecond) {}
 
   /** Sets motor closed loop velocity setpoint for right flywheel. */
-  public default void setRightVelocityGoal(double velocityRadiansPerSecond) {}
+  public default void setRightVelocity(double velocityRadiansPerSecond) {}
+
+  public default void setPID(double kp, double ki, double kd) {}
+
+  public default void setFeedforward(double ks, double kv, double ka) {}
+
+  public default void setProfile(
+      double maxAccelerationRadiansPerSecondSquared, double goalToleranceRadians) {}
 
   /** Returns true if the shooter is at the goal velocity. */
   public default boolean atGoal() {

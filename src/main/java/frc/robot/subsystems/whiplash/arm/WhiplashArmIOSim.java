@@ -12,6 +12,7 @@ import frc.robot.Constants;
 
 public class WhiplashArmIOSim implements WhiplashArmIO {
   private final SingleJointedArmSim sim;
+
   private final ProfiledPIDController feedback;
   private ArmFeedforward feedforward;
 
@@ -38,7 +39,6 @@ public class WhiplashArmIOSim implements WhiplashArmIO {
                 WhiplashArmConstants.CONSTRAINTS.maxVelocityRadiansPerSecond().get(),
                 WhiplashArmConstants.CONSTRAINTS.maxAccelerationRadiansPerSecondSqaured().get()));
     feedback.setTolerance(WhiplashArmConstants.CONSTRAINTS.goalToleranceRadians().get());
-
     feedforward =
         new ArmFeedforward(
             WhiplashArmConstants.GAINS.ks().get(),
@@ -53,16 +53,14 @@ public class WhiplashArmIOSim implements WhiplashArmIO {
     sim.setInputVoltage(MathUtil.clamp(AppliedVolts, -12.0, 12.0));
     sim.update(Constants.LOOP_PERIOD_SECONDS);
 
+    inputs.absolutePosition = Rotation2d.fromRadians(sim.getAngleRads());
     inputs.position = Rotation2d.fromRadians(sim.getAngleRads());
     inputs.velocityRadiansPerSecond = sim.getVelocityRadPerSec();
     inputs.appliedVolts = AppliedVolts;
     inputs.currentAmps = sim.getCurrentDrawAmps();
-
-    inputs.absolutePosition = Rotation2d.fromRadians(sim.getAngleRads());
-
+    inputs.positionGoal = Rotation2d.fromRadians(feedback.getGoal().position);
     inputs.positionSetpoint = Rotation2d.fromRadians(feedback.getSetpoint().position);
     inputs.positionError = Rotation2d.fromRadians(feedback.getPositionError());
-    inputs.positionGoal = Rotation2d.fromRadians(feedback.getGoal().position);
   }
 
   @Override
@@ -71,9 +69,9 @@ public class WhiplashArmIOSim implements WhiplashArmIO {
   }
 
   @Override
-  public void setPosition(Rotation2d setpointPosition) {
+  public void setPosition(Rotation2d positionGoal) {
     AppliedVolts =
-        feedback.calculate(sim.getAngleRads(), setpointPosition.getRadians())
+        feedback.calculate(sim.getAngleRads(), positionGoal.getRadians())
             + feedforward
                 .calculate(
                     Radians.of(sim.getAngleRads()), RadiansPerSecond.of(sim.getVelocityRadPerSec()))
@@ -91,14 +89,18 @@ public class WhiplashArmIOSim implements WhiplashArmIO {
   }
 
   @Override
-  public void setProfile(double maxVelocity, double maxAcceleration, double goalToleranceRadians) {
-    feedback.setConstraints(new Constraints(maxVelocity, maxAcceleration));
+  public void setProfile(
+      double maxVelocityRadiansPerSecond,
+      double maxAccelerationRadiansPerSecondSquared,
+      double goalToleranceRadians) {
+    feedback.setConstraints(
+        new Constraints(maxVelocityRadiansPerSecond, maxAccelerationRadiansPerSecondSquared));
     feedback.setTolerance(goalToleranceRadians);
   }
 
   @Override
-  public boolean atSetpoint() {
-    return feedback.atSetpoint();
+  public boolean atGoal() {
+    return feedback.atGoal();
   }
 
   @Override

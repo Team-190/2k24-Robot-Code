@@ -9,13 +9,15 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants;
 import frc.robot.subsystems.snapback.shooter.SnapbackShooterConstants.SnapbackShooterGoal;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class SnapbackShooter extends SubsystemBase {
 
   private final SnapbackShooterIO io;
   private final SnapbackShooterIOInputsAutoLogged inputs;
-  private SnapbackShooterGoal goal = SnapbackShooterGoal.IDLE;
+  private SnapbackShooterGoal goal;
+  private boolean isClosedLoop;
 
   private final SysIdRoutine sysIdRoutineLeft;
   private final SysIdRoutine sysIdRoutineRight;
@@ -23,6 +25,9 @@ public class SnapbackShooter extends SubsystemBase {
   public SnapbackShooter(SnapbackShooterIO io) {
     this.io = io;
     inputs = new SnapbackShooterIOInputsAutoLogged();
+
+    goal = SnapbackShooterGoal.IDLE;
+    isClosedLoop = false;
 
     sysIdRoutineLeft =
         new SysIdRoutine(
@@ -49,10 +54,12 @@ public class SnapbackShooter extends SubsystemBase {
       case SNAPBACK:
       case SNAPBACK_SIM:
         io.updateInputs(inputs);
-        Logger.processInputs("Intake", inputs);
+        Logger.processInputs("Shooter", inputs);
 
-        io.setLeftVelocityGoal(goal.getLeftGoal());
-        io.setRightVelocityGoal(goal.getRightGoal());
+        if (isClosedLoop) {
+          io.setLeftVelocity(goal.getLeftGoal());
+          io.setRightVelocity(goal.getRightGoal());
+        }
         break;
       default:
         break;
@@ -63,19 +70,26 @@ public class SnapbackShooter extends SubsystemBase {
     return runOnce(() -> this.goal = goal);
   }
 
-  public SnapbackShooterGoal getGoal() {
-    return goal;
-  }
-
-  public Command shoot(SnapbackShooterGoal goal) {
-    return setGoal(goal).andThen(runOnce(() -> io.setAcceleratorVoltage(12.0)));
-  }
-
+  @AutoLogOutput(key = "Shooter/At Goal")
   public boolean atGoal() {
     return io.atGoal();
   }
 
+  public void setPID(double kp, double kd) {
+    io.setPID(kp, 0.0, kd);
+  }
+
+  public void setFeedforward(double ks, double kv, double ka) {
+    io.setFeedforward(ks, kv, ka);
+  }
+
+  public void setProfile(
+      double maxAccelerationRadiansPerSecondSquared, double goalToleranceRadians) {
+    io.setProfile(maxAccelerationRadiansPerSecondSquared, goalToleranceRadians);
+  }
+
   public Command runSysId() {
+    isClosedLoop = false;
     return Commands.sequence(
         sysIdRoutineLeft
             .quasistatic(Direction.kForward)

@@ -1,5 +1,6 @@
 package frc.robot.subsystems.snapback.intake;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
@@ -15,6 +16,10 @@ public class SnapbackIntakeIOSim implements SnapbackIntakeIO {
   private DCMotorSim kickerMotorSim;
 
   private DoubleSolenoidSim solenoidSim;
+
+  private double intakeAppliedVolts;
+  private double serializerAppliedVolts;
+  private double kickerAppliedVolts;
 
   public SnapbackIntakeIOSim() {
     intakeMotorSim =
@@ -46,6 +51,10 @@ public class SnapbackIntakeIOSim implements SnapbackIntakeIO {
 
   @Override
   public void updateInputs(SnapbackIntakeIOInputs inputs) {
+    intakeMotorSim.setInputVoltage(MathUtil.clamp(intakeAppliedVolts, -12.0, 12.0));
+    serializerMotorSim.setInputVoltage(MathUtil.clamp(serializerAppliedVolts, -12.0, 12.0));
+    kickerMotorSim.setInputVoltage(MathUtil.clamp(kickerAppliedVolts, -12.0, 12.0));
+
     intakeMotorSim.update(Constants.LOOP_PERIOD_SECONDS);
     serializerMotorSim.update(Constants.LOOP_PERIOD_SECONDS);
     kickerMotorSim.update(Constants.LOOP_PERIOD_SECONDS);
@@ -71,17 +80,17 @@ public class SnapbackIntakeIOSim implements SnapbackIntakeIO {
 
   @Override
   public void setIntakeVoltage(double volts) {
-    intakeMotorSim.setInputVoltage(volts);
+    intakeAppliedVolts = volts;
   }
 
   @Override
   public void setSerializerVoltage(double volts) {
-    serializerMotorSim.setInputVoltage(volts);
+    serializerAppliedVolts = volts;
   }
 
   @Override
   public void setKickerVoltage(double volts) {
-    kickerMotorSim.setInputVoltage(volts);
+    kickerAppliedVolts = volts;
   }
 
   @Override

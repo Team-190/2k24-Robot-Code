@@ -14,9 +14,9 @@ public class WhiplashShooterIOSim implements WhiplashShooterIO {
   private DCMotorSim topMotorSim;
   private DCMotorSim bottomMotorSim;
 
-  private SimpleMotorFeedforward feedforward;
   private final PIDController feedback;
   private final LinearProfile profile;
+  private SimpleMotorFeedforward feedforward;
 
   private double topAppliedVolts;
   private double bottomAppliedVolts;
@@ -33,20 +33,20 @@ public class WhiplashShooterIOSim implements WhiplashShooterIO {
                 WhiplashShooterConstants.BOTTOM_MOTOR_CONFIG, 0.004, 1.0),
             WhiplashShooterConstants.BOTTOM_MOTOR_CONFIG);
 
-    feedforward =
-        new SimpleMotorFeedforward(
-            WhiplashShooterConstants.GAINS.ks().get(), WhiplashShooterConstants.GAINS.kv().get());
     feedback =
         new PIDController(
             WhiplashShooterConstants.GAINS.kp().get(),
             0.0,
             WhiplashShooterConstants.GAINS.kd().get());
+    feedback.setTolerance(
+        WhiplashShooterConstants.CONSTRAINTS.goalToleranceRadiansPerSecond().get());
     profile =
         new LinearProfile(
             WhiplashShooterConstants.CONSTRAINTS.maxAccelerationRadiansPerSecondSquared().get(),
             Constants.LOOP_PERIOD_SECONDS);
-    feedback.setTolerance(
-        WhiplashShooterConstants.CONSTRAINTS.goalToleranceRadiansPerSecond().get());
+    feedforward =
+        new SimpleMotorFeedforward(
+            WhiplashShooterConstants.GAINS.ks().get(), WhiplashShooterConstants.GAINS.kv().get());
 
     topAppliedVolts = 0.0;
     bottomAppliedVolts = 0.0;
@@ -83,16 +83,16 @@ public class WhiplashShooterIOSim implements WhiplashShooterIO {
   }
 
   @Override
-  public void setTopVelocitySetpoint(double setpointVelocityRadiansPerSecond) {
-    profile.setGoal(setpointVelocityRadiansPerSecond, topMotorSim.getAngularVelocityRadPerSec());
+  public void setTopVelocity(double velocityRadiansPerSecond) {
+    profile.setGoal(velocityRadiansPerSecond, topMotorSim.getAngularVelocityRadPerSec());
     topAppliedVolts =
         feedback.calculate(topMotorSim.getAngularVelocityRadPerSec(), profile.calculateSetpoint())
             + feedforward.calculate(feedback.getSetpoint());
   }
 
   @Override
-  public void setBottomVelocitySetpoint(double setpointVelocityRadiansPerSecond) {
-    profile.setGoal(setpointVelocityRadiansPerSecond, bottomMotorSim.getAngularVelocityRadPerSec());
+  public void setBottomVelocity(double velocityRadiansPerSecond) {
+    profile.setGoal(velocityRadiansPerSecond, bottomMotorSim.getAngularVelocityRadPerSec());
     bottomAppliedVolts =
         feedback.calculate(
                 bottomMotorSim.getAngularVelocityRadPerSec(), profile.calculateSetpoint())
@@ -117,7 +117,7 @@ public class WhiplashShooterIOSim implements WhiplashShooterIO {
   }
 
   @Override
-  public boolean atSetpoint() {
+  public boolean atGoal() {
     return (Math.abs(profile.getGoal() - feedback.getSetpoint())
             <= WhiplashShooterConstants.CONSTRAINTS.goalToleranceRadiansPerSecond().get())
         && feedback.atSetpoint();

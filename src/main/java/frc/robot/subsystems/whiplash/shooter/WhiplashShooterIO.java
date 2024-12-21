@@ -32,9 +32,9 @@ public interface WhiplashShooterIO {
 
   public default void setVoltage(double volts) {}
 
-  public default void setTopVelocitySetpoint(double setpointVelocityRadiansPerSecond) {}
+  public default void setTopVelocity(double velocityRadiansPerSecond) {}
 
-  public default void setBottomVelocitySetpoint(double setpointVelocityRadiansPerSecond) {}
+  public default void setBottomVelocity(double velocityRadiansPerSecond) {}
 
   public default void setPID(double kp, double ki, double kd) {}
 
@@ -43,7 +43,7 @@ public interface WhiplashShooterIO {
   public default void setProfile(
       double maxAccelerationRadiansPerSecondSquared, double goalToleranceRadiansPerSecond) {}
 
-  public default boolean atSetpoint() {
+  public default boolean atGoal() {
     return false;
   }
 

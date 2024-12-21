@@ -6,6 +6,10 @@ import frc.robot.RobotState;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
+import frc.robot.subsystems.snapback.hood.SnapbackHood;
+import frc.robot.subsystems.snapback.hood.SnapbackHoodConstants;
+import frc.robot.subsystems.snapback.shooter.SnapbackShooter;
+import frc.robot.subsystems.snapback.shooter.SnapbackShooterConstants;
 import frc.robot.subsystems.whiplash.arm.WhiplashArm;
 import frc.robot.subsystems.whiplash.arm.WhiplashArmConstants;
 import frc.robot.subsystems.whiplash.shooter.WhiplashShooter;
@@ -69,13 +73,13 @@ public class LTNUpdater {
     LoggedTunableNumber.ifChanged(
         whiplashArm.hashCode(),
         () -> {
-          whiplashArm.setPIDGains(
+          whiplashArm.setPID(
               WhiplashArmConstants.GAINS.kp().get(), WhiplashArmConstants.GAINS.kd().get());
           whiplashArm.setFeedforward(
               WhiplashArmConstants.GAINS.ks().get(),
               WhiplashArmConstants.GAINS.kg().get(),
               WhiplashArmConstants.GAINS.kv().get());
-          whiplashArm.setConstraints(
+          whiplashArm.setProfile(
               WhiplashArmConstants.CONSTRAINTS.maxVelocityRadiansPerSecond().get(),
               WhiplashArmConstants.CONSTRAINTS.maxAccelerationRadiansPerSecondSqaured().get(),
               WhiplashArmConstants.CONSTRAINTS.goalToleranceRadians().get());
@@ -113,10 +117,65 @@ public class LTNUpdater {
         WhiplashShooterConstants.CONSTRAINTS.goalToleranceRadiansPerSecond());
   }
 
+  private static final void updateSnapbackHood(SnapbackHood snapbackHood) {
+    LoggedTunableNumber.ifChanged(
+        snapbackHood.hashCode(),
+        () -> {
+          snapbackHood.setPID(
+              SnapbackHoodConstants.GAINS.kp().get(), SnapbackHoodConstants.GAINS.kd().get());
+          snapbackHood.setFeedforward(
+              SnapbackHoodConstants.GAINS.ks().get(),
+              SnapbackHoodConstants.GAINS.kv().get(),
+              SnapbackHoodConstants.GAINS.ka().get());
+          snapbackHood.setProfile(
+              SnapbackHoodConstants.CONSTRAINTS.maxVelocityRadiansPerSecond().get(),
+              SnapbackHoodConstants.CONSTRAINTS.maxAccelerationRadiansPerSecondSqaured().get(),
+              SnapbackHoodConstants.CONSTRAINTS.goalToleranceRadians().get());
+        },
+        SnapbackHoodConstants.GAINS.kp(),
+        SnapbackHoodConstants.GAINS.kd(),
+        SnapbackHoodConstants.GAINS.ks(),
+        SnapbackHoodConstants.GAINS.kv(),
+        SnapbackHoodConstants.GAINS.ka(),
+        SnapbackHoodConstants.CONSTRAINTS.maxVelocityRadiansPerSecond(),
+        SnapbackHoodConstants.CONSTRAINTS.maxAccelerationRadiansPerSecondSqaured(),
+        SnapbackHoodConstants.CONSTRAINTS.goalToleranceRadians());
+  }
+
+  private static final void updateSnapbackShooter(SnapbackShooter snapbackShooter) {
+    LoggedTunableNumber.ifChanged(
+        snapbackShooter.hashCode(),
+        () -> {
+          snapbackShooter.setPID(
+              SnapbackShooterConstants.GAINS.kp().get(), SnapbackShooterConstants.GAINS.kd().get());
+          snapbackShooter.setFeedforward(
+              SnapbackShooterConstants.GAINS.ks().get(),
+              SnapbackShooterConstants.GAINS.kv().get(),
+              SnapbackShooterConstants.GAINS.ka().get());
+          snapbackShooter.setProfile(
+              SnapbackShooterConstants.CONSTRAINTS.maxAccelerationRadiansPerSecondSquared().get(),
+              SnapbackShooterConstants.CONSTRAINTS.goalToleranceRadiansPerSecond().get());
+        },
+        SnapbackShooterConstants.GAINS.kp(),
+        SnapbackShooterConstants.GAINS.kd(),
+        SnapbackShooterConstants.GAINS.ks(),
+        SnapbackShooterConstants.GAINS.kv(),
+        SnapbackShooterConstants.GAINS.ka(),
+        SnapbackShooterConstants.CONSTRAINTS.maxAccelerationRadiansPerSecondSquared(),
+        SnapbackShooterConstants.CONSTRAINTS.goalToleranceRadiansPerSecond());
+  }
+
   public static final void updateWhiplash(
       Drive drive, WhiplashArm whiplashArm, WhiplashShooter whiplashShooter) {
     updateDrive(drive);
     updateWhiplashArm(whiplashArm);
     updateWhiplashShooter(whiplashShooter);
+  }
+
+  public static final void updateSnapback(
+      Drive drive, SnapbackHood snapbackHood, SnapbackShooter snapbackShooter) {
+    updateDrive(drive);
+    updateSnapbackHood(snapbackHood);
+    updateSnapbackShooter(snapbackShooter);
   }
 }

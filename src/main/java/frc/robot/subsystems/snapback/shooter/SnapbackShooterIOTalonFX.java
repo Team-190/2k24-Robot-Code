@@ -61,27 +61,22 @@ public class SnapbackShooterIOTalonFX implements SnapbackShooterIO {
     // Left flywheel is the right one when looking at the robot from the front
     // (shooter side); right
     // flywheel is the left one
-    leftFlywheel = new TalonFX(SnapbackShooterConstants.LEFT_FLYWHEEL_MOTOR_CAN_ID);
-    rightFlywheel = new TalonFX(SnapbackShooterConstants.RIGHT_FLYWHEEL_MOTOR_CAN_ID);
-    accelerator = new TalonFX(SnapbackShooterConstants.ACCELERATOR_MOTOR_CAN_ID);
+    leftFlywheel = new TalonFX(SnapbackShooterConstants.LEFT_CAN_ID);
+    rightFlywheel = new TalonFX(SnapbackShooterConstants.RIGHT_CAN_ID);
+    accelerator = new TalonFX(SnapbackShooterConstants.ACCELERATOR_CAN_ID);
 
     TalonFXConfiguration rightFlywheelConfig = new TalonFXConfiguration();
-    rightFlywheelConfig.CurrentLimits.SupplyCurrentLimit =
-        SnapbackShooterConstants.FLYWHEEL_CURRENT_LIMIT;
+    rightFlywheelConfig.CurrentLimits.SupplyCurrentLimit = SnapbackShooterConstants.CURRENT_LIMIT;
     rightFlywheelConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     rightFlywheelConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-    rightFlywheelConfig.Feedback.SensorToMechanismRatio =
-        SnapbackShooterConstants.FLYWHEEL_GEAR_REDUCTION;
+    rightFlywheelConfig.Feedback.SensorToMechanismRatio = SnapbackShooterConstants.RIGHT_GEAR_RATIO;
     rightFlywheelConfig.Slot0.kP = SnapbackShooterConstants.GAINS.kp().get();
-    rightFlywheelConfig.Slot0.kI = SnapbackShooterConstants.GAINS.ki().get();
     rightFlywheelConfig.Slot0.kD = SnapbackShooterConstants.GAINS.kd().get();
-    rightFlywheelConfig.Slot0.kS = SnapbackShooterConstants.GAINS.ks();
-    rightFlywheelConfig.Slot0.kV = SnapbackShooterConstants.GAINS.kv();
-    rightFlywheelConfig.Slot0.kA = SnapbackShooterConstants.GAINS.ka();
-    rightFlywheelConfig.MotionMagic.MotionMagicCruiseVelocity =
-        SnapbackShooterConstants.CRUISE_VELOCITY.get();
+    rightFlywheelConfig.Slot0.kS = SnapbackShooterConstants.GAINS.ks().get();
+    rightFlywheelConfig.Slot0.kV = SnapbackShooterConstants.GAINS.kv().get();
+    rightFlywheelConfig.Slot0.kA = SnapbackShooterConstants.GAINS.ka().get();
     rightFlywheelConfig.MotionMagic.MotionMagicAcceleration =
-        SnapbackShooterConstants.MAX_ACCELERATION.get();
+        SnapbackShooterConstants.CONSTRAINTS.maxAccelerationRadiansPerSecondSquared().get();
     rightFlywheel.getConfigurator().apply(rightFlywheelConfig);
 
     TalonFXConfiguration leftFlywheelConfig = rightFlywheelConfig;
@@ -89,10 +84,9 @@ public class SnapbackShooterIOTalonFX implements SnapbackShooterIO {
     leftFlywheel.getConfigurator().apply(leftFlywheelConfig);
 
     TalonFXConfiguration acceleratorConfig = rightFlywheelConfig;
-    acceleratorConfig.CurrentLimits.SupplyCurrentLimit =
-        SnapbackShooterConstants.ACCELERATOR_CURRENT_LIMIT;
+    acceleratorConfig.CurrentLimits.SupplyCurrentLimit = SnapbackShooterConstants.CURRENT_LIMIT;
     acceleratorConfig.Feedback.SensorToMechanismRatio =
-        SnapbackShooterConstants.ACCELERATOR_GEAR_REDUCTION;
+        SnapbackShooterConstants.ACCELERATOR_GEAR_RATIO;
     accelerator.getConfigurator().apply(acceleratorConfig);
 
     leftPosition = leftFlywheel.getPosition();
@@ -228,17 +222,46 @@ public class SnapbackShooterIOTalonFX implements SnapbackShooterIO {
   }
 
   @Override
-  public void setLeftVelocityGoal(double velocityRadiansPerSecond) {
+  public void setLeftVelocity(double velocityRadiansPerSecond) {
     leftVelocityGoalRadiansPerSecond = velocityRadiansPerSecond;
     leftFlywheel.setControl(
         velocityControlRequest.withVelocity(velocityRadiansPerSecond).withUpdateFreqHz(1000.0));
   }
 
   @Override
-  public void setRightVelocityGoal(double velocityRadiansPerSecond) {
+  public void setRightVelocity(double velocityRadiansPerSecond) {
     rightVelocityGoalRadiansPerSecond = velocityRadiansPerSecond;
     rightFlywheel.setControl(
         velocityControlRequest.withVelocity(velocityRadiansPerSecond).withUpdateFreqHz(1000.0));
+  }
+
+  @Override
+  public void setPID(double kp, double ki, double kd) {
+    TalonFXConfiguration config = new TalonFXConfiguration();
+    config.Slot0.kP = kp;
+    config.Slot0.kI = ki;
+    config.Slot0.kD = kd;
+    leftFlywheel.getConfigurator().apply(config);
+    rightFlywheel.getConfigurator().apply(config);
+  }
+
+  @Override
+  public void setFeedforward(double ks, double kv, double ka) {
+    TalonFXConfiguration config = new TalonFXConfiguration();
+    config.Slot0.kS = ks;
+    config.Slot0.kV = kv;
+    config.Slot0.kA = ka;
+    leftFlywheel.getConfigurator().apply(config);
+    rightFlywheel.getConfigurator().apply(config);
+  }
+
+  @Override
+  public void setProfile(
+      double maxAccelerationRadiansPerSecondSquared, double goalToleranceRadians) {
+    TalonFXConfiguration config = new TalonFXConfiguration();
+    config.MotionMagic.MotionMagicAcceleration = maxAccelerationRadiansPerSecondSquared;
+    leftFlywheel.getConfigurator().apply(config);
+    rightFlywheel.getConfigurator().apply(config);
   }
 
   @Override
@@ -246,10 +269,10 @@ public class SnapbackShooterIOTalonFX implements SnapbackShooterIO {
     return Math.abs(
                 leftVelocitySetpointRotationsPerSecond.getValueAsDouble()
                     - Units.rotationsToRadians(leftVelocityRotationsPerSecond.getValueAsDouble()))
-            < SnapbackShooterConstants.FLYWHEEL_TOLERANCE_RAD_PER_SEC
+            < SnapbackShooterConstants.CONSTRAINTS.goalToleranceRadiansPerSecond().get()
         && Math.abs(
                 rightVelocitySetpointRotationsPerSecond.getValueAsDouble()
                     - Units.rotationsToRadians(rightVelocityRotationsPerSecond.getValueAsDouble()))
-            < SnapbackShooterConstants.FLYWHEEL_TOLERANCE_RAD_PER_SEC;
+            < SnapbackShooterConstants.CONSTRAINTS.goalToleranceRadiansPerSecond().get();
   }
 }
