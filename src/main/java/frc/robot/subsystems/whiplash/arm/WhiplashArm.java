@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants;
 import frc.robot.RobotState;
 import frc.robot.util.AllianceFlipUtil;
-import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
 public class WhiplashArm extends SubsystemBase {
@@ -76,25 +75,6 @@ public class WhiplashArm extends SubsystemBase {
       default:
         break;
     }
-
-    LoggedTunableNumber.ifChanged(
-        hashCode(),
-        pid -> io.setPID(pid[0], 0.0, pid[1]),
-        WhiplashArmConstants.ARM_KP,
-        WhiplashArmConstants.ARM_KD);
-
-    LoggedTunableNumber.ifChanged(
-        hashCode(),
-        feedforward -> io.setFeedforward(feedforward[0], feedforward[1], feedforward[2]),
-        WhiplashArmConstants.ARM_KS,
-        WhiplashArmConstants.ARM_KG,
-        WhiplashArmConstants.ARM_KV);
-
-    LoggedTunableNumber.ifChanged(
-        hashCode(),
-        profile -> io.setProfile(profile[0], profile[1]),
-        WhiplashArmConstants.ARM_MAX_ACCELERATION,
-        WhiplashArmConstants.ARM_MAX_VELOCITY);
 
     Logger.recordOutput("Arm/Position", inputs.armPosition.getRadians());
     Logger.recordOutput("Arm/Desired Position", positionSetpoint);
