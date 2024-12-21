@@ -9,6 +9,8 @@ import frc.robot.util.LoggedTunableNumber;
 public class WhiplashArmConstants {
 
   public static final int ARM_CAN_ID;
+  public static final int CANCODER_CAN_ID;
+
   public static final double ARM_GEAR_RATIO;
   public static final double CURRENT_LIMIT;
   public static final double ARM_MOMENT_OF_INERTIA;
@@ -18,12 +20,10 @@ public class WhiplashArmConstants {
   public static final LoggedTunableNumber ARM_AMP_CONSTANT;
   public static final LoggedTunableNumber ARM_PRE_AMP_CONSTANT;
   public static final Rotation2d ARM_ABSOLUTE_ENCODER_OFFSET;
-  public static final int ARM_ENCODER_ID;
   public static final LoggedTunableNumber GOAL_TOLERANCE;
   public static final double ARM_LENGTH_METERS;
   public static final double ARM_MIN_ANGLE;
   public static final double ARM_MAX_ANGLE;
-  public static final int CANCODER_CAN_ID;
   public static final LoggedTunableNumber ARM_KP;
   public static final LoggedTunableNumber ARM_KD;
   public static final LoggedTunableNumber ARM_KS;
@@ -55,9 +55,7 @@ public class WhiplashArmConstants {
         ARM_CAN_ID = 13;
         CANCODER_CAN_ID = 24;
 
-        // Get
         ARM_GEAR_RATIO = 60.666666666;
-
         CURRENT_LIMIT = 40.0;
 
         // Get
@@ -71,7 +69,6 @@ public class WhiplashArmConstants {
         ARM_PRE_AMP_CONSTANT.initDefault(Units.degreesToRadians(90.0));
         ARM_ABSOLUTE_ENCODER_OFFSET =
             Rotation2d.fromRadians(-0.6273981422452273).plus(Rotation2d.fromDegrees(18.746));
-        ARM_ENCODER_ID = 24;
         GOAL_TOLERANCE.initDefault(1.0);
         // Get
         ARM_LENGTH_METERS = 0.381;
