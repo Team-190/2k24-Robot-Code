@@ -107,18 +107,18 @@ public class DriveConstants {
   public record DriveConfig(
       String canBus,
       int pigeon2Id,
-      double wheelRadius,
-      double trackWidthX,
-      double trackWidthY,
-      double maxLinearVelocity,
+      double wheelRadiusMeters,
+      double trackWidthXMeters,
+      double trackWidthYMeters,
+      double maxLinearVelocityMetersPerSecond,
       DCMotor driveModel,
       DCMotor turnModel) {
     public double driveBaseRadius() {
-      return Math.hypot(trackWidthX / 2.0, trackWidthY / 2.0);
+      return Math.hypot(trackWidthXMeters / 2.0, trackWidthYMeters / 2.0);
     }
 
     public double maxAngularVelocity() {
-      return maxLinearVelocity / driveBaseRadius();
+      return maxLinearVelocityMetersPerSecond / driveBaseRadius();
     }
 
     public Translation2d[] getModuleTranslations() {

@@ -3,21 +3,19 @@ package frc.robot.subsystems.whiplash.arm;
 import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants;
-import frc.robot.RobotState;
-import frc.robot.util.AllianceFlipUtil;
+import frc.robot.subsystems.whiplash.arm.WhiplashArmConstants.WhiplashArmGoal;
 import org.littletonrobotics.junction.Logger;
 
 public class WhiplashArm extends SubsystemBase {
   private final WhiplashArmIOInputsAutoLogged inputs;
   private final WhiplashArmIO io;
-  private Rotation2d positionSetpoint;
+  private Rotation2d positionGoal;
   private boolean isClosedLoop;
   private boolean isAmping;
   private boolean isSlowMode;
@@ -26,7 +24,7 @@ public class WhiplashArm extends SubsystemBase {
   public WhiplashArm(WhiplashArmIO io) {
     inputs = new WhiplashArmIOInputsAutoLogged();
     this.io = io;
-    positionSetpoint = WhiplashArmConstants.ARM_STOW_CONSTANT;
+    positionGoal = WhiplashArmGoal.STOW.getAngle();
     isClosedLoop = true;
 
     characterizationRoutine =
@@ -36,7 +34,7 @@ public class WhiplashArm extends SubsystemBase {
                 Volts.of(3.5),
                 Seconds.of(10),
                 (state) -> Logger.recordOutput("Arm/sysIDState", state.toString())),
-            new SysIdRoutine.Mechanism((volts) -> io.setArmVoltage(volts.in(Volts)), null, this));
+            new SysIdRoutine.Mechanism((volts) -> io.setVoltage(volts.in(Volts)), null, this));
   }
 
   /**
@@ -57,18 +55,19 @@ public class WhiplashArm extends SubsystemBase {
           if (isAmping) {
             if (!isSlowMode) {
               isSlowMode = true;
-              io.setProfile(10, 10);
+              io.setProfile(10, 10, WhiplashArmConstants.CONSTRAINTS.goalToleranceRadians().get());
             }
-            io.setArmPosition(inputs.armPosition, positionSetpoint);
+            io.setPosition(positionGoal);
           }
           if (!isAmping) {
             if (isSlowMode) {
               io.setProfile(
-                  WhiplashArmConstants.ARM_MAX_VELOCITY.get(),
-                  WhiplashArmConstants.ARM_MAX_ACCELERATION.get());
+                  WhiplashArmConstants.CONSTRAINTS.maxVelocityRadiansPerSecond().get(),
+                  WhiplashArmConstants.CONSTRAINTS.maxAccelerationRadiansPerSecondSqaured().get(),
+                  WhiplashArmConstants.CONSTRAINTS.goalToleranceRadians().get());
               isSlowMode = false;
             }
-            io.setArmPosition(inputs.armPosition, positionSetpoint);
+            io.setPosition(positionGoal);
           }
         }
         break;
@@ -76,127 +75,15 @@ public class WhiplashArm extends SubsystemBase {
         break;
     }
 
-    Logger.recordOutput("Arm/Position", inputs.armPosition.getRadians());
-    Logger.recordOutput("Arm/Desired Position", positionSetpoint);
+    Logger.recordOutput("Arm/Current Position", inputs.position.getRadians());
+    Logger.recordOutput("Arm/Position Goal", positionGoal);
     Logger.recordOutput("Arm/At Setpoint", atSetpoint());
   }
 
-  /**
-   * Creates a command to set the arm angle to the stow position. The arm angle is set to a constant
-   * value defined in the ArmConstants class. The command is executed only once, and the arm enters
-   * closed-loop control.
-   *
-   * @return A command to set the arm angle to the stow position.
-   */
-  public Command stowAngle() {
-    return Commands.runOnce(
-        () -> {
-          isAmping = false;
-          isClosedLoop = true;
-          positionSetpoint = WhiplashArmConstants.ARM_STOW_CONSTANT;
-        });
-  }
-
-  /**
-   * Creates a command to set the arm angle to the intake position. The arm angle is set to a
-   * constant value defined in the ArmConstants class. The command is executed only once, and the
-   * arm enters closed-loop control.
-   *
-   * @return A command to set the arm angle to the intake position.
-   */
-  public Command intakeAngle() {
-    return Commands.runOnce(
-        () -> {
-          isAmping = false;
-          isClosedLoop = true;
-          positionSetpoint = WhiplashArmConstants.ARM_INTAKE_CONSTANT;
-        });
-  }
-
-  /**
-   * Creates a command to set the arm angle to the amplifier position. The arm angle is set to a
-   * constant value defined in the ArmConstants class. The command is executed only once, and the
-   * arm enters closed-loop control.
-   *
-   * @return A command to set the arm angle to the amplifier position.
-   */
-  public Command ampAngle() {
-    return Commands.runOnce(
-        () -> {
-          isAmping = true;
-          isClosedLoop = true;
-          positionSetpoint = Rotation2d.fromRadians(WhiplashArmConstants.ARM_AMP_CONSTANT.get());
-        });
-  }
-
-  public Command preAmpAngle() {
-    return Commands.runOnce(
-        () -> {
-          isAmping = false;
-          isClosedLoop = true;
-          positionSetpoint =
-              Rotation2d.fromRadians(WhiplashArmConstants.ARM_PRE_AMP_CONSTANT.get());
-        });
-  }
-
-  public Command ejectCommand() {
-    return Commands.runOnce(
-        () -> {
-          isAmping = false;
-          isClosedLoop = true;
-          positionSetpoint = WhiplashArmConstants.ARM_EJECT_ANGLE;
-        });
-  }
-
-  /**
-   * Creates a command to set the arm angle to the shoot position. The arm angle is set to the value
-   * obtained from the control data's speaker arm angle. The command is executed only once, and the
-   * arm enters closed-loop control.
-   *
-   * @return A command to set the arm angle to the shoot position.
-   */
-  public Command shootAngle() {
-    return Commands.run(
-        () -> {
-          isAmping = false;
-          isClosedLoop = true;
-          positionSetpoint =
-              Rotation2d.fromRadians(RobotState.getControlData().speakerArmAngle().getRadians());
-        });
-  }
-
-  /**
-   * Creates a command to set the arm angle to the feed position. The arm angle is set to the value
-   * obtained from the control data's feed arm angle. The command is executed only once, and the arm
-   * enters closed-loop control.
-   *
-   * @return A command to set the arm angle to the feed position.
-   */
-  public Command feedAngle() {
-    return Commands.runOnce(
-        () -> {
-          isAmping = false;
-          isClosedLoop = true;
-          positionSetpoint = Rotation2d.fromRadians(WhiplashArmConstants.FEED_ANGLE.get());
-        });
-  }
-
-  public Command subwooferAngle() {
-    return Commands.runOnce(
-        () -> {
-          isAmping = false;
-          isClosedLoop = true;
-          positionSetpoint =
-              shootForward()
-                  ? Rotation2d.fromRadians(WhiplashArmConstants.ARM_SUBWOOFER_CONSTANT.get())
-                  : Rotation2d.fromRadians(
-                      WhiplashArmConstants.ARM_AMP_CONSTANT.get() + Units.degreesToRadians(3.5));
-        });
-  }
-
-  public boolean shootForward() {
-    double angle = AllianceFlipUtil.apply(RobotState.getRobotPose().getRotation()).getDegrees();
-    return (angle > -90 && angle < 90);
+  public Command setGoal(WhiplashArmGoal goal) {
+    isAmping = goal.equals(WhiplashArmGoal.AMP) ? true : false;
+    isClosedLoop = true;
+    return Commands.runOnce(() -> positionGoal = goal.getAngle());
   }
 
   public boolean atSetpoint() {
@@ -215,11 +102,11 @@ public class WhiplashArm extends SubsystemBase {
   }
 
   public Command runVoltage(double volts) {
-    return Commands.run(() -> io.setArmVoltage(volts));
+    return Commands.run(() -> io.setVoltage(volts));
   }
 
   public Rotation2d getPosition() {
-    return inputs.armAbsolutePosition;
+    return inputs.absolutePosition;
   }
 
   public void setPIDGains(double kp, double kd) {
@@ -230,7 +117,11 @@ public class WhiplashArm extends SubsystemBase {
     io.setFeedforward(ks, kg, kv);
   }
 
-  public void setConstraints(double maxVelocity, double maxAcceleration) {
-    io.setProfile(maxVelocity, maxAcceleration);
+  public void setConstraints(
+      double maxVelocityRadiansPerSecond,
+      double maxAccelerationRadiansPerSecondSquared,
+      double goalToleranceRadians) {
+    io.setProfile(
+        maxVelocityRadiansPerSecond, maxAccelerationRadiansPerSecondSquared, goalToleranceRadians);
   }
 }

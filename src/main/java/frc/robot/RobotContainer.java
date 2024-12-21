@@ -20,7 +20,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.Mode;
-import frc.robot.Constants.RobotType;
 import frc.robot.commands.CompositeCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.shared.drive.Drive;
@@ -45,6 +44,7 @@ import frc.robot.subsystems.snapback.shooter.SnapbackShooterIO;
 import frc.robot.subsystems.snapback.shooter.SnapbackShooterIOSim;
 import frc.robot.subsystems.snapback.shooter.SnapbackShooterIOTalonFX;
 import frc.robot.subsystems.whiplash.arm.WhiplashArm;
+import frc.robot.subsystems.whiplash.arm.WhiplashArmConstants.WhiplashArmGoal;
 import frc.robot.subsystems.whiplash.arm.WhiplashArmIO;
 import frc.robot.subsystems.whiplash.arm.WhiplashArmIOSim;
 import frc.robot.subsystems.whiplash.arm.WhiplashArmIOTalonFX;
@@ -219,7 +219,7 @@ public class RobotContainer {
         .whileTrue(CompositeCommands.shootAmp(whiplashIntake, whiplashArm, whiplashShooter));
     driver
         .axisGreaterThan(XboxController.Axis.kRightTrigger.value, 0.05)
-        .whileTrue(whiplashArm.ampAngle());
+        .whileTrue(whiplashArm.setGoal(WhiplashArmGoal.PREAMP));
     driver
         .povUp()
         .onTrue(
@@ -279,8 +279,15 @@ public class RobotContainer {
         false,
         false,
         false);
-    if (Constants.ROBOT == RobotType.WHIPLASH || Constants.ROBOT == RobotType.WHIPLASH_SIM) {
-      LTNUpdater.updateWhiplash(drive, whiplashArm, whiplashIntake, whiplashShooter);
+    switch (Constants.ROBOT) {
+      case WHIPLASH:
+      case WHIPLASH_SIM:
+      default:
+        LTNUpdater.updateWhiplash(drive, whiplashArm, whiplashIntake, whiplashShooter);
+        break;
+      case SNAPBACK:
+      case SNAPBACK_SIM:
+        break;
     }
   }
 

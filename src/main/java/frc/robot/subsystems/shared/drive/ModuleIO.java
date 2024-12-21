@@ -65,8 +65,7 @@ public interface ModuleIO {
   public default void setTurnPosition(Rotation2d position) {}
 
   /** Sets the module PID gains */
-  public default void setPID(
-      double drive_Kp, double drive_Kd, double turn_Kp, double turn_Kd) {}
+  public default void setPID(double drive_Kp, double drive_Kd, double turn_Kp, double turn_Kd) {}
 
   /** Sets the module FF gains */
   public default void setFeedforward(double drive_Ks, double drive_Kv) {}

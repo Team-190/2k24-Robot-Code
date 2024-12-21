@@ -31,6 +31,7 @@ public class WhiplashArmIOTalonFX implements WhiplashArmIO {
   private final StatusSignal<Voltage> appliedVolts;
   private final StatusSignal<Current> currentAmps;
   private final StatusSignal<Temperature> temperatureCelcius;
+  private Rotation2d positionGoal;
   private final StatusSignal<Double> positionSetpointRotations;
   private final StatusSignal<Double> positionErrorRotations;
 
@@ -43,10 +44,8 @@ public class WhiplashArmIOTalonFX implements WhiplashArmIO {
   private final TalonFXConfiguration motorConfig;
   private final CANcoderConfiguration cancoderConfig;
 
-  private Rotation2d positionGoal;
-
   public WhiplashArmIOTalonFX() {
-    motor = new TalonFX(WhiplashArmConstants.ARM_CAN_ID);
+    motor = new TalonFX(WhiplashArmConstants.MOTOR_CAN_ID);
     cancoder = new CANcoder(WhiplashArmConstants.CANCODER_CAN_ID);
 
     motorConfig = new TalonFXConfiguration();
@@ -56,25 +55,27 @@ public class WhiplashArmIOTalonFX implements WhiplashArmIO {
     motorConfig.Feedback.FeedbackRemoteSensorID = cancoder.getDeviceID();
     motorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
     motorConfig.Feedback.SensorToMechanismRatio = 1.0;
-    motorConfig.Feedback.RotorToSensorRatio = WhiplashArmConstants.ARM_GEAR_RATIO;
+    motorConfig.Feedback.RotorToSensorRatio = WhiplashArmConstants.GEAR_RATIO;
     motorConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     motorConfig.MotionMagic.MotionMagicCruiseVelocity =
-        Units.radiansToRotations(WhiplashArmConstants.ARM_MAX_VELOCITY.get());
+        Units.radiansToRotations(
+            WhiplashArmConstants.CONSTRAINTS.maxVelocityRadiansPerSecond().get());
     motorConfig.MotionMagic.MotionMagicAcceleration =
-        Units.radiansToRotations(WhiplashArmConstants.ARM_MAX_ACCELERATION.get());
-    motorConfig.Slot0.kP = WhiplashArmConstants.ARM_KP.get();
-    motorConfig.Slot0.kD = WhiplashArmConstants.ARM_KD.get();
+        Units.radiansToRotations(
+            WhiplashArmConstants.CONSTRAINTS.maxAccelerationRadiansPerSecondSqaured().get());
+    motorConfig.Slot0.kP = WhiplashArmConstants.GAINS.kp().get();
+    motorConfig.Slot0.kD = WhiplashArmConstants.GAINS.kd().get();
+    motorConfig.Slot0.kS = WhiplashArmConstants.GAINS.ks().get();
+    motorConfig.Slot0.kG = WhiplashArmConstants.GAINS.kg().get();
+    motorConfig.Slot0.kV = WhiplashArmConstants.GAINS.kv().get();
     motorConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
-    motorConfig.Slot0.kS = WhiplashArmConstants.ARM_KS.get();
-    motorConfig.Slot0.kV = WhiplashArmConstants.ARM_KV.get();
-    motorConfig.Slot0.kG = WhiplashArmConstants.ARM_KG.get();
     motor.getConfigurator().apply(motorConfig);
 
     cancoderConfig = new CANcoderConfiguration();
     cancoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 1;
     cancoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
     cancoderConfig.MagnetSensor.MagnetOffset =
-        WhiplashArmConstants.ARM_ABSOLUTE_ENCODER_OFFSET.getRotations();
+        WhiplashArmConstants.ABSOLUTE_ENCODER_OFFSET.getRotations();
     cancoder.getConfigurator().apply(cancoderConfig);
 
     positionRotations = motor.getPosition();
@@ -82,6 +83,7 @@ public class WhiplashArmIOTalonFX implements WhiplashArmIO {
     appliedVolts = motor.getMotorVoltage();
     currentAmps = motor.getSupplyCurrent();
     temperatureCelcius = motor.getDeviceTemp();
+    positionGoal = new Rotation2d();
     positionSetpointRotations = motor.getClosedLoopReference();
     positionErrorRotations = motor.getClosedLoopError();
 
@@ -90,8 +92,6 @@ public class WhiplashArmIOTalonFX implements WhiplashArmIO {
     neutralControl = new NeutralOut();
     voltageControl = new VoltageOut(0.0);
     voltagePositionControl = new MotionMagicVoltage(0.0);
-
-    positionGoal = new Rotation2d();
 
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0,
@@ -107,8 +107,7 @@ public class WhiplashArmIOTalonFX implements WhiplashArmIO {
     motor.optimizeBusUtilization(50.0, 1.0);
     cancoder.optimizeBusUtilization(50.0, 1.0);
 
-    motor.setPosition(
-        ((absolutePosition.getValueAsDouble() * WhiplashArmConstants.ARM_GEAR_RATIO)));
+    motor.setPosition(((absolutePosition.getValueAsDouble() * WhiplashArmConstants.GEAR_RATIO)));
   }
 
   @Override
@@ -125,14 +124,14 @@ public class WhiplashArmIOTalonFX implements WhiplashArmIO {
     positionSetpointRotations.refresh();
     positionErrorRotations.refresh();
 
-    inputs.armPosition = Rotation2d.fromRotations(positionRotations.getValueAsDouble());
-    inputs.armVelocityRadPerSec =
+    inputs.position = Rotation2d.fromRotations(positionRotations.getValueAsDouble());
+    inputs.velocityRadiansPerSecond =
         Units.rotationsToRadians(velocityRotationsPerSecond.getValueAsDouble());
-    inputs.armAppliedVolts = appliedVolts.getValueAsDouble();
-    inputs.armCurrentAmps = currentAmps.getValueAsDouble();
-    inputs.armTemperatureCelsius = temperatureCelcius.getValueAsDouble();
+    inputs.appliedVolts = appliedVolts.getValueAsDouble();
+    inputs.currentAmps = currentAmps.getValueAsDouble();
+    inputs.temperatureCelsius = temperatureCelcius.getValueAsDouble();
 
-    inputs.armAbsolutePosition = Rotation2d.fromRotations(absolutePosition.getValueAsDouble());
+    inputs.absolutePosition = Rotation2d.fromRotations(absolutePosition.getValueAsDouble());
     inputs.positionGoal = positionGoal;
     inputs.positionSetpoint =
         Rotation2d.fromRotations(positionSetpointRotations.getValueAsDouble());
@@ -140,17 +139,12 @@ public class WhiplashArmIOTalonFX implements WhiplashArmIO {
   }
 
   @Override
-  public void stop() {
-    motor.setControl(neutralControl);
-  }
-
-  @Override
-  public void setArmVoltage(double volts) {
+  public void setVoltage(double volts) {
     motor.setControl(voltageControl.withOutput(volts).withEnableFOC(false));
   }
 
   @Override
-  public void setArmPosition(Rotation2d currentPosition, Rotation2d setpointPosition) {
+  public void setPosition(Rotation2d setpointPosition) {
     positionGoal = setpointPosition;
     motor.setControl(
         voltagePositionControl
@@ -176,15 +170,25 @@ public class WhiplashArmIOTalonFX implements WhiplashArmIO {
   }
 
   @Override
-  public void setProfile(double maxVelocity, double maxAcceleration) {
-    motorConfig.MotionMagic.MotionMagicCruiseVelocity = Units.radiansToRotations(maxVelocity);
-    motorConfig.MotionMagic.MotionMagicAcceleration = Units.radiansToRotations(maxAcceleration);
+  public void setProfile(
+      double maxVelocityRadiansPerSecond,
+      double maxAccelerationRadiansPerSecondSquared,
+      double goalToleranceRadians) {
+    motorConfig.MotionMagic.MotionMagicCruiseVelocity =
+        Units.radiansToRotations(maxVelocityRadiansPerSecond);
+    motorConfig.MotionMagic.MotionMagicAcceleration =
+        Units.radiansToRotations(maxAccelerationRadiansPerSecondSquared);
     motor.getConfigurator().apply(motorConfig);
   }
 
   @Override
   public boolean atSetpoint() {
     return Math.abs(positionGoal.getRotations() - positionRotations.getValueAsDouble())
-        <= Units.degreesToRotations(WhiplashArmConstants.GOAL_TOLERANCE.get());
+        <= Units.radiansToRotations(WhiplashArmConstants.CONSTRAINTS.goalToleranceRadians().get());
+  }
+
+  @Override
+  public void stop() {
+    motor.setControl(neutralControl);
   }
 }

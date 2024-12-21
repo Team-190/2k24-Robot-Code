@@ -20,30 +20,30 @@ public class WhiplashArmIOSim implements WhiplashArmIO {
   public WhiplashArmIOSim() {
     sim =
         new SingleJointedArmSim(
-            WhiplashArmConstants.ARM_MOTOR_CONFIG,
-            WhiplashArmConstants.ARM_GEAR_RATIO,
-            WhiplashArmConstants.ARM_MOMENT_OF_INERTIA,
-            WhiplashArmConstants.ARM_LENGTH_METERS,
-            WhiplashArmConstants.ARM_MIN_ANGLE,
-            WhiplashArmConstants.ARM_MAX_ANGLE,
+            WhiplashArmConstants.MOTOR_CONFIG,
+            WhiplashArmConstants.GEAR_RATIO,
+            WhiplashArmConstants.MOMENT_OF_INERTIA,
+            WhiplashArmConstants.LENGTH_METERS,
+            WhiplashArmConstants.MIN_ANGLE,
+            WhiplashArmConstants.MAX_ANGLE,
             true,
-            WhiplashArmConstants.ARM_MIN_ANGLE);
+            WhiplashArmConstants.MIN_ANGLE);
 
     feedback =
         new ProfiledPIDController(
-            WhiplashArmConstants.ARM_KP.get(),
+            WhiplashArmConstants.GAINS.kp().get(),
             0.0,
-            WhiplashArmConstants.ARM_KD.get(),
+            WhiplashArmConstants.GAINS.kd().get(),
             new Constraints(
-                WhiplashArmConstants.ARM_MAX_VELOCITY.get(),
-                WhiplashArmConstants.ARM_MAX_ACCELERATION.get()));
-    feedback.setTolerance(WhiplashArmConstants.GOAL_TOLERANCE.get());
+                WhiplashArmConstants.CONSTRAINTS.maxVelocityRadiansPerSecond().get(),
+                WhiplashArmConstants.CONSTRAINTS.maxAccelerationRadiansPerSecondSqaured().get()));
+    feedback.setTolerance(WhiplashArmConstants.CONSTRAINTS.goalToleranceRadians().get());
 
     feedforward =
         new ArmFeedforward(
-            WhiplashArmConstants.ARM_KS.get(),
-            WhiplashArmConstants.ARM_KG.get(),
-            WhiplashArmConstants.ARM_KV.get());
+            WhiplashArmConstants.GAINS.ks().get(),
+            WhiplashArmConstants.GAINS.kg().get(),
+            WhiplashArmConstants.GAINS.kv().get());
 
     AppliedVolts = 0.0;
   }
@@ -52,12 +52,12 @@ public class WhiplashArmIOSim implements WhiplashArmIO {
   public void updateInputs(WhiplashArmIOInputs inputs) {
     sim.update(Constants.LOOP_PERIOD_SECONDS);
 
-    inputs.armPosition = Rotation2d.fromRadians(sim.getAngleRads());
-    inputs.armVelocityRadPerSec = sim.getVelocityRadPerSec();
-    inputs.armAppliedVolts = AppliedVolts;
-    inputs.armCurrentAmps = sim.getCurrentDrawAmps();
+    inputs.position = Rotation2d.fromRadians(sim.getAngleRads());
+    inputs.velocityRadiansPerSecond = sim.getVelocityRadPerSec();
+    inputs.appliedVolts = AppliedVolts;
+    inputs.currentAmps = sim.getCurrentDrawAmps();
 
-    inputs.armAbsolutePosition = Rotation2d.fromRadians(sim.getAngleRads());
+    inputs.absolutePosition = Rotation2d.fromRadians(sim.getAngleRads());
 
     inputs.positionSetpoint = Rotation2d.fromRadians(feedback.getSetpoint().position);
     inputs.positionError = Rotation2d.fromRadians(feedback.getPositionError());
@@ -65,19 +65,13 @@ public class WhiplashArmIOSim implements WhiplashArmIO {
   }
 
   @Override
-  public void setArmVoltage(double volts) {
+  public void setVoltage(double volts) {
     AppliedVolts = MathUtil.clamp(volts, -12.0, 12.0);
     sim.setInputVoltage(AppliedVolts);
   }
 
   @Override
-  public void stop() {
-    AppliedVolts = 0.0;
-    sim.setInputVoltage(0.0);
-  }
-
-  @Override
-  public void setArmPosition(Rotation2d currentPosition, Rotation2d setpointPosition) {
+  public void setPosition(Rotation2d setpointPosition) {
     AppliedVolts =
         MathUtil.clamp(
             feedback.calculate(sim.getAngleRads(), setpointPosition.getRadians())
@@ -102,12 +96,19 @@ public class WhiplashArmIOSim implements WhiplashArmIO {
   }
 
   @Override
-  public void setProfile(double max_velocity, double max_acceleration) {
-    feedback.setConstraints(new Constraints(max_velocity, max_acceleration));
+  public void setProfile(double maxVelocity, double maxAcceleration, double goalToleranceRadians) {
+    feedback.setConstraints(new Constraints(maxVelocity, maxAcceleration));
+    feedback.setTolerance(goalToleranceRadians);
   }
 
   @Override
   public boolean atSetpoint() {
     return feedback.atSetpoint();
+  }
+
+  @Override
+  public void stop() {
+    AppliedVolts = 0.0;
+    sim.setInputVoltage(0.0);
   }
 }

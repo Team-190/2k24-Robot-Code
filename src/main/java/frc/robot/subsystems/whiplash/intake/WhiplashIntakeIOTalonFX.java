@@ -111,14 +111,14 @@ public class WhiplashIntakeIOTalonFX implements WhiplashIntakeIO {
   @Override
   public void updateInputs(WhiplashIntakeIOInputs inputs) {
     inputs.topPosition = Rotation2d.fromRotations(topPositionRotations.getValueAsDouble());
-    inputs.topVelocityRadPerSec =
+    inputs.topVelocityRadiansPerSecond =
         Units.rotationsPerMinuteToRadiansPerSecond(topVelocityRotPerSec.getValueAsDouble());
     inputs.topAppliedVolts = topAppliedVolts.getValueAsDouble();
     inputs.topCurrentAmps = topCurrentAmps.getValueAsDouble();
     inputs.topTemperatureCelsius = topTemperatureCelsius.getValueAsDouble();
 
     inputs.bottomPosition = Rotation2d.fromRotations(bottomPositionRotations.getValueAsDouble());
-    inputs.bottomVelocityRadPerSec =
+    inputs.bottomVelocityRadiansPerSecond =
         Units.rotationsPerMinuteToRadiansPerSecond(bottomCurrentAmps.getValueAsDouble());
     inputs.bottomAppliedVolts = bottomAppliedVolts.getValueAsDouble();
     inputs.bottomCurrentAmps = bottomCurrentAmps.getValueAsDouble();
@@ -126,7 +126,7 @@ public class WhiplashIntakeIOTalonFX implements WhiplashIntakeIO {
 
     inputs.acceleratorPosition =
         Rotation2d.fromRotations(acceleratorPositionRotations.getValueAsDouble());
-    inputs.acceleratorVelocityRadPerSec =
+    inputs.acceleratorVelocityRadiansPerSecond =
         Units.rotationsPerMinuteToRadiansPerSecond(acceleratorCurrentAmps.getValueAsDouble());
     inputs.acceleratorAppliedVolts = acceleratorAppliedVolts.getValueAsDouble();
     inputs.acceleratorCurrentAmps = acceleratorCurrentAmps.getValueAsDouble();

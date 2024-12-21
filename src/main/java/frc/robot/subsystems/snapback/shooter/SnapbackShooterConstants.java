@@ -99,7 +99,7 @@ public class SnapbackShooterConstants {
       double ka) {}
 
   @RequiredArgsConstructor
-  public enum Goal {
+  public enum SnapbackShooterGoal {
     IDLE(() -> 0.0, () -> 0.0),
     SPEAKER(
         () -> RobotState.getControlData().speakerShotSpeed().f1Speed(),

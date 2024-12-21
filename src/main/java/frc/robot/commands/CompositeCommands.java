@@ -12,8 +12,9 @@ import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.snapback.hood.SnapbackHood;
 import frc.robot.subsystems.snapback.intake.SnapbackIntake;
 import frc.robot.subsystems.snapback.shooter.SnapbackShooter;
-import frc.robot.subsystems.snapback.shooter.SnapbackShooterConstants.Goal;
+import frc.robot.subsystems.snapback.shooter.SnapbackShooterConstants.SnapbackShooterGoal;
 import frc.robot.subsystems.whiplash.arm.WhiplashArm;
+import frc.robot.subsystems.whiplash.arm.WhiplashArmConstants.WhiplashArmGoal;
 import frc.robot.subsystems.whiplash.intake.WhiplashIntake;
 import frc.robot.subsystems.whiplash.shooter.WhiplashShooter;
 import frc.robot.util.AllianceFlipUtil;
@@ -47,7 +48,7 @@ public class CompositeCommands {
       SnapbackShooter shooter,
       XboxController driver) {
     return Commands.sequence(
-            Commands.parallel(shooter.setGoal(Goal.SPEAKER), hood.setSpeaker())
+            Commands.parallel(shooter.setGoal(SnapbackShooterGoal.SPEAKER), hood.setSpeaker())
                 .until(
                     () ->
                         shooter.atGoal()
@@ -64,7 +65,7 @@ public class CompositeCommands {
   public static final Command shootSpeakerAuto(
       Drive drive, SnapbackIntake intake, SnapbackHood hood, SnapbackShooter shooter) {
     return Commands.sequence(
-        Commands.parallel(shooter.setGoal(Goal.SPEAKER), hood.setSpeaker()),
+        Commands.parallel(shooter.setGoal(SnapbackShooterGoal.SPEAKER), hood.setSpeaker()),
         Commands.waitUntil(
             () ->
                 shooter.atGoal() && hood.atGoal() && DriveCommands.getAimController().atSetpoint()),
@@ -76,7 +77,7 @@ public class CompositeCommands {
   public static final Command shootFeed(
       SnapbackIntake intake, SnapbackHood hood, SnapbackShooter shooter) {
     return Commands.sequence(
-        Commands.parallel(shooter.setGoal(Goal.FEED), hood.setFeed()),
+        Commands.parallel(shooter.setGoal(SnapbackShooterGoal.FEED), hood.setFeed()),
         Commands.waitUntil(() -> shooter.atGoal() && hood.atGoal()),
         intake.shoot());
   }
@@ -84,12 +85,16 @@ public class CompositeCommands {
   // Whiplash
   public static final Command collect(WhiplashIntake intake, WhiplashArm arm) {
     return Commands.sequence(
-        arm.intakeAngle(), Commands.waitUntil(() -> arm.atSetpoint()), intake.intake());
+        arm.setGoal(WhiplashArmGoal.INTAKE),
+        Commands.waitUntil(() -> arm.atSetpoint()),
+        intake.intake());
   }
 
   public static final Command eject(WhiplashIntake intake, WhiplashArm arm) {
     return Commands.sequence(
-        arm.ejectCommand(), Commands.waitUntil(() -> arm.atSetpoint()), intake.eject());
+        arm.setGoal(WhiplashArmGoal.EJECT),
+        Commands.waitUntil(() -> arm.atSetpoint()),
+        intake.eject());
   }
 
   public static final Command shootSpeaker(
@@ -99,7 +104,7 @@ public class CompositeCommands {
       WhiplashShooter shooter,
       XboxController driver) {
     return Commands.sequence(
-            Commands.parallel(shooter.setSpeakerVelocity(), arm.shootAngle())
+            Commands.parallel(shooter.setSpeakerVelocity(), arm.setGoal(WhiplashArmGoal.SPEAKER))
                 .until(
                     () ->
                         shooter.atSetPoint()
@@ -111,7 +116,8 @@ public class CompositeCommands {
             Commands.either(
                 Commands.sequence(
                     intake.intake(),
-                    Commands.parallel(shooter.setSpeakerVelocity(), arm.shootAngle())
+                    Commands.parallel(
+                            shooter.setSpeakerVelocity(), arm.setGoal(WhiplashArmGoal.SPEAKER))
                         .until(
                             () ->
                                 shooter.atSetPoint()
@@ -119,8 +125,8 @@ public class CompositeCommands {
                                     && DriveCommands.getAimController().atSetpoint()),
                     Commands.waitSeconds(0.125),
                     intake.shoot(),
-                    arm.stowAngle()),
-                arm.stowAngle(),
+                    arm.setGoal(WhiplashArmGoal.STOW)),
+                arm.setGoal(WhiplashArmGoal.STOW),
                 () -> intake.hasNoteStaged()),
             Commands.runOnce(() -> driver.setRumble(RumbleType.kBothRumble, 1)),
             Commands.waitSeconds(1))
@@ -130,7 +136,7 @@ public class CompositeCommands {
   public static final Command shootSpeakerAuto(
       Drive drive, WhiplashIntake intake, WhiplashArm arm, WhiplashShooter shooter) {
     return Commands.sequence(
-        Commands.deadline(shooter.setSpeakerVelocity(), arm.shootAngle()),
+        Commands.deadline(shooter.setSpeakerVelocity(), arm.setGoal(WhiplashArmGoal.SPEAKER)),
         Commands.waitUntil(
             () ->
                 shooter.atSetPoint()
@@ -144,55 +150,56 @@ public class CompositeCommands {
   public static final Command shootSubwoofer(
       WhiplashIntake intake, WhiplashArm arm, WhiplashShooter shooter) {
     return Commands.sequence(
-        Commands.parallel(shooter.setSpeakerVelocity(), arm.subwooferAngle()),
+        Commands.parallel(shooter.setSpeakerVelocity(), arm.setGoal(WhiplashArmGoal.SUBWOOFER)),
         Commands.waitUntil(() -> shooter.atSetPoint() && arm.atSetpoint()),
         intake.shoot(),
         Commands.either(
             Commands.sequence(
                 CompositeCommands.collect(intake, arm),
-                Commands.parallel(shooter.setSpeakerVelocity(), arm.subwooferAngle()),
+                Commands.parallel(
+                    shooter.setSpeakerVelocity(), arm.setGoal(WhiplashArmGoal.SUBWOOFER)),
                 Commands.waitUntil(() -> shooter.atSetPoint() && arm.atSetpoint()),
                 intake.shoot(),
-                arm.stowAngle()),
-            arm.stowAngle(),
+                arm.setGoal(WhiplashArmGoal.STOW)),
+            arm.setGoal(WhiplashArmGoal.STOW),
             () -> intake.hasNoteStaged()));
   }
 
   public static final Command shootAmp(
       WhiplashIntake intake, WhiplashArm arm, WhiplashShooter shooter) {
     return Commands.sequence(
-        Commands.parallel(shooter.setAmpVelocity(), arm.preAmpAngle()),
+        Commands.parallel(shooter.setAmpVelocity(), arm.setGoal(WhiplashArmGoal.PREAMP)),
         Commands.waitUntil(() -> shooter.atSetPoint() && arm.atSetpoint()),
         Commands.waitSeconds(0.125),
-        Commands.parallel(intake.shoot(), arm.ampAngle()),
+        Commands.parallel(intake.shoot(), arm.setGoal(WhiplashArmGoal.AMP)),
         Commands.waitSeconds(0.5),
         Commands.either(
             Commands.sequence(
                 CompositeCommands.collect(intake, arm),
-                Commands.parallel(shooter.setAmpVelocity(), arm.preAmpAngle()),
+                Commands.parallel(shooter.setAmpVelocity(), arm.setGoal(WhiplashArmGoal.PREAMP)),
                 Commands.waitUntil(() -> shooter.atSetPoint() && arm.atSetpoint()),
                 Commands.waitSeconds(0.125),
-                Commands.parallel(intake.shoot(), arm.ampAngle()),
+                Commands.parallel(intake.shoot(), arm.setGoal(WhiplashArmGoal.AMP)),
                 Commands.waitSeconds(0.5),
-                arm.stowAngle()),
-            arm.stowAngle(),
+                arm.setGoal(WhiplashArmGoal.STOW)),
+            arm.setGoal(WhiplashArmGoal.STOW),
             () -> intake.hasNoteStaged()));
   }
 
   public static final Command shootFeed(
       WhiplashIntake intake, WhiplashArm arm, WhiplashShooter shooter) {
     return Commands.sequence(
-        Commands.parallel(shooter.setFeedVelocity(), arm.feedAngle()),
+        Commands.parallel(shooter.setFeedVelocity(), arm.setGoal(WhiplashArmGoal.FEED)),
         Commands.waitUntil(() -> shooter.atSetPoint() && arm.atSetpoint()),
         intake.shoot(),
         Commands.either(
             Commands.sequence(
                 CompositeCommands.collect(intake, arm),
-                Commands.parallel(shooter.setFeedVelocity(), arm.feedAngle()),
+                Commands.parallel(shooter.setFeedVelocity(), arm.setGoal(WhiplashArmGoal.FEED)),
                 Commands.waitUntil(() -> shooter.atSetPoint() && arm.atSetpoint()),
                 intake.shoot(),
-                arm.stowAngle()),
-            arm.stowAngle(),
+                arm.setGoal(WhiplashArmGoal.STOW)),
+            arm.setGoal(WhiplashArmGoal.STOW),
             () -> intake.hasNoteStaged()));
   }
 }

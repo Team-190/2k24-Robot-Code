@@ -50,18 +50,18 @@ public class WhiplashIntakeIOSim implements WhiplashIntakeIO {
     acceleratorMotorSim.update(Constants.LOOP_PERIOD_SECONDS);
 
     inputs.topPosition = Rotation2d.fromRadians(topMotorSim.getAngularPositionRad());
-    inputs.topVelocityRadPerSec = topMotorSim.getAngularVelocityRadPerSec();
+    inputs.topVelocityRadiansPerSecond = topMotorSim.getAngularVelocityRadPerSec();
     inputs.topAppliedVolts = topAppliedVolts;
     inputs.topCurrentAmps = topMotorSim.getCurrentDrawAmps();
 
     inputs.bottomPosition = Rotation2d.fromRadians(bottomMotorSim.getAngularPositionRad());
-    inputs.bottomVelocityRadPerSec = bottomMotorSim.getAngularVelocityRadPerSec();
+    inputs.bottomVelocityRadiansPerSecond = bottomMotorSim.getAngularVelocityRadPerSec();
     inputs.bottomAppliedVolts = bottomAppliedVolts;
     inputs.bottomCurrentAmps = bottomMotorSim.getCurrentDrawAmps();
 
     inputs.acceleratorPosition =
         Rotation2d.fromRadians(acceleratorMotorSim.getAngularPositionRad());
-    inputs.acceleratorVelocityRadPerSec = acceleratorMotorSim.getAngularVelocityRadPerSec();
+    inputs.acceleratorVelocityRadiansPerSecond = acceleratorMotorSim.getAngularVelocityRadPerSec();
     inputs.acceleratorAppliedVolts = acceleratorAppliedVolts;
     inputs.acceleratorCurrentAmps = acceleratorMotorSim.getCurrentDrawAmps();
   }

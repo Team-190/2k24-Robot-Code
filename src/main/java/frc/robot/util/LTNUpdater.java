@@ -38,22 +38,24 @@ public class LTNUpdater {
         whiplashArm.hashCode(),
         () -> {
           whiplashArm.setPIDGains(
-              WhiplashArmConstants.ARM_KP.get(), WhiplashArmConstants.ARM_KD.get());
+              WhiplashArmConstants.GAINS.kp().get(), WhiplashArmConstants.GAINS.kd().get());
           whiplashArm.setFeedforward(
-              WhiplashArmConstants.ARM_KS.get(),
-              WhiplashArmConstants.ARM_KG.get(),
-              WhiplashArmConstants.ARM_KV.get());
+              WhiplashArmConstants.GAINS.ks().get(),
+              WhiplashArmConstants.GAINS.kg().get(),
+              WhiplashArmConstants.GAINS.kv().get());
           whiplashArm.setConstraints(
-              WhiplashArmConstants.ARM_MAX_VELOCITY.get(),
-              WhiplashArmConstants.ARM_MAX_ACCELERATION.get());
+              WhiplashArmConstants.CONSTRAINTS.maxVelocityRadiansPerSecond().get(),
+              WhiplashArmConstants.CONSTRAINTS.maxAccelerationRadiansPerSecondSqaured().get(),
+              WhiplashArmConstants.CONSTRAINTS.goalToleranceRadians().get());
         },
-        WhiplashArmConstants.ARM_KP,
-        WhiplashArmConstants.ARM_KD,
-        WhiplashArmConstants.ARM_KS,
-        WhiplashArmConstants.ARM_KG,
-        WhiplashArmConstants.ARM_KV,
-        WhiplashArmConstants.ARM_MAX_VELOCITY,
-        WhiplashArmConstants.ARM_MAX_ACCELERATION);
+        WhiplashArmConstants.GAINS.kp(),
+        WhiplashArmConstants.GAINS.kd(),
+        WhiplashArmConstants.GAINS.ks(),
+        WhiplashArmConstants.GAINS.kg(),
+        WhiplashArmConstants.GAINS.kv(),
+        WhiplashArmConstants.CONSTRAINTS.maxVelocityRadiansPerSecond(),
+        WhiplashArmConstants.CONSTRAINTS.maxAccelerationRadiansPerSecondSqaured(),
+        WhiplashArmConstants.CONSTRAINTS.goalToleranceRadians());
   }
 
   private static final void updateWhiplashIntake(WhiplashIntake whiplashIntake) {}

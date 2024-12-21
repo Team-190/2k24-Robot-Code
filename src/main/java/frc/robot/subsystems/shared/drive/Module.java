@@ -56,7 +56,7 @@ public class Module {
     odometryPositions = new SwerveModulePosition[sampleCount];
     for (int i = 0; i < sampleCount; i++) {
       double positionMeters =
-          inputs.odometryDrivePositionsRadians[i] * DriveConstants.DRIVE_CONFIG.wheelRadius();
+          inputs.odometryDrivePositionsRadians[i] * DriveConstants.DRIVE_CONFIG.wheelRadiusMeters();
       Rotation2d angle = inputs.odometryTurnPositions[i];
       odometryPositions[i] = new SwerveModulePosition(positionMeters, angle);
     }
@@ -76,7 +76,7 @@ public class Module {
     double wheelTorqueNewtonMeters = torqueFeedforward.speedMetersPerSecond;
     // Apply setpoints
     io.setDriveVelocity(
-        state.speedMetersPerSecond / DriveConstants.DRIVE_CONFIG.wheelRadius(),
+        state.speedMetersPerSecond / DriveConstants.DRIVE_CONFIG.wheelRadiusMeters(),
         DriveConstants.DRIVE_CONFIG
             .driveModel()
             .getCurrent(wheelTorqueNewtonMeters / DriveConstants.FRONT_LEFT.DriveMotorGearRatio));
@@ -102,12 +102,12 @@ public class Module {
 
   /** Returns the current drive position of the module in meters. */
   public double getPositionMeters() {
-    return inputs.drivePositionRadians * DriveConstants.DRIVE_CONFIG.wheelRadius();
+    return inputs.drivePositionRadians * DriveConstants.DRIVE_CONFIG.wheelRadiusMeters();
   }
 
   /** Returns the current drive velocity of the module in meters per second. */
   public double getVelocityMetersPerSec() {
-    return inputs.driveVelocityRadiansPerSecond * DriveConstants.DRIVE_CONFIG.wheelRadius();
+    return inputs.driveVelocityRadiansPerSecond * DriveConstants.DRIVE_CONFIG.wheelRadiusMeters();
   }
 
   /** Returns the module position (turn angle and drive position). */

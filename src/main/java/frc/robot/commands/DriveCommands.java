@@ -85,9 +85,11 @@ public final class DriveCommands {
                   && DriverStation.getAlliance().get() == Alliance.Red;
 
           double fieldRelativeXVel =
-              linearVelocity.getX() * DriveConstants.DRIVE_CONFIG.maxLinearVelocity();
+              linearVelocity.getX()
+                  * DriveConstants.DRIVE_CONFIG.maxLinearVelocityMetersPerSecond();
           double fieldRelativeYVel =
-              linearVelocity.getY() * DriveConstants.DRIVE_CONFIG.maxLinearVelocity();
+              linearVelocity.getY()
+                  * DriveConstants.DRIVE_CONFIG.maxLinearVelocityMetersPerSecond();
 
           double angular = 0.0;
 

@@ -8,14 +8,14 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants;
-import frc.robot.subsystems.snapback.shooter.SnapbackShooterConstants.Goal;
+import frc.robot.subsystems.snapback.shooter.SnapbackShooterConstants.SnapbackShooterGoal;
 import org.littletonrobotics.junction.Logger;
 
 public class SnapbackShooter extends SubsystemBase {
 
   private final SnapbackShooterIO io;
   private final SnapbackShooterIOInputsAutoLogged inputs;
-  private Goal goal = Goal.IDLE;
+  private SnapbackShooterGoal goal = SnapbackShooterGoal.IDLE;
 
   private final SysIdRoutine sysIdRoutineLeft;
   private final SysIdRoutine sysIdRoutineRight;
@@ -59,15 +59,15 @@ public class SnapbackShooter extends SubsystemBase {
     }
   }
 
-  public Command setGoal(Goal goal) {
+  public Command setGoal(SnapbackShooterGoal goal) {
     return runOnce(() -> this.goal = goal);
   }
 
-  public Goal getGoal() {
+  public SnapbackShooterGoal getGoal() {
     return goal;
   }
 
-  public Command shoot(Goal goal) {
+  public Command shoot(SnapbackShooterGoal goal) {
     return setGoal(goal).andThen(runOnce(() -> io.setAcceleratorVoltage(12.0)));
   }
 
