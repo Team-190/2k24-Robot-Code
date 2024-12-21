@@ -163,7 +163,7 @@ public final class DriveCommands {
     return Commands.run(() -> drive.stopWithX());
   }
 
-  public static final void setPIDGains(double kp, double ki, double kd) {
-    aimController.setPID(kp, ki, kd);
+  public static final void setPID(double kp, double kd) {
+    aimController.setPID(kp, 0.0, kd);
   }
 }

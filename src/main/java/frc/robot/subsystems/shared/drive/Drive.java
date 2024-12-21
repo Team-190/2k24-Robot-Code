@@ -41,6 +41,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import lombok.Getter;
+import lombok.Setter;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -60,7 +61,8 @@ public class Drive extends SubsystemBase {
   @Getter private Rotation2d rawGyroRotation;
   private SwerveModulePosition[] lastModulePositions;
 
-  @Getter private AutoFactory autoFactory;
+  @Getter private AutoController autoController;
+  @Setter @Getter private AutoFactory autoFactory;
 
   static {
     odometryLock = new ReentrantLock();
@@ -98,10 +100,11 @@ public class Drive extends SubsystemBase {
           new SwerveModulePosition()
         };
 
+    autoController = new AutoController(this);
     autoFactory =
         Choreo.createAutoFactory(
             RobotState::getRobotPose,
-            new AutoController(this),
+            autoController,
             AllianceFlipUtil::shouldFlip,
             this,
             new AutoBindings());
@@ -331,7 +334,7 @@ public class Drive extends SubsystemBase {
   }
 
   public class AutoController implements Consumer<SwerveSample> {
-    private final Drive drive; // drive subsystem
+    private final Drive drive;
     private final PIDController xController =
         new PIDController(
             DriveConstants.AUTO_ALIGN_GAINS.translation_Kp().get(),
@@ -380,6 +383,16 @@ public class Drive extends SubsystemBase {
       }
 
       drive.runVelocityTorque(velocity, moduleTorques);
+    }
+
+    public void setPID(
+        double translation_Kp, double translation_Kd, double rotation_Kp, double rotation_Kd) {
+      xController.setP(translation_Kp);
+      xController.setD(translation_Kd);
+      yController.setP(translation_Kp);
+      yController.setD(translation_Kd);
+      headingController.setP(rotation_Kp);
+      headingController.setD(rotation_Kd);
     }
   }
 }

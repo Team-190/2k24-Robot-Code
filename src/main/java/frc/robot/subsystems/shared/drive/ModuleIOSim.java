@@ -20,6 +20,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
+import frc.robot.Constants;
 
 /**
  * Physics sim implementation of module IO. Simulation is not vendor-specific, but the sim models
@@ -63,10 +64,10 @@ public class ModuleIOSim implements ModuleIO {
 
     driveController =
         new PIDController(
-            DriveConstants.GAINS.driveKp().get(), 0.0, DriveConstants.GAINS.driveKd().get());
+            DriveConstants.GAINS.drive_Kp().get(), 0.0, DriveConstants.GAINS.drive_Kd().get());
     turnController =
         new PIDController(
-            DriveConstants.GAINS.turnKp().get(), 0.0, DriveConstants.GAINS.turnKd().get());
+            DriveConstants.GAINS.turn_Kp().get(), 0.0, DriveConstants.GAINS.turn_Kd().get());
 
     driveFFVolts = 0.0;
     driveAppliedVolts = 0.0;
@@ -94,8 +95,8 @@ public class ModuleIOSim implements ModuleIO {
     // Update simulation state
     driveSim.setInputVoltage(MathUtil.clamp(driveAppliedVolts, -12.0, 12.0));
     turnSim.setInputVoltage(MathUtil.clamp(turnAppliedVolts, -12.0, 12.0));
-    driveSim.update(0.02);
-    turnSim.update(0.02);
+    driveSim.update(Constants.LOOP_PERIOD_SECONDS);
+    turnSim.update(Constants.LOOP_PERIOD_SECONDS);
 
     inputs.drivePositionRadians = driveSim.getAngularPositionRad();
     inputs.driveVelocityRadiansPerSecond = driveSim.getAngularVelocityRadPerSec();
@@ -138,8 +139,8 @@ public class ModuleIOSim implements ModuleIO {
   public void setDriveVelocity(double velocityRadiansPerSecond, double currentFeedforward) {
     driveClosedLoop = true;
     driveFFVolts =
-        DriveConstants.GAINS.driveKs().get() * Math.signum(velocityRadiansPerSecond)
-            + DriveConstants.GAINS.driveKv().get() * velocityRadiansPerSecond;
+        DriveConstants.GAINS.drive_Ks().get() * Math.signum(velocityRadiansPerSecond)
+            + DriveConstants.GAINS.drive_Kv().get() * velocityRadiansPerSecond;
     driveController.setSetpoint(velocityRadiansPerSecond);
   }
 

@@ -18,25 +18,25 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 
 public class WhiplashShooterIOTalonFX implements WhiplashShooterIO {
-
   private final TalonFX topMotor;
   private final TalonFX bottomMotor;
 
   private final StatusSignal<Angle> topPositionRotations;
-  private final StatusSignal<AngularVelocity> topVelocityRotPerSec;
+  private final StatusSignal<AngularVelocity> topVelocityRotationsPerSecond;
   private final StatusSignal<Voltage> topAppliedVolts;
   private final StatusSignal<Current> topCurrentAmps;
   private final StatusSignal<Temperature> topTemperatureCelsius;
-  private final StatusSignal<Double> topVelocitySetpointRotationsPerSec;
+  private double topGoalRadiansPerSecond;
+  private final StatusSignal<Double> topVelocitySetpointRotationsPerSecond;
+  private final StatusSignal<Double> topVelocityErrorRotationsPerSecond;
 
   private final StatusSignal<Angle> bottomPositionRotations;
-  private final StatusSignal<AngularVelocity> bottomVelocityRotPerSec;
+  private final StatusSignal<AngularVelocity> bottomVelocityRotationsPerSecond;
   private final StatusSignal<Voltage> bottomAppliedVolts;
   private final StatusSignal<Current> bottomCurrentAmps;
   private final StatusSignal<Temperature> bottomTemperatureCelsius;
-  private final StatusSignal<Double> bottomVelocitySetpointRotationsPerSec;
-
-  private final StatusSignal<Double> topVelocityErrorRotationsPerSecond;
+  private double bottomGoalRadiansPerSecond;
+  private final StatusSignal<Double> bottomVelocitySetpointRotationsPerSecond;
   private final StatusSignal<Double> bottomVelocityErrorRotationsPerSecond;
 
   private final TalonFXConfiguration topConfig;
@@ -47,11 +47,7 @@ public class WhiplashShooterIOTalonFX implements WhiplashShooterIO {
   private final VelocityVoltage topProfiledVelocityControl;
   private final VelocityVoltage bottomProfiledVelocityControl;
 
-  private double topGoalRadiansPerSecond;
-  private double bottomGoalRadiansPerSecond;
-
   public WhiplashShooterIOTalonFX() {
-
     topMotor = new TalonFX(WhiplashShooterConstants.TOP_CAN_ID);
     bottomMotor = new TalonFX(WhiplashShooterConstants.BOTTOM_CAN_ID);
 
@@ -61,59 +57,56 @@ public class WhiplashShooterIOTalonFX implements WhiplashShooterIO {
     topConfig.CurrentLimits.SupplyCurrentLimit = WhiplashShooterConstants.CURRENT_LIMIT;
     topConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     topConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    topConfig.Slot0.kP = WhiplashShooterConstants.KP.get();
-    topConfig.Slot0.kD = WhiplashShooterConstants.KD.get();
-    topConfig.Slot0.kS = WhiplashShooterConstants.KS.get();
-    topConfig.Slot0.kV = WhiplashShooterConstants.KV.get();
+    topConfig.Slot0.kP = WhiplashShooterConstants.GAINS.kp().get();
+    topConfig.Slot0.kD = WhiplashShooterConstants.GAINS.kd().get();
+    topConfig.Slot0.kS = WhiplashShooterConstants.GAINS.ks().get();
+    topConfig.Slot0.kV = WhiplashShooterConstants.GAINS.kv().get();
     topConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
     bottomConfig.CurrentLimits.SupplyCurrentLimit = WhiplashShooterConstants.CURRENT_LIMIT;
     bottomConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     bottomConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    bottomConfig.Slot0.kP = WhiplashShooterConstants.KP.get();
-    bottomConfig.Slot0.kD = WhiplashShooterConstants.KD.get();
-    bottomConfig.Slot0.kS = WhiplashShooterConstants.KS.get();
-    bottomConfig.Slot0.kV = WhiplashShooterConstants.KV.get();
+    bottomConfig.Slot0.kP = WhiplashShooterConstants.GAINS.kp().get();
+    bottomConfig.Slot0.kD = WhiplashShooterConstants.GAINS.kd().get();
+    bottomConfig.Slot0.kS = WhiplashShooterConstants.GAINS.ks().get();
+    bottomConfig.Slot0.kV = WhiplashShooterConstants.GAINS.kv().get();
 
     topMotor.getConfigurator().apply(topConfig);
     bottomMotor.getConfigurator().apply(bottomConfig);
 
     topPositionRotations = topMotor.getPosition();
-    topVelocityRotPerSec = topMotor.getVelocity();
+    topVelocityRotationsPerSecond = topMotor.getVelocity();
     topAppliedVolts = topMotor.getMotorVoltage();
     topCurrentAmps = topMotor.getSupplyCurrent();
     topTemperatureCelsius = topMotor.getDeviceTemp();
+    topGoalRadiansPerSecond = 0.0;
+    topVelocitySetpointRotationsPerSecond = topMotor.getClosedLoopReference();
+    topVelocityErrorRotationsPerSecond = topMotor.getClosedLoopError();
 
     bottomPositionRotations = bottomMotor.getPosition();
-    bottomVelocityRotPerSec = bottomMotor.getVelocity();
+    bottomVelocityRotationsPerSecond = bottomMotor.getVelocity();
     bottomAppliedVolts = bottomMotor.getMotorVoltage();
     bottomCurrentAmps = bottomMotor.getSupplyCurrent();
     bottomTemperatureCelsius = bottomMotor.getDeviceTemp();
-
-    topVelocitySetpointRotationsPerSec = topMotor.getClosedLoopReference();
-    bottomVelocitySetpointRotationsPerSec = bottomMotor.getClosedLoopReference();
-
-    topVelocityErrorRotationsPerSecond = topMotor.getClosedLoopError();
-    bottomVelocityErrorRotationsPerSecond = bottomMotor.getClosedLoopError();
-
-    topGoalRadiansPerSecond = 0.0;
     bottomGoalRadiansPerSecond = 0.0;
+    bottomVelocitySetpointRotationsPerSecond = bottomMotor.getClosedLoopReference();
+    bottomVelocityErrorRotationsPerSecond = bottomMotor.getClosedLoopError();
 
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0,
         topPositionRotations,
-        topVelocityRotPerSec,
+        topVelocityRotationsPerSecond,
         topAppliedVolts,
         topCurrentAmps,
         topTemperatureCelsius,
+        topVelocitySetpointRotationsPerSecond,
+        topVelocityErrorRotationsPerSecond,
         bottomPositionRotations,
-        bottomVelocityRotPerSec,
+        bottomVelocityRotationsPerSecond,
         bottomAppliedVolts,
         bottomCurrentAmps,
         bottomTemperatureCelsius,
-        topVelocitySetpointRotationsPerSec,
-        bottomVelocitySetpointRotationsPerSec,
-        topVelocityErrorRotationsPerSecond,
+        bottomVelocitySetpointRotationsPerSecond,
         bottomVelocityErrorRotationsPerSecond);
 
     topMotor.optimizeBusUtilization(50.0, 1.0);
@@ -129,107 +122,109 @@ public class WhiplashShooterIOTalonFX implements WhiplashShooterIO {
   public void updateInputs(WhiplashShooterIOInputs inputs) {
     BaseStatusSignal.refreshAll(
         topPositionRotations,
-        topVelocityRotPerSec,
+        topVelocityRotationsPerSecond,
         topAppliedVolts,
         topCurrentAmps,
         topTemperatureCelsius,
+        topVelocitySetpointRotationsPerSecond,
+        topVelocityErrorRotationsPerSecond,
         bottomPositionRotations,
-        bottomVelocityRotPerSec,
+        bottomVelocityRotationsPerSecond,
         bottomAppliedVolts,
         bottomCurrentAmps,
         bottomTemperatureCelsius,
-        topVelocitySetpointRotationsPerSec,
-        bottomVelocitySetpointRotationsPerSec,
-        topVelocityErrorRotationsPerSecond,
+        bottomVelocitySetpointRotationsPerSecond,
         bottomVelocityErrorRotationsPerSecond);
-    topVelocitySetpointRotationsPerSec.refresh();
-    bottomVelocitySetpointRotationsPerSec.refresh();
+    topVelocitySetpointRotationsPerSecond.refresh();
     topVelocityErrorRotationsPerSecond.refresh();
+    bottomVelocitySetpointRotationsPerSecond.refresh();
     bottomVelocityErrorRotationsPerSecond.refresh();
 
     inputs.topPosition = Rotation2d.fromRotations(topPositionRotations.getValueAsDouble());
-    inputs.topVelocityRadPerSec = Units.rotationsToRadians(topVelocityRotPerSec.getValueAsDouble());
+    inputs.topVelocityRadiansPerSecond =
+        Units.rotationsToRadians(topVelocityRotationsPerSecond.getValueAsDouble());
     inputs.topAppliedVolts = topAppliedVolts.getValueAsDouble();
     inputs.topCurrentAmps = topCurrentAmps.getValueAsDouble();
     inputs.topTemperatureCelsius = topTemperatureCelsius.getValueAsDouble();
-    inputs.topVelocitySetpointRadiansPerSec =
-        Units.rotationsToRadians(topVelocitySetpointRotationsPerSec.getValueAsDouble());
-    inputs.topVelocityGoalRadiansPerSec = topGoalRadiansPerSecond;
+    inputs.topVelocityGoalRadiansPerSecond = topGoalRadiansPerSecond;
+    inputs.topVelocitySetpointRadiansPerSecond =
+        Units.rotationsToRadians(topVelocitySetpointRotationsPerSecond.getValueAsDouble());
+    inputs.topVelocityErrorRadiansPerSecond =
+        Units.rotationsToRadians(topVelocityErrorRotationsPerSecond.getValueAsDouble());
 
     inputs.bottomPosition = Rotation2d.fromRotations(bottomPositionRotations.getValueAsDouble());
-    inputs.bottomVelocityRadPerSec =
-        Units.rotationsToRadians(bottomVelocityRotPerSec.getValueAsDouble());
+    inputs.bottomVelocityRadiansPerSecond =
+        Units.rotationsToRadians(bottomVelocityRotationsPerSecond.getValueAsDouble());
     inputs.bottomAppliedVolts = bottomAppliedVolts.getValueAsDouble();
     inputs.bottomCurrentAmps = bottomCurrentAmps.getValueAsDouble();
     inputs.bottomTemperatureCelsius = bottomTemperatureCelsius.getValueAsDouble();
-    inputs.bottomVelocitySetpointRadiansPerSec =
-        Units.rotationsToRadians(bottomVelocitySetpointRotationsPerSec.getValueAsDouble());
-    inputs.bottomVelocityGoalRadiansPerSec = bottomGoalRadiansPerSecond;
-
-    inputs.topVelocityErrorRadiansPerSec =
-        Units.rotationsToRadians(topVelocityErrorRotationsPerSecond.getValueAsDouble());
-    inputs.bottomVelocityErrorRadiansPerSec =
+    inputs.bottomVelocityGoalRadiansPerSecond = bottomGoalRadiansPerSecond;
+    inputs.bottomVelocitySetpointRadiansPerSecond =
+        Units.rotationsToRadians(bottomVelocitySetpointRotationsPerSecond.getValueAsDouble());
+    inputs.bottomVelocityErrorRadiansPerSecond =
         Units.rotationsToRadians(bottomVelocityErrorRotationsPerSecond.getValueAsDouble());
   }
 
   @Override
-  public void setTopVelocitySetPoint(double setPointVelocityRadiansPerSecond) {
-    topGoalRadiansPerSecond = setPointVelocityRadiansPerSecond;
+  public void setVoltage(double volts) {
+    topMotor.setControl(voltageControl.withOutput(volts).withEnableFOC(true));
+    bottomMotor.setControl(voltageControl.withOutput(volts).withEnableFOC(true));
+  }
+
+  @Override
+  public void setTopVelocitySetpoint(double setpointVelocityRadiansPerSecond) {
+    topGoalRadiansPerSecond = setpointVelocityRadiansPerSecond;
     topMotor.setControl(
         topProfiledVelocityControl
-            .withVelocity(Units.radiansToRotations(setPointVelocityRadiansPerSecond))
-            .withEnableFOC(false));
+            .withVelocity(Units.radiansToRotations(setpointVelocityRadiansPerSecond))
+            .withEnableFOC(true));
   }
 
   @Override
-  public void setBottomVelocitySetPoint(double setPointVelocityRadiansPerSecond) {
-    bottomGoalRadiansPerSecond = setPointVelocityRadiansPerSecond;
+  public void setBottomVelocitySetpoint(double setpointVelocityRadiansPerSecond) {
+    bottomGoalRadiansPerSecond = setpointVelocityRadiansPerSecond;
     bottomMotor.setControl(
         bottomProfiledVelocityControl
-            .withVelocity(Units.radiansToRotations(setPointVelocityRadiansPerSecond))
-            .withEnableFOC(false));
+            .withVelocity(Units.radiansToRotations(setpointVelocityRadiansPerSecond))
+            .withEnableFOC(true));
   }
 
   @Override
-  public void setPID(double kP, double kI, double kD) {
-    topConfig.Slot0.kP = kP;
-    topConfig.Slot0.kI = kI;
-    topConfig.Slot0.kD = kD;
+  public void setPID(double kp, double ki, double kd) {
+    topConfig.Slot0.kP = kp;
+    topConfig.Slot0.kI = ki;
+    topConfig.Slot0.kD = kd;
     topMotor.getConfigurator().apply(topConfig, 0.01);
   }
 
   @Override
-  public void setFeedForward(double kS, double kV, double kA) {
-    topConfig.Slot0.kS = kS;
-    topConfig.Slot0.kV = kV;
-    topConfig.Slot0.kA = kA;
+  public void setFeedforward(double ks, double kv, double ka) {
+    topConfig.Slot0.kS = ks;
+    topConfig.Slot0.kV = kv;
+    topConfig.Slot0.kA = ka;
     topMotor.getConfigurator().apply(topConfig, 0.01);
   }
 
   @Override
-  public void setProfile(double maxAccelerationRadiansPerSecondSquared) {
+  public void setProfile(
+      double maxAccelerationRadiansPerSecondSquared, double goalToleranceRadiansPerSecond) {
     topConfig.MotionMagic.MotionMagicAcceleration =
         Units.radiansToRotations(maxAccelerationRadiansPerSecondSquared);
     topMotor.getConfigurator().apply(topConfig);
   }
 
   @Override
-  public boolean atSetPoint() {
+  public boolean atSetpoint() {
     return Math.abs(
                 Units.radiansToRotations(topGoalRadiansPerSecond)
-                    - topVelocityRotPerSec.getValueAsDouble())
-            <= Units.radiansToRotations(WhiplashShooterConstants.SPEED_TOLERANCE_RADIANS_PER_SECOND)
+                    - topVelocityRotationsPerSecond.getValueAsDouble())
+            <= Units.radiansToRotations(
+                WhiplashShooterConstants.CONSTRAINTS.goalToleranceRadiansPerSecond().get())
         && Math.abs(
                 Units.radiansToRotations(bottomGoalRadiansPerSecond)
-                    - bottomVelocityRotPerSec.getValueAsDouble())
+                    - bottomVelocityRotationsPerSecond.getValueAsDouble())
             <= Units.radiansToRotations(
-                WhiplashShooterConstants.SPEED_TOLERANCE_RADIANS_PER_SECOND);
-  }
-
-  @Override
-  public void setVoltage(double volts) {
-    topMotor.setControl(voltageControl.withOutput(volts));
-    bottomMotor.setControl(voltageControl.withOutput(volts));
+                WhiplashShooterConstants.CONSTRAINTS.goalToleranceRadiansPerSecond().get());
   }
 
   @Override

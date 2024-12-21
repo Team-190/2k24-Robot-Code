@@ -141,12 +141,12 @@ public class DriveConstants {
   }
 
   public record Gains(
-      LoggedTunableNumber driveKs,
-      LoggedTunableNumber driveKv,
-      LoggedTunableNumber driveKp,
-      LoggedTunableNumber driveKd,
-      LoggedTunableNumber turnKp,
-      LoggedTunableNumber turnKd) {}
+      LoggedTunableNumber drive_Ks,
+      LoggedTunableNumber drive_Kv,
+      LoggedTunableNumber drive_Kp,
+      LoggedTunableNumber drive_Kd,
+      LoggedTunableNumber turn_Kp,
+      LoggedTunableNumber turn_Kd) {}
 
   public record AutoAlignGains(
       LoggedTunableNumber translation_Kp,

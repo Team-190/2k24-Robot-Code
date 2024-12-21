@@ -50,6 +50,7 @@ public class WhiplashArmIOSim implements WhiplashArmIO {
 
   @Override
   public void updateInputs(WhiplashArmIOInputs inputs) {
+    sim.setInputVoltage(MathUtil.clamp(AppliedVolts, -12.0, 12.0));
     sim.update(Constants.LOOP_PERIOD_SECONDS);
 
     inputs.position = Rotation2d.fromRadians(sim.getAngleRads());
@@ -66,23 +67,17 @@ public class WhiplashArmIOSim implements WhiplashArmIO {
 
   @Override
   public void setVoltage(double volts) {
-    AppliedVolts = MathUtil.clamp(volts, -12.0, 12.0);
-    sim.setInputVoltage(AppliedVolts);
+    AppliedVolts = volts;
   }
 
   @Override
   public void setPosition(Rotation2d setpointPosition) {
     AppliedVolts =
-        MathUtil.clamp(
-            feedback.calculate(sim.getAngleRads(), setpointPosition.getRadians())
-                + feedforward
-                    .calculate(
-                        Radians.of(sim.getAngleRads()),
-                        RadiansPerSecond.of(sim.getVelocityRadPerSec()))
-                    .in(Volts),
-            -12.0,
-            12.0);
-    sim.setInputVoltage(AppliedVolts);
+        feedback.calculate(sim.getAngleRads(), setpointPosition.getRadians())
+            + feedforward
+                .calculate(
+                    Radians.of(sim.getAngleRads()), RadiansPerSecond.of(sim.getVelocityRadPerSec()))
+                .in(Volts);
   }
 
   @Override

@@ -283,7 +283,7 @@ public class RobotContainer {
       case WHIPLASH:
       case WHIPLASH_SIM:
       default:
-        LTNUpdater.updateWhiplash(drive, whiplashArm, whiplashIntake, whiplashShooter);
+        LTNUpdater.updateWhiplash(drive, whiplashArm, whiplashShooter);
         break;
       case SNAPBACK:
       case SNAPBACK_SIM:

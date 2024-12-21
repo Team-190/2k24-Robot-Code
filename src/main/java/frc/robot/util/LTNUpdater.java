@@ -1,10 +1,13 @@
 package frc.robot.util;
 
+import choreo.Choreo;
+import choreo.auto.AutoFactory.AutoBindings;
+import frc.robot.RobotState;
+import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
 import frc.robot.subsystems.whiplash.arm.WhiplashArm;
 import frc.robot.subsystems.whiplash.arm.WhiplashArmConstants;
-import frc.robot.subsystems.whiplash.intake.WhiplashIntake;
 import frc.robot.subsystems.whiplash.shooter.WhiplashShooter;
 import frc.robot.subsystems.whiplash.shooter.WhiplashShooterConstants;
 
@@ -14,19 +17,48 @@ public class LTNUpdater {
         drive.hashCode(),
         () -> {
           drive.setPIDGains(
-              DriveConstants.GAINS.driveKp().get(),
-              DriveConstants.GAINS.driveKd().get(),
-              DriveConstants.GAINS.turnKp().get(),
-              DriveConstants.GAINS.turnKd().get());
+              DriveConstants.GAINS.drive_Kp().get(),
+              DriveConstants.GAINS.drive_Kd().get(),
+              DriveConstants.GAINS.turn_Kp().get(),
+              DriveConstants.GAINS.turn_Kd().get());
           drive.setFFGains(
-              DriveConstants.GAINS.driveKs().get(), DriveConstants.GAINS.driveKv().get());
+              DriveConstants.GAINS.drive_Ks().get(), DriveConstants.GAINS.drive_Kv().get());
         },
-        DriveConstants.GAINS.driveKs(),
-        DriveConstants.GAINS.driveKv(),
-        DriveConstants.GAINS.driveKp(),
-        DriveConstants.GAINS.driveKd(),
-        DriveConstants.GAINS.turnKp(),
-        DriveConstants.GAINS.turnKd(),
+        DriveConstants.GAINS.drive_Ks(),
+        DriveConstants.GAINS.drive_Kv(),
+        DriveConstants.GAINS.drive_Kp(),
+        DriveConstants.GAINS.drive_Kd(),
+        DriveConstants.GAINS.turn_Kp(),
+        DriveConstants.GAINS.turn_Kd());
+
+    LoggedTunableNumber.ifChanged(
+        drive.hashCode(),
+        () -> {
+          DriveCommands.setPID(
+              DriveConstants.AUTO_ALIGN_GAINS.rotation_Kp().get(),
+              DriveConstants.AUTO_ALIGN_GAINS.rotation_Kd().get());
+        },
+        DriveConstants.AUTO_ALIGN_GAINS.rotation_Kp(),
+        DriveConstants.AUTO_ALIGN_GAINS.rotation_Kd());
+
+    LoggedTunableNumber.ifChanged(
+        drive.hashCode(),
+        () -> {
+          drive
+              .getAutoController()
+              .setPID(
+                  DriveConstants.AUTO_ALIGN_GAINS.translation_Kp().get(),
+                  DriveConstants.AUTO_ALIGN_GAINS.translation_Kd().get(),
+                  DriveConstants.AUTO_ALIGN_GAINS.rotation_Kp().get(),
+                  DriveConstants.AUTO_ALIGN_GAINS.rotation_Kd().get());
+          drive.setAutoFactory(
+              Choreo.createAutoFactory(
+                  RobotState::getRobotPose,
+                  drive.getAutoController(),
+                  AllianceFlipUtil::shouldFlip,
+                  drive,
+                  new AutoBindings()));
+        },
         DriveConstants.AUTO_ALIGN_GAINS.translation_Kp(),
         DriveConstants.AUTO_ALIGN_GAINS.translation_Kd(),
         DriveConstants.AUTO_ALIGN_GAINS.rotation_Kp(),
@@ -58,37 +90,33 @@ public class LTNUpdater {
         WhiplashArmConstants.CONSTRAINTS.goalToleranceRadians());
   }
 
-  private static final void updateWhiplashIntake(WhiplashIntake whiplashIntake) {}
-
   private static final void updateWhiplashShooter(WhiplashShooter whiplashShooter) {
     LoggedTunableNumber.ifChanged(
         whiplashShooter.hashCode(),
         () -> {
           whiplashShooter.setPID(
-              WhiplashShooterConstants.KP.get(), WhiplashShooterConstants.KD.get());
+              WhiplashShooterConstants.GAINS.kp().get(), WhiplashShooterConstants.GAINS.kd().get());
           whiplashShooter.setFeedforward(
-              WhiplashShooterConstants.KS.get(),
-              WhiplashShooterConstants.KV.get(),
-              WhiplashShooterConstants.KA.get());
+              WhiplashShooterConstants.GAINS.ks().get(),
+              WhiplashShooterConstants.GAINS.kv().get(),
+              WhiplashShooterConstants.GAINS.ka().get());
           whiplashShooter.setProfile(
-              WhiplashShooterConstants.MAX_ACCELERATION_RADIANS_PER_SECOND_SQUARED.get());
+              WhiplashShooterConstants.CONSTRAINTS.maxAccelerationRadiansPerSecondSquared().get(),
+              WhiplashShooterConstants.CONSTRAINTS.goalToleranceRadiansPerSecond().get());
         },
-        WhiplashShooterConstants.KP,
-        WhiplashShooterConstants.KD,
-        WhiplashShooterConstants.KS,
-        WhiplashShooterConstants.KV,
-        WhiplashShooterConstants.KA,
-        WhiplashShooterConstants.MAX_ACCELERATION_RADIANS_PER_SECOND_SQUARED);
+        WhiplashShooterConstants.GAINS.kp(),
+        WhiplashShooterConstants.GAINS.kd(),
+        WhiplashShooterConstants.GAINS.ks(),
+        WhiplashShooterConstants.GAINS.kv(),
+        WhiplashShooterConstants.GAINS.ka(),
+        WhiplashShooterConstants.CONSTRAINTS.maxAccelerationRadiansPerSecondSquared(),
+        WhiplashShooterConstants.CONSTRAINTS.goalToleranceRadiansPerSecond());
   }
 
   public static final void updateWhiplash(
-      Drive drive,
-      WhiplashArm whiplashArm,
-      WhiplashIntake whiplashIntake,
-      WhiplashShooter whiplashShooter) {
+      Drive drive, WhiplashArm whiplashArm, WhiplashShooter whiplashShooter) {
     updateDrive(drive);
     updateWhiplashArm(whiplashArm);
-    updateWhiplashIntake(whiplashIntake);
     updateWhiplashShooter(whiplashShooter);
   }
 }
